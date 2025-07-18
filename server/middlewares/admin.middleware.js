@@ -9,7 +9,7 @@ export const adminMiddleware = asyncHandler(async (req, res, next) => {
         throw new ApiError("Access Token is missing", 401);
     }
 
-    const decodedToken = jwt.verify(accessToken, process.env.SECRET_KEY);
+    const decodedToken = jwt.verify(accessToken, process.env.ADMIN_SECRET_KEY);
     const admin = await Admin.findById(decodedToken.id).select('-password -refreshToken -resetPasswordToken -resetPasswordExpires');
 
     if (!admin) {

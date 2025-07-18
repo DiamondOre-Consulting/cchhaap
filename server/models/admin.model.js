@@ -52,7 +52,7 @@ adminSchema.methods = {
 
     generateAccessToken : async function(){
         const user = this.toObject()
-         const token = jwt.sign({id:user._id,email:user.email,fullName:user.fullName, role:"Admin"}, process.env.SECRET_KEY,{expiresIn:'7d'})
+         const token = jwt.sign({id:user._id,email:user.email,fullName:user.fullName, role:"Admin"}, process.env.ADMIN_SECRET_KEY,{expiresIn:'7d'})
 
          return token;
     },
@@ -62,7 +62,7 @@ adminSchema.methods = {
 
     generateRefreshToken : async function(){
         const user = this.toObject()
-        const refreshToken = jwt.sign({id:user._id,email:user.email,fullName:user.fullName, role:"Admin"}, process.env.REFRESH_SECRET_KEY,{expiresIn:'7d'})
+        const refreshToken = jwt.sign({id:user._id,email:user.email,fullName:user.fullName, role:"Admin"}, process.env.ADMIN_REFRESH_SECRET_KEY,{expiresIn:'7d'})
         return refreshToken;
     }
 

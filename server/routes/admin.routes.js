@@ -5,6 +5,7 @@ import validate from '../middlewares/zod.validator.js';
 import { createCategoryBodySchema, deleteCategoryParamsSchema, editCategoryBodySchema, editCategoryParamsSchema } from '../validator/category.validator.js';
 import { signin, signout, signup } from '../controllers/auth/admin.auth.js';
 import { signinSchema, signupSchema } from '../validator/admin.auth.validator.js';
+import { adminMiddleware } from '../middlewares/admin.middleware.js';
 
 
 
