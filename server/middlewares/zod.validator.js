@@ -5,6 +5,7 @@ const validate = (schemas) => (req, res, next) => {
       
       const validatedData = {};
 
+  
       
       if(schemas.body){ 
         validatedData.body = schemas.body.parse(req.body);

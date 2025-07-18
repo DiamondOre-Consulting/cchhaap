@@ -160,10 +160,10 @@ export const deleteSubCategory = asyncHandler(async(req,res)=>{
 
     await existingCategory.save()
 
-    await Product.updateMany(
-        { category: categoryId },
-        { $pull: { subCategory: subCategoryName } }
-    );
+    // await Product.updateMany(
+    //     { category: categoryId },
+    //     { $pull: { subCategory: subCategoryName } }
+    // );
 
     sendResponse(res,200,existingCategory,"Subcategory deleted")
 
@@ -173,6 +173,8 @@ export const deleteSubCategory = asyncHandler(async(req,res)=>{
 export const editSubCategory = asyncHandler(async(req,res)=>{
     const {categoryId} = req.validatedData.params
     const {oldSubCategoryName,newSubCategoryName,indexOfOldCategory} = req.validatedData.body
+
+    console.log(indexOfOldCategory)
     
 
     if(oldSubCategoryName===newSubCategoryName){
@@ -216,33 +218,3 @@ export const editSubCategory = asyncHandler(async(req,res)=>{
     sendResponse(res,200,existingCategory,"Subcategory edited")
 })
 
-
-export const getHeaderCategories = asyncHandler(async (req, res) => {
-    const categoriesWithProducts = await Category.aggregate([
-        {
-            $lookup: {
-                from: "products",
-                localField: "_id",
-                foreignField: "category",
-                as: "products"
-            }
-        },
-        { $match: { "products.0": { $exists: true } } }, 
-        { $unwind: "$products" }, 
-        { $unwind: "$products.subCategory" }, 
-        {
-            $group: {
-                _id: "$_id",
-                categoryName: { $first: "$categoryName" },
-                categoryImage: { $first: "$categoryImage" },
-                subCategories: { $addToSet: "$products.subCategory" } 
-            }
-        }
-    ]);
-
-    if (categoriesWithProducts.length === 0) {
-        throw new ApiError("No categories with products found", 404);
-    }
-
-    sendResponse(res, 200, categoriesWithProducts, "Categories found successfully");
-});
