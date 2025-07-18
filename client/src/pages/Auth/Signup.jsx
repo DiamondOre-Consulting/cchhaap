@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 // import { sendOtp, userSignUp } from "../Redux/Slices/auth.slice";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 import {Link, useNavigate} from 'react-router-dom'
 
 const Signup = () => {

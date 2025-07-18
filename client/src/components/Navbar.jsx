@@ -21,14 +21,14 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import CartDrawer from "./CartDrawer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import SearchDrawer from "./SearchDrawer";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
   { href: "#", label: "Home" },
-   { href: "#", label: "Featured Products" },
+  { href: "#", label: "Featured Products" },
   {
     label: "For Men",
     submenu: true,
@@ -62,30 +62,46 @@ const navigationLinks = [
       { href: "#", label: "Product D" },
     ],
   },
-
- 
-
 ];
 const Navbar = () => {
   const [cartDrawer, setCartDrawer] = useState(false);
-  const [searchDrawer , setSearchDrawer] = useState(false)
+  const [searchDrawer, setSearchDrawer] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
+  const [isSticky, setIsSticky] = useState(false);
 
-    const handleOpenCart = () => {
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        setIsSticky(true);
+      } else {
+        setIsSticky(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+ 
+
+  const handleOpenCart = () => {
     setCartDrawer((prev) => !prev);
   };
 
-  const handleOpenSearch = () =>{
-    setSearchDrawer((prev)=> !prev)
-  }
-
+  const handleOpenSearch = () => {
+    setSearchDrawer((prev) => !prev);
+  };
 
   return (
     <div>
       <div className="  flex bg-black  text-white justify-center items-center py-4 w-full">
         <p> छाप - Live Now</p>
       </div>
-      <header className=" px-4 md:px-6">
+      <header className={`${
+            isSticky ? "fixed top-0 left-0 w-full bg-white z-20" : ""
+          }  px-4 md:px-6 `}>
         <div className="flex  h-16 items-center justify-between gap-4">
           <div className="flex items-center   w-full">
             <Popover>
@@ -240,9 +256,7 @@ const Navbar = () => {
                                   {link.type === "description" &&
                                   "description" in item ? (
                                     <div className="space-y-1">
-                                      <div className="">
-                                        {item.label}
-                                      </div>
+                                      <div className="">{item.label}</div>
                                       <p className="text-muted-foreground line-clamp-2 text-xs">
                                         {item.description}
                                       </p>
@@ -276,17 +290,15 @@ const Navbar = () => {
           </div>
 
           <div className="flex cursor-pointer justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-black  gap-2">
-            <IoSearch  onClick={handleOpenSearch}/>
+            <IoSearch onClick={handleOpenSearch} />
             <FaRegUser />
-           <FaRegHeart />
+            <FaRegHeart />
             <AiOutlineShoppingCart onClick={handleOpenCart} />
-           
           </div>
         </div>
       </header>
-  <CartDrawer isOpen={cartDrawer} onClose={handleOpenCart} />
-  <SearchDrawer isOpen={searchDrawer} onClose={handleOpenSearch}/>
-
+      <CartDrawer isOpen={cartDrawer} onClose={handleOpenCart} />
+      <SearchDrawer isOpen={searchDrawer} onClose={handleOpenSearch} />
     </div>
   );
 };

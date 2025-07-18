@@ -6,6 +6,7 @@ import Products from './pages/Products';
 import EachProductPage from './pages/EachProductPage';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
+import ProfilePage from './pages/ProfilePage';
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
@@ -18,6 +19,7 @@ const App = () => {
           <Route path="/" element={<Home />} />
           <Route path='/products' element={<Products/>}/>
           <Route path="/each-product" element={<EachProductPage/>} /> 
+          <Route path='/my-account' element={<ProfilePage/>}/>
           {/* <Route path='/login' element={<Login/>}/> */}
           {/* <Route path='/signup' element={<Signup/>}/> */}
         </Routes>

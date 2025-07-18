@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 // import { userForgotPassword, userSignin } from "../Redux/Slices/auth.slice";
-import { toast } from "sonner";
+// import { toast } from "sonner";
 // import { getNavbarCartCount } from "../Redux/Slices/cart";
 
 const Login = () => {
