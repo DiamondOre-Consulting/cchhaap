@@ -3,12 +3,8 @@ import { createCategory, deleteCategory, editCategory, getAllCategories } from '
 import { singleImageUpload } from '../middlewares/multer.middleware.js';
 import validate from '../middlewares/zod.validator.js';
 import { createCategoryBodySchema, deleteCategoryParamsSchema, editCategoryBodySchema, editCategoryParamsSchema } from '../validator/category.validator.js';
-
-
-
-
-
-
+import { signin, signout, signup } from '../controllers/auth/admin.auth.js';
+import { signinSchema, signupSchema } from '../validator/admin.auth.validator.js';
 
 
 
@@ -29,6 +25,12 @@ adminRouter.put('/edit-category/:categoryId',singleImageUpload.single("categoryI
 
 adminRouter.delete('/delete-category/:categoryId',validate({params:deleteCategoryParamsSchema}),deleteCategory)
 
+
+adminRouter.post('/signin'  , validate({body:signinSchema}), signin)
+
+adminRouter.post('/signup', validate({body:signupSchema}),signup)
+
+adminRouter.get('/signout',signout)
 
 
 
