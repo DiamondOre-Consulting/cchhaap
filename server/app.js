@@ -2,14 +2,14 @@ import express from "express"
 import {config} from 'dotenv'
 import morgan  from "morgan"
 import cookieParser from "cookie-parser"
-import adminRouter from "./routes/admin.route.js"
-import userRouter from "./routes/user.route.js"
+import adminRouter from "./routes/admin.routes.js"
+// import userRouter from "./routes/user.routes.js"
 import errorMiddleware from "./middlewares/error.middleware.js"
-import { rateLimiter } from "./utils/rateLimitter.js"
+// import { rateLimiter } from "./utils/rateLimitter.js"
 import cloudinary from "cloudinary"
 import Razorpay from "razorpay"
 import cors from 'cors'
-import paymentRouter from "./routes/payment.route.js"
+// import paymentRouter from "./routes/payment.route.js"
 const app= express()
 config()
 
@@ -29,19 +29,19 @@ cloudinary.v2.config({
 })
 
 app.use("/api/v1/admin",adminRouter)
-app.use("/api/v1/user", userRouter)
-app.use("/api/v1/payment",paymentRouter)
+// app.use("/api/v1/user", userRouter)
+// app.use("/api/v1/payment",paymentRouter)
 
 
-app.all("*",(req,res)=>{
-     res.status(404).json({message : "OOPS! 404 Page not found"})
-})
+// app.all("*",(req,res)=>{
+//      res.status(404).json({message : "OOPS! 404 Page not found"})
+// })
 app.use(errorMiddleware);
 
-export const razorpay = new Razorpay({
-     key_id: process.env.RAZORPAY_KEY_ID,
-     key_secret: process.env.RAZORPAY_SECRET,
-});
+// export const razorpay = new Razorpay({
+//      key_id: process.env.RAZORPAY_KEY_ID,
+//      key_secret: process.env.RAZORPAY_SECRET,
+// });
 
 
 export default app;

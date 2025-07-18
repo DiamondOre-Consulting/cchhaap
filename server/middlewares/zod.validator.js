@@ -14,13 +14,7 @@ const validate = (schemas) => (req, res, next) => {
       }
       if(schemas.query){
         validatedData.query = schemas.query.parse(req.query);
-      }
-      if(schemas.file) {   
-        validatedData.file = schemas.file.parse(req.file);       
-      }
-      if(schemas.files) {       
-        validatedData.files = schemas.files.parse(req.files);
-      }    
+      }  
       req.validatedData = validatedData;
       next(); 
   } catch (error) {
