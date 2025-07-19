@@ -109,16 +109,13 @@ const Category = () => {
         createSubCategory({ categoryId, subCategoryName })
       );
       console.log(response);
-      setOpenSubCategoryForm(false)
-      
+      setOpenSubCategoryForm(false);
     } catch (error) {
       console.log(error);
-      
     } finally {
       setLoader(false);
       setSubCategoryName("");
       handleGetAllCategories();
-      
     }
   };
 
@@ -134,8 +131,6 @@ const Category = () => {
     }
   };
 
-
-
   const handleEditSubCategory = async (e) => {
     try {
       e.preventDefault();
@@ -150,17 +145,16 @@ const Category = () => {
         })
       );
       console.log(response);
-   
     } catch (error) {
       console.log(error);
     } finally {
       setLoader(false);
       setEditSubCategoyPopUp(false);
-     await handleGetAllCategories()
+      await handleGetAllCategories();
+      setSubCategoryName("");
     }
   };
 
-  console.log(editData);
   return (
     <div className="">
       <div className="flex justify-between ">
@@ -270,6 +264,7 @@ const Category = () => {
                       onClick={() => {
                         setCategoryId(cate._id);
                         setOpenSubCategoryForm(true);
+                        setSubCategoryName("");
                       }}
                       className="py-4 px-6 cursor-pointer text-base font-semibold text-blue-600"
                     >
@@ -277,47 +272,43 @@ const Category = () => {
                     </td>
                   ) : (
                     <td className="flex flex-col border">
-                    
-                    <td
-                      onClick={() => {
-                        setCategoryId(cate._id);
-                        setOpenSubCategoryForm(true);
-                      }}
-                      className="py-2 px-6 cursor-pointer border-b text-base font-semibold text-blue-600"
-                    >
-                      + Sub Category
-                    </td>
-               {
-                    cate.subCategories?.map((sub, idx) => (
                       <td
-                        key={idx}
-                        className="py-2 px-6 flex border-b  flex-col "
+                        onClick={() => {
+                          setCategoryId(cate._id);
+                          setOpenSubCategoryForm(true);
+                          setSubCategoryName("");
+                        }}
+                        className="py-2 px-6 cursor-pointer border-b text-base font-semibold text-blue-600"
                       >
-                        <div className="flex  items-center  justify-between gap-2">
-                          <span>{sub}</span>
-                          <MdOutlineModeEdit
-                            className="text-xl cursor-pointer"
-                            onClick={() => {
-                            setEditSubCategoyPopUp(true);
-                              setCategoryId(cate?._id);
-                              setSubCategoryName(sub);
-                              setSubCategoryIndex(idx);
-                            }}
-                          />
-                          <MdOutlineDeleteOutline
-                            className="text-xl text-red-600 cursor-pointer"
-                              onClick={() =>
-                              handleDeleteSubCategories(cate?._id, sub)
-                            }
-                          />
-                        </div>
+                        + Sub Category
                       </td>
-                    ))
-                        
-                  }
-
-                       </td>
-                  
+                      {cate.subCategories?.map((sub, idx) => (
+                        <td
+                          key={idx}
+                          className="py-2 px-6 flex border-b  flex-col "
+                        >
+                          <div className="flex  items-center  justify-between gap-2">
+                            <span>{sub}</span>
+                            <MdOutlineModeEdit
+                              className="text-xl cursor-pointer"
+                              onClick={() => {
+                                setEditSubCategoyPopUp(true);
+                                setCategoryId(cate?._id);
+                                setSubCategoryName(sub);
+                                setNewSubCategoryName(sub);
+                                setSubCategoryIndex(idx);
+                              }}
+                            />
+                            <MdOutlineDeleteOutline
+                              className="text-xl text-red-600 cursor-pointer"
+                              onClick={() =>
+                                handleDeleteSubCategories(cate?._id, sub)
+                              }
+                            />
+                          </div>
+                        </td>
+                      ))}
+                    </td>
                   )}
                   <td class="px-6 py-4 border">
                     {/* <div class="flex items-center"> */}
@@ -510,14 +501,13 @@ const Category = () => {
               </div>
 
               <form onSubmit={handleEditSubCategory} className="space-y-3 p-4">
-                <h2 className="text-lg font-semibold">Add Subcategories</h2>
-
+                <h2 className="text-lg font-semibold">New Sub Category</h2>
                 <input
                   name="subCategory"
                   type="text"
                   value={newSubCategoryName}
                   onChange={(e) => setNewSubCategoryName(e.target.value)}
-                  placeholder="Enter Sub Category"
+                  placeholder="Enter New Sub Category"
                   className="w-full border border-black/30 px-2 rounded flex-1 py-2 placeholder-gray-300 outline-none "
                 />
 
