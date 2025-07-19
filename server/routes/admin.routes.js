@@ -6,6 +6,14 @@ import { createCategoryBodySchema, createSubCategoryBodySchema, createSubCategor
 import { signin, signout, signup } from '../controllers/auth/admin.auth.js';
 import { signinSchema, signupSchema } from '../validator/admin.auth.validator.js';
 import { adminMiddleware } from '../middlewares/admin.middleware.js';
+import { createCoupon, deleteCoupon, editCoupon, getAllCoupons } from '../controllers/coupon.controller.js';
+import { createCouponSchema, deleteCouponParamsSchema, editCouponBodySchema, editCouponParamsSchema } from '../validator/coupon.validator.js';
+
+
+
+
+
+
 
 
 
@@ -52,6 +60,18 @@ adminRouter.post('/create-sub-category/:categoryId',validate({body:createSubCate
 adminRouter.delete('/delete-sub-category/:categoryId',validate({body:deleteSubCategoryBodySchema, params:deleteSubCategoryParamsSchema}),deleteSubCategory)
 
 adminRouter.put('/edit-sub-category/:categoryId',validate({body:editSubCategoryBodySchema, params:editSubCategoryParamsSchema}),editSubCategory)
+
+
+adminRouter.post('/create-coupon-code',validate({body:createCouponSchema}),createCoupon)
+
+
+adminRouter.get('/get-all-coupons',getAllCoupons);
+
+
+adminRouter.delete('/delete-coupon-code/:couponId',validate({params:deleteCouponParamsSchema}),deleteCoupon)
+
+
+adminRouter.put('/edit-coupon-code/:couponId',validate({body:editCouponBodySchema, params:editCouponParamsSchema}),editCoupon)
 
 
 
