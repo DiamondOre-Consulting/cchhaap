@@ -118,3 +118,25 @@
     @apply bg-background text-foreground;
   }
 }
+
+
+
+body{
+   font-family: "Playfair Display", serif;
+}
+
+.text-c1{
+  color: #620A1A;
+}
+
+.text-c2{
+  color: #C6953F;
+}
+
+.bg-c1{
+  background-color: #620A1A;
+}
+
+.bg-c2{
+  background-color: #C6953F;
+}
