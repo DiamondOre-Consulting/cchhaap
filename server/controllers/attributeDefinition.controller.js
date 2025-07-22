@@ -42,7 +42,7 @@ export const createAttributeDefinition = asyncHandler(async (req, res) => {
 
 export const getSingleAttributeDefinition = asyncHandler(async (req, res) => {
   const { category } = req.validatedData.params;
-  const attributeDefinition = await AttributeDefinition.findOne({ category });
+  const attributeDefinition = await AttributeDefinition.findOne({ category }).populate("category");
   if (!attributeDefinition) {
     throw new ApiError("Attribute definition not found", 404);
   }
@@ -51,7 +51,7 @@ export const getSingleAttributeDefinition = asyncHandler(async (req, res) => {
 
 export const getAllAttributeDefinition = asyncHandler(async (req, res) => {
 
-  const attributeDefinition = await AttributeDefinition.find({});
+  const attributeDefinition = await AttributeDefinition.find({}).populate("category");
   if (!attributeDefinition) {
     throw new ApiError("Attribute definition not found", 404);
   }
