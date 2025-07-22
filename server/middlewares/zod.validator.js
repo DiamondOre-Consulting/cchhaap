@@ -9,7 +9,7 @@ const validate = (schemas) => (req, res, next) => {
 
       
       if(schemas.body){ 
-        validatedData.body = schemas.body.parse(req.body);
+        validatedData.body  = schemas.body.parse(req.body);
        
       }
      
