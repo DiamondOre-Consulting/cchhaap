@@ -36,7 +36,7 @@ export const createAttributeDefinition = asyncHandler(async (req, res) => {
   });
 
   
-  sendResponse(res, 200, newAttributeDefinition, "Attribute definition created");
+  sendResponse(res, 200, newAttributeDefinition, " Attribute definition created");
 });
 
 
