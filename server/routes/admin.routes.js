@@ -8,25 +8,8 @@ import { signinSchema, signupSchema } from '../validator/admin.auth.validator.js
 import { adminMiddleware } from '../middlewares/admin.middleware.js';
 import { createCoupon, deleteCoupon, editCoupon, getAllCoupons } from '../controllers/coupon.controller.js';
 import { createCouponSchema, deleteCouponParamsSchema, editCouponBodySchema, editCouponParamsSchema } from '../validator/coupon.validator.js';
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+import { createAttributeDefinition } from '../controllers/attributeDefinition.controller.js';
+import { createAttributeDefinitionSchema } from '../validator/attributeDefinition.validator.js';
 
 
 
@@ -74,6 +57,8 @@ adminRouter.delete('/delete-coupon-code/:couponId',validate({params:deleteCoupon
 adminRouter.put('/edit-coupon-code/:couponId',validate({body:editCouponBodySchema, params:editCouponParamsSchema}),editCoupon)
 
 
+
+adminRouter.post('/create-attribute-definition',adminMiddleware,validate({body:createAttributeDefinitionSchema}),createAttributeDefinition)
 
 
 

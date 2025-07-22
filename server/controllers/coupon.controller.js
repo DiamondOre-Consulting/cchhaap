@@ -5,9 +5,6 @@ import ApiError from "../utils/apiError.js";
 
 
 
-
-
-
 export const createCoupon = asyncHandler(async(req,res)=>{
 
     const {couponCode,discountType,startDate,endDate,minAmount,discountValue,isActive} = req.validatedData.body 

@@ -1,5 +1,5 @@
 
-
+import mongoose from "mongoose";
 
 const attributeDefinitionSchema = new mongoose.Schema({
   category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
@@ -12,3 +12,6 @@ const attributeDefinitionSchema = new mongoose.Schema({
 });
 
 const AttributeDefinition = mongoose.model("AttributeDefinition", attributeDefinitionSchema);
+
+
+export default AttributeDefinition

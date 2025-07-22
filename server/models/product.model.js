@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema(
     brandName: {
         type: String,
         trim: true,
-        defaule:"cchhaap"
+        default:"cchhaap"
     },
     category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
     subCategory: [{ type: String, required:true }], 
@@ -83,6 +83,17 @@ const productSchema = new mongoose.Schema(
         },
         thumbnailImage:{ secureUrl:{type : String}, publicId:{ type : String }},
         images: [{ secureUrl:{type : String}, publicId:{ type : String }}],
+        
+        attributes: {
+               type: Map,
+               of: String // or Array if attributes can have multiple values
+        },
+
+        
+        attributeDefinition:{
+            type:  mongoose.Schema.Types.ObjectId, 
+            ref: "AttributeDefinition",
+        }
       }
     ],
 
