@@ -8,7 +8,7 @@ import { signinSchema, signupSchema } from '../validator/admin.auth.validator.js
 import { adminMiddleware } from '../middlewares/admin.middleware.js';
 import { createCoupon, deleteCoupon, editCoupon, getAllCoupons } from '../controllers/coupon.controller.js';
 import { createCouponSchema, deleteCouponParamsSchema, editCouponBodySchema, editCouponParamsSchema } from '../validator/coupon.validator.js';
-import { createAttributeDefinition, getAttributeDefinition } from '../controllers/attributeDefinition.controller.js';
+import { createAttributeDefinition, getAllAttributeDefinition, getSingleAttributeDefinition } from '../controllers/attributeDefinition.controller.js';
 import { createAttributeDefinitionSchema, getAttributeDefinitionParamsSchema } from '../validator/attributeDefinition.validator.js';
 
 
@@ -61,7 +61,15 @@ adminRouter.put('/edit-coupon-code/:couponId',validate({body:editCouponBodySchem
 adminRouter.post('/create-attribute-definition',validate({body:createAttributeDefinitionSchema}),createAttributeDefinition)
 
 
-adminRouter.get('/get-all-attribute-definition/:category',validate({params:getAttributeDefinitionParamsSchema}),getAttributeDefinition)
+adminRouter.get('/get-single-attribute-definition/:category',validate({params:getAttributeDefinitionParamsSchema}),getSingleAttributeDefinition)
+
+adminRouter.get('/get-all-attribute-definition',getAllAttributeDefinition)
+
+
+adminRouter.delete('/delete-attribute-definition/:category',validate({params:getAttributeDefinitionParamsSchema}),getAllAttributeDefinition)
+
+
+
 
 
 
