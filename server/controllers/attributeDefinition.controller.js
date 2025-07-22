@@ -71,3 +71,21 @@ export const deleteAttributeDefinition = asyncHandler(async (req, res) => {
 
 
 
+
+export const editAttributeDefinition = asyncHandler(async (req, res) => {
+  const { category } = req.validatedData.params;
+  const { attributes } = req.validatedData.body;
+
+
+  
+  const attributeDefinition = await AttributeDefinition.findOne({ category });
+  if (!attributeDefinition) {
+    throw new ApiError("Attribute definition not found", 404);
+  }
+  attributeDefinition.attributes = attributes;
+  await attributeDefinition.save();
+  sendResponse(res, 200, attributeDefinition, "Attribute definition updated");
+});
+
+
+

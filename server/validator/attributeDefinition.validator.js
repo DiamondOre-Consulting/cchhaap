@@ -13,8 +13,7 @@ export const createAttributeDefinitionSchema = z.object({
 })
 
 
-export const editAttributeDefinitionSchema = z.object({
-      category: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid category ID format" }),
+export const editAttributeDefinitionBodySchema = z.object({
       attributes: z.array(z.object({
         name: z.string(),
         options: z.array(z.string())
