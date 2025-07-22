@@ -58,7 +58,7 @@ adminRouter.put('/edit-coupon-code/:couponId',validate({body:editCouponBodySchem
 
 
 
-adminRouter.post('/create-attribute-definition',adminMiddleware,validate({body:createAttributeDefinitionSchema}),createAttributeDefinition)
+adminRouter.post('/create-attribute-definition',validate({body:createAttributeDefinitionSchema}),createAttributeDefinition)
 
 
 adminRouter.get('/get-all-attribute-definition/:category',validate({params:getAttributeDefinitionParamsSchema}),getAttributeDefinition)
