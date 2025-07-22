@@ -40,4 +40,14 @@ export const createAttributeDefinition = asyncHandler(async (req, res) => {
 });
 
 
+export const getAttributeDefinition = asyncHandler(async (req, res) => {
+  const { category } = req.validatedData.params;
+  const attributeDefinition = await AttributeDefinition.findOne({ category });
+  if (!attributeDefinition) {
+    throw new ApiError("Attribute definition not found", 404);
+  }
+  sendResponse(res, 200, attributeDefinition, "Attribute definition found");
+});
+
+
 
