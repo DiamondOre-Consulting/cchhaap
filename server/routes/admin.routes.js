@@ -10,8 +10,8 @@ import { createCoupon, deleteCoupon, editCoupon, getAllCoupons } from '../contro
 import { createCouponSchema, deleteCouponParamsSchema, editCouponBodySchema, editCouponParamsSchema } from '../validator/coupon.validator.js';
 import { createAttributeDefinition, deleteAttributeDefinition, editAttributeDefinition, getAllAttributeDefinition, getSingleAttributeDefinition } from '../controllers/attributeDefinition.controller.js';
 import { createAttributeDefinitionSchema, editAttributeDefinitionBodySchema, getAttributeDefinitionParamsSchema } from '../validator/attributeDefinition.validator.js';
-import { createProductBodySchema } from '../validator/admin.product.validator.js';
-import { createProduct } from '../controllers/admin.product.controller.js';
+import { createProductBodySchema, deleteProductParamsSchema, getAdminAllProductsParamsSchema } from '../validator/admin.product.validator.js';
+import { createProduct, deleteProduct, getAdminAllProducts, getAdminSingleProduct } from '../controllers/admin.product.controller.js';
 
 
 
@@ -73,6 +73,18 @@ adminRouter.put('/edit-attribute-definition/:category',validate({body:editAttrib
 
 
 adminRouter.post("/add-new-product",multipleImageUpload.any(),createProduct);
+
+adminRouter.delete('/delete-product/:productId',validate({params:deleteProductParamsSchema}),deleteProduct)
+
+
+adminRouter.get('/get-all-product/:limit/:page',validate({
+    params:getAdminAllProductsParamsSchema
+}),getAdminAllProducts)
+
+adminRouter.get('/get-single-product/:productId',validate({params:deleteProductParamsSchema}),getAdminSingleProduct)
+
+
+
 
 
 

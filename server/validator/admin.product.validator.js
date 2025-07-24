@@ -185,3 +185,25 @@ export const createProductBodySchema = z.object({
   )
 });
 
+
+
+
+
+
+
+export const deleteProductParamsSchema = z.object({
+  productId: z.string()
+    .min(1, "Product ID is required")
+    .refine(val => mongoose.Types.ObjectId.isValid(val), {
+      message: "Invalid product ID format"
+    })
+});
+
+
+
+
+export const getAdminAllProductsParamsSchema = z.object({
+    limit: z.coerce.number().optional(),
+    page: z.coerce.number().optional()
+})
+

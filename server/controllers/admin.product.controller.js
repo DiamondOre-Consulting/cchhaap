@@ -73,3 +73,93 @@ export const createProduct = asyncHandler(async (req, res) => {
 
 
 
+export const deleteProduct = asyncHandler(async (req, res) => {
+  const productId = req.params.productId;
+
+
+  const product = await Product.findById(productId);
+  
+  if (!product) {
+    throw new ApiError(404, "Product not found");
+  }
+
+ 
+  const imageDeletionPromises = [];
+
+
+  product.variations.forEach(variation => {
+  
+    if (variation.thumbnailImage?.publicId) {
+      imageDeletionPromises.push(
+        fileDestroy(variation.thumbnailImage.publicId)
+      );
+    }
+
+   
+    if (variation.images?.length > 0) {
+      variation.images.forEach(image => {
+        if (image.publicId) {
+          imageDeletionPromises.push(
+            fileDestroy(image.publicId)
+          );
+        }
+      });
+    }
+  });
+
+  await Promise.all(imageDeletionPromises)
+    .catch(error => {
+      console.error("Error deleting images:", error);
+
+    });
+
+
+  await Product.findByIdAndDelete(productId);
+
+  return sendResponse(res, 200, null, "Product and all associated images deleted successfully");
+});
+
+
+
+export const getAdminAllProducts = asyncHandler(async (req, res) => {
+     
+    const limit = req.validatedData.params.limit || 10;
+    const page = req.validatedData.params.page || 1;
+
+    const products = await Product.find({}).populate("category").limit(limit).skip((page-1)*limit).sort({createdAt:-1})
+
+
+    if (products.length === 0) {
+        throw new ApiError("No products found", 404);
+    }
+    const totalPages = await Product.estimatedDocumentCount()
+
+    sendResponse(res, 200, { products, currentPage: page, totalPages: Math.ceil(totalPages/limit) }, "Products found");
+
+})
+
+
+
+
+
+export const getAdminSingleProduct = asyncHandler(async(req,res)=>{
+     const {productId} = req.validatedData.params
+
+     const product = await Product.findById(productId)
+    .populate("category");
+
+
+     if(!product){
+        throw new ApiError("Product not found",400)
+    }
+
+  
+   
+    sendResponse(res,200,product,"Product fetched successfully")
+
+})
+
+
+
+
+
