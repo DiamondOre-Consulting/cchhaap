@@ -2,37 +2,34 @@ export const defaultCategoryValues = {
   categoryName: "",
   categoryImage: "",
 };
-
 export const productDefaultValues = {
   productName: "",
-  brandName: "",
+  brandName: "cchhaap",
   category: "",
   subCategory: [""],
   description: "",
   fabric: "",
-  quantity: "",
+  quantity: 0,
   gender: "",
-  // discountType: "",
+  discountType: "percentage",
   isActive: true,
   sku: "",
   variations: [
     {
       size: "",
-      color: {
-        name: "",
-        hex: "#000000",
-      },
-      price: "",
-      discountPrice: "",
-      discountType:"",
-      quantity: "",
+      color: { name: "", hex: "" },
+      price: 0,
+      gender:'',
+      discountPrice: 0,
+      quantity: 0,
       sku: "",
       inStock: true,
-    },
-  ],
-  thumbnailImage: {
-    secureUrl: "",
-    publicId: "",
-  },
-  images: [],
+      soldCount: 0,
+      thumbnailImage: { secureUrl: "", publicId: ""  , uniqueId:""},
+      images: [{ secureUrl: "", publicId: ""  , uniqueId:"" }],
+      attributes: {}, // example: { Occasion: "Party" }
+      attributeDefinition: ""
+    }
+  ]
 };
+

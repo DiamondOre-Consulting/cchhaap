@@ -23,7 +23,7 @@ import { toast } from "sonner";
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
   { icon: Tag, label: "Manage Category", path: "/manage-category" },
-  { icon: Tag, label: "Manage Variations", path: "/manage-variations" },
+  { icon: Tag, label: "Attribute Variations", path: "/manage-variations" },
   { icon: Tag, label: "Manage Coupons", path: "/manage-coupons" },
   { icon: Package, label: "Manage Products", path: "/manage-products" },
   { icon: ShoppingCart, label: "Orders", path: "/manage-orders" },

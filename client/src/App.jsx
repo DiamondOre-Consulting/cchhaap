@@ -7,6 +7,7 @@ import EachProductPage from './pages/EachProductPage';
 import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import ProfilePage from './pages/ProfilePage';
+import Wishlist from './components/Profile/Wishlist';
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 

@@ -90,7 +90,7 @@ const Testimonial = () => {
     <div>
         <div className="min-h-screen">
 			
-			<section className="py-12 bg-white">
+			<section className="py-12 ">
                 <div className='flex flex-col justify-center items-center'>
                     <h1 className='text-4xl'>छाप And ME</h1>
                 </div>

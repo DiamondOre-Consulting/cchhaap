@@ -256,7 +256,7 @@ const EachProductPage = () => {
 
   return (
     <div>
-      <section className="py-14 md:py-10 bg-white dark:bg-[#0b1727]  text-zinc-900 dark:text-white relative overflow-hidden z-10">
+      <section className="py-14 md:py-10    relative overflow-hidden z-10">
         <div className="container px-6 md:px-20 mx-auto">
           <div className="grid grid-cols-5 gap-6">
             <div className="col-span-5 lg:col-span-3">
@@ -281,7 +281,7 @@ const EachProductPage = () => {
 
                 <div>
                   <div className="flex items-center   gap-x-4">
-                    <h3 className="text-2xl text-black/80 font-medium">
+                    <h3 className="text-2xl  font-medium">
                       {" "}
                       {product.price.toLocaleString("en-US", {
                         style: "currency",
@@ -304,7 +304,7 @@ const EachProductPage = () => {
                   <p className="text-sm mt-1">Inclusive Of All Taxes.</p>
                 </div>
 
-                <div className="w-full bg-black/40 mt-10 h-[1px]"></div>
+                <div className="w-full bg-white/40 mt-10 h-[1px]"></div>
                 <p className="text-red-400 text-sm py-2">
                   Only 2 items left !{" "}
                 </p>
@@ -323,12 +323,12 @@ const EachProductPage = () => {
                     <button
                       type="button"
                       onClick={() => setQty(1)}
-                      className="border border-[#620A1A] text-[#620A1A] cursor-pointer hover:bg-[#620A1A] hover:text-white text-sm uppercase px-6 py-4 md:px-12 min-w-[202px]"
+                      className="border border-[#620A1A] text-white cursor-pointer hover:bg-[#edb141] hover:text-white text-sm uppercase px-6 py-4 md:px-12 min-w-[202px]"
                     >
                       Add To Cart
                     </button>
                   ) : (
-                    <div className="flex items-center border border-[#620A1A] px-4 py-2 min-w-[202px] justify-between text-[#620A1A]">
+                    <div className="flex items-center border border-[#edb141] px-4 py-2 min-w-[202px] justify-between text-[#edb141]">
                       <button
                         type="button"
                         onClick={() => setQty(Math.max(qty - 1, 0))}
@@ -349,7 +349,7 @@ const EachProductPage = () => {
 
                   <button
                     type="button"
-                    className="bg-c1 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
+                    className="bg-c2 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
                   >
                     Buy it Now
                   </button>

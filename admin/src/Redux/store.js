@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit"
 import categorySlice from './Slices/categorySlice'
 import couponSlice from './Slices/couponSlice'
 import attributesSlice from './Slices/attributesSlice'
+import productSlice from './Slices/productSlice'
 import adminSlice from './Slices/authSlice'
 
 export const store = configureStore({
@@ -9,6 +10,7 @@ export const store = configureStore({
         categorySlice : categorySlice,
         couponSlice : couponSlice,
         attributesSlice: attributesSlice,
-        adminSlice : adminSlice
+        adminSlice : adminSlice,
+        productSlice:productSlice
     }
 })

@@ -2,7 +2,7 @@ import React from 'react'
 
 const AboutSection = () => {
   return (
-    <div className='grid grid-cols-2 bg-[#C6953F]/20'>
+    <div className='grid grid-cols-2 '>
       
       <video src="https://videos.pexels.com/video-files/853800/853800-hd_1920_1080_25fps.mp4
       "

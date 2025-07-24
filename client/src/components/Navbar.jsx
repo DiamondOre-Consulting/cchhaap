@@ -96,11 +96,11 @@ const Navbar = () => {
 
   return (
     <div>
-      <div className="  flex bg-black  text-white justify-center items-center py-4 w-full">
+      <div className="  flex bg-c2  text-white justify-center items-center py-2 w-full">
         <p> छाप - Live Now</p>
       </div>
       <header className={`${
-            isSticky ? "fixed top-0 left-0 w-full bg-white z-20" : ""
+            isSticky ? "fixed top-0 left-0 w-full bg-[#edb141]  z-20" : ""
           }  px-4 md:px-6 `}>
         <div className="flex  h-16 items-center justify-between gap-4">
           <div className="flex items-center   w-full">
@@ -195,19 +195,19 @@ const Navbar = () => {
               </PopoverContent>
             </Popover>
 
-            <Link to={'/'} className="text-primary  text-4xl">
+            <Link to={'/'} className="text-primary text-white text-4xl">
               छाप
             </Link>
           </div>
           <div className="flex items-center w-full justify-center  gap-6">
             {/* Navigation menu */}
             <NavigationMenu viewport={false} className="max-md:hidden ">
-              <NavigationMenuList className="gap-2   text-gray-800 ">
+              <NavigationMenuList className="gap-2   text-gray-100 ">
                 {navigationLinks.map((link, index) => (
                   <NavigationMenuItem key={index}>
                     {link.submenu ? (
                       <>
-                        <NavigationMenuTrigger className="text-muted-foreground text-gray-800  px-4 py-1.5  *:[svg]:-me-0.5 *:[svg]:size-3.5">
+                        <NavigationMenuTrigger className="text-muted-foreground bg-transparent text-gray-100  px-4 py-1.5  *:[svg]:-me-0.5 *:[svg]:size-3.5">
                           {link.label}
                         </NavigationMenuTrigger>
                         <NavigationMenuContent className=" data-[motion=from-end]:slide-in-from-right-16! data-[motion=from-start]:slide-in-from-left-16! data-[motion=to-end]:slide-out-to-right-16! data-[motion=to-start]:slide-out-to-left-16! z-50 p-1">
@@ -289,10 +289,10 @@ const Navbar = () => {
             </NavigationMenu>
           </div>
 
-          <div className="flex cursor-pointer justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-black  gap-2">
+          <div className="flex cursor-pointer  justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-white  gap-2">
             <IoSearch onClick={handleOpenSearch} />
            <Link to={'/my-account'}><FaRegUser /></Link>
-            <FaRegHeart />
+           <Link to={'/my-account'}> <FaRegHeart /></Link>
             <AiOutlineShoppingCart onClick={handleOpenCart} />
           </div>
         </div>

@@ -7,8 +7,10 @@ import {
 } from "@/components/ui/tabs"
 import Orders from '@/components/Profile/Orders'
 import Address from '@/components/Profile/Address'
+import Wishlist from '@/components/Profile/Wishlist'
 
 const ProfilePage = () => {
+  
   return (
      <Tabs defaultValue="tab-1" className="items-center py-6">
       <TabsList className="h-auto rounded-none border-b bg-transparent w-96 p-0">
@@ -53,7 +55,7 @@ const ProfilePage = () => {
       </TabsContent>
       <TabsContent value="tab-3">
         <p className="text-muted-foreground p-4 text-center text-xs">
-          Content for Tab 3
+          <Wishlist/>
         </p>
       </TabsContent>
         <TabsContent value="tab-4">

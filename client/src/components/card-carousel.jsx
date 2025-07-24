@@ -52,7 +52,7 @@ export const CardCarousel = ({
     <section className="card-carousel w-full py-10">
       <style>{css}</style>
       <div className="mx-auto w-full w-full ">
-        <div className="relative mx-auto flex w-full flex-col  border border-black/5 bg-[#C6953F]/20 p-2 shadow-sm md:items-start md:gap-8  md:p-2">
+        <div className="relative mx-auto flex w-full flex-col    p-2 shadow-sm md:items-start md:gap-8  md:p-2">
           <h3 className="text-4xl py-10 text-center mx-auto flex justify-center items-center  uppercase tracking-tight">
             Featured Products
           </h3>

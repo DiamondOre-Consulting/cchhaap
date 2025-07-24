@@ -9,6 +9,7 @@ import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 // import { FaCartPlus, FaHeart, FaStar } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
+import { Link } from "react-router-dom";
 
 const products = [
   {
@@ -175,9 +176,9 @@ const ProductItem = ({ product }) => {
               </SwiperSlide>
             ))}
 
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white  px-6 py-2 z-40 shadow-md">
+            <Link to={'/each-product'} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white  px-6 py-2 z-40 shadow-md">
               Quick View
-            </div>
+            </Link>
           </Swiper>
 
           <div className="absolute top-2 left-6 bg-white/60  p-2 z-40 shadow-md rounded-full">
@@ -227,12 +228,12 @@ ProductItem.propTypes = {
 const Products = () => {
   return (
     <div>
-      <section className="relative z-10 overflow-hidden ezy__epgrid5 light py-14 md:py-10 text-zinc-900">
-        <div className="container px-4 mx-auto">
+      <section className="relative z-10 overflow-hidden ezy__epgrid5 light py-14 md:py-10 ">
+        <div className=" px-4 mx-auto">
           <h2 className="text-4xl sm:text-6xl md:text-[3rem] font-medium leading-none  text-center">
             Our Products
           </h2>
-          <div className="grid grid-cols-4 gap-6 mt-20 text-center">
+          <div className="grid grid-cols-4 gap-y-6 mt-20 text-center">
             {products.map((product, i) => (
               <div className="" key={i}>
                 <ProductItem product={product} />{" "}
