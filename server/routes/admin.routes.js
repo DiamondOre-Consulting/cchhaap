@@ -1,6 +1,6 @@
 import {Router} from 'express';
 import { createCategory, createSubCategory, deleteCategory, deleteSubCategory, editCategory, editSubCategory, getAllCategories } from '../controllers/category.controller.js';
-import { singleImageUpload } from '../middlewares/multer.middleware.js';
+import { multipleImageUpload, singleImageUpload } from '../middlewares/multer.middleware.js';
 import validate from '../middlewares/zod.validator.js';
 import { createCategoryBodySchema, createSubCategoryBodySchema, createSubCategoryParamsSchema, deleteCategoryParamsSchema, deleteSubCategoryBodySchema, deleteSubCategoryParamsSchema, editCategoryBodySchema, editCategoryParamsSchema, editSubCategoryBodySchema, editSubCategoryParamsSchema } from '../validator/category.validator.js';
 import { signin, signout, signup } from '../controllers/auth/admin.auth.js';
@@ -10,6 +10,8 @@ import { createCoupon, deleteCoupon, editCoupon, getAllCoupons } from '../contro
 import { createCouponSchema, deleteCouponParamsSchema, editCouponBodySchema, editCouponParamsSchema } from '../validator/coupon.validator.js';
 import { createAttributeDefinition, deleteAttributeDefinition, editAttributeDefinition, getAllAttributeDefinition, getSingleAttributeDefinition } from '../controllers/attributeDefinition.controller.js';
 import { createAttributeDefinitionSchema, editAttributeDefinitionBodySchema, getAttributeDefinitionParamsSchema } from '../validator/attributeDefinition.validator.js';
+import { createProductBodySchema } from '../validator/admin.product.validator.js';
+import { createProduct } from '../controllers/admin.product.controller.js';
 
 
 
@@ -67,6 +69,11 @@ adminRouter.delete('/delete-attribute-definition/:category',validate({params:get
 
 
 adminRouter.put('/edit-attribute-definition/:category',validate({body:editAttributeDefinitionBodySchema, params:getAttributeDefinitionParamsSchema}),editAttributeDefinition)
+
+
+
+adminRouter.post("/add-new-product",multipleImageUpload.any(),createProduct);
+
 
 
 

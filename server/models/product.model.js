@@ -2,106 +2,112 @@ import mongoose from "mongoose";
 
 const productSchema = new mongoose.Schema(
   {
-    productName : {
-    type:String,
-    required : true,
-    trim:true,
-   },
-    brandName: {
-        type: String,
-        trim: true,
-        default:"cchhaap"
-    },
-    category: { type: mongoose.Schema.Types.ObjectId, ref: "Category", required: true },
-    subCategory: [{ type: String, required:true }], 
-    description: {
-        type: String,
-        required: true
-    },
-    fabric:{
-        type: String,
-        required: true
-    },
-    
-  quantity: {
-    type: Number,
-    default: 0
-  },
-  fabric: {
-    type: String,
-    enum: ['Cotton', 'Silk', 'Rayon', 'Polyester', 'Linen', 'Wool', 'Blended', 'Other']
-  },
-  gender: {
-    type: String,
-    enum: ['Men', 'Women', 'Unisex', 'Kids'],
-    required: true
-  },
-   discountType : {
+    productName: {
       type: String,
-      enum: ["percentage", "fixed"],
-      default: "percentage"
-   },
-   totalRatingSum: { type: Number, default: 0 },
-   totalRatingsCount: { type: Number, default: 0 },
-   isActive: { type: Boolean, default: true, required: true },
-   sku : {type:String, required:true, unique:true},
+      required: true,
+      trim: true,
+    },
+    brandName: {
+      type: String,
+      trim: true,
+      default: "cchhaap",
+    },
+    category: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Category",
+      required: true,
+    },
+    subCategory: [{ type: String, required: true }],
+    description: {
+      type: String,
+      required: true,
+    },
+ 
+    totalRatingSum: { type: Number, default: 0 },
+    totalRatingsCount: { type: Number, default: 0 },
+    isActive: { type: Boolean, default: true, required: true },
+    sku: { type: String, required: true, unique: true },
 
-   variations: [
+    variations: [
       {
         size: {
           type: String,
-          enum: ['XS', 'S', 'M', 'L', 'XL', 'XXL', 'Free Size']
+          enum: ["XS", "S", "M", "L", "XL", "XXL", "Free Size"],
         },
         color: {
-                name: { type: String, required: true },      
-                hex: { type: String, required: true }          
+          name: { type: String, required: true },
+          hex: { type: String, required: true },
+        },
+        fabric: {
+          type: String,
+          enum: [
+            "Cotton",
+            "Silk",
+            "Rayon",
+            "Polyester",
+            "Linen",
+            "Wool",
+            "Blended",
+            "Other",
+          ],
+        },
+           discountType: {
+              type: String,
+              enum: ["percentage", "fixed"],
+              default: "percentage",
+       },
+        gender: {
+          type: String,
+          enum: ["Men", "Women", "Unisex", "Kids"],
+          required: true,
         },
         price: {
           type: Number,
-          required: true
+          required: true,
         },
         discountPrice: {
-          type: Number
+          type: Number,
         },
         quantity: {
           type: Number,
-          required: true
-        },
-        sku: {
-          type: String,
           required: true,
-          unique: true
         },
-        inStock:{
-           type: Boolean,
-           default: true
+        inStock: {
+          type: Boolean,
+          default: true,
         },
         soldCount: { type: Number, default: 0 },
-        quantity: {
-            type: Number,
-            required: true
+
+        thumbnailImage: {
+          secureUrl: { type: String },
+          publicId: { type: String },
+          uniqueId: { type: String },
         },
-        thumbnailImage:{ secureUrl:{type : String}, publicId:{ type : String }},
-        images: [{ secureUrl:{type : String}, publicId:{ type : String }}],
-        
+        images: [
+          {
+            secureUrl: { type: String },
+            publicId: { type: String },
+            uniqueId: { type: String },
+          },
+        ],
+
         attributes: {
-               type: Map,
-               of: String // or Array if attributes can have multiple values
+            type: Map,
+            of: String,
+            default: new Map()
         },
 
-        
-        attributeDefinition:{
-            type:  mongoose.Schema.Types.ObjectId, 
-            ref: "AttributeDefinition",
-        }
-      }
+        attributeDefinition: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: "AttributeDefinition",
+        },
+      },
     ],
-
-
-
   },
   { timestamps: true }
 );
+
+productSchema.index({ sku: 1 }, { unique: true });
 
 const Product = mongoose.model("Product", productSchema);
 
