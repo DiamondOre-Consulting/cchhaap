@@ -3,7 +3,7 @@ import {config} from 'dotenv'
 import morgan  from "morgan"
 import cookieParser from "cookie-parser"
 import adminRouter from "./routes/admin.routes.js"
-// import userRouter from "./routes/user.routes.js"
+import userRouter from "./routes/user.routes.js"
 import errorMiddleware from "./middlewares/error.middleware.js"
 // import { rateLimiter } from "./utils/rateLimitter.js"
 import cloudinary from "cloudinary"
@@ -29,7 +29,7 @@ cloudinary.v2.config({
 })
 
 app.use("/api/v1/admin",adminRouter)
-// app.use("/api/v1/user", userRouter)
+app.use("/api/v1/user", userRouter)
 // app.use("/api/v1/payment",paymentRouter)
 
 

@@ -52,8 +52,12 @@ export const multipleFileUpload = async (files, folder) => {
               console.error("Upload error:", error);
               return reject(new Error("Upload failed: " + error.message));
             }
+             const fileNameWithExtension = file.originalname;
+             const fileName = fileNameWithExtension.split(".").slice(0, -1).join(".");
+
             resolve({
               fieldname: file.fieldname,
+              uniqueId:fileName,
               uploadResult: {
                 publicId: result.public_id,
                 secureUrl: result.secure_url
