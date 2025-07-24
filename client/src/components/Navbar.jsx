@@ -27,7 +27,7 @@ import SearchDrawer from "./SearchDrawer";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  { href: "#", label: "Home" },
+  // { href: "#", label: "Home" },
   { href: "#", label: "Featured Products" },
   {
     label: "For Men",
@@ -195,14 +195,14 @@ const Navbar = () => {
               </PopoverContent>
             </Popover>
 
-            <a href="#" className="text-primary  text-4xl">
+            <Link to={'/'} className="text-primary  text-4xl">
               छाप
-            </a>
+            </Link>
           </div>
           <div className="flex items-center w-full justify-center  gap-6">
             {/* Navigation menu */}
             <NavigationMenu viewport={false} className="max-md:hidden ">
-              <NavigationMenuList className="gap-2 text-gray-800 ">
+              <NavigationMenuList className="gap-2   text-gray-800 ">
                 {navigationLinks.map((link, index) => (
                   <NavigationMenuItem key={index}>
                     {link.submenu ? (
@@ -210,7 +210,7 @@ const Navbar = () => {
                         <NavigationMenuTrigger className="text-muted-foreground text-gray-800  px-4 py-1.5  *:[svg]:-me-0.5 *:[svg]:size-3.5">
                           {link.label}
                         </NavigationMenuTrigger>
-                        <NavigationMenuContent className="data-[motion=from-end]:slide-in-from-right-16! data-[motion=from-start]:slide-in-from-left-16! data-[motion=to-end]:slide-out-to-right-16! data-[motion=to-start]:slide-out-to-left-16! z-50 p-1">
+                        <NavigationMenuContent className=" data-[motion=from-end]:slide-in-from-right-16! data-[motion=from-start]:slide-in-from-left-16! data-[motion=to-end]:slide-out-to-right-16! data-[motion=to-start]:slide-out-to-left-16! z-50 p-1">
                           <ul
                             className={cn(
                               link.type === "description"
@@ -224,7 +224,7 @@ const Navbar = () => {
                                   href={item.href}
                                   className="py-1.5"
                                 >
-                                  {/* Display icon if present */}
+                                
                                   {link.type === "icon" && "icon" in item && (
                                     <div className="flex items-center gap-2">
                                       {item.icon === "BookOpenIcon" && (
@@ -291,7 +291,7 @@ const Navbar = () => {
 
           <div className="flex cursor-pointer justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-black  gap-2">
             <IoSearch onClick={handleOpenSearch} />
-            <FaRegUser />
+           <Link to={'/my-account'}><FaRegUser /></Link>
             <FaRegHeart />
             <AiOutlineShoppingCart onClick={handleOpenCart} />
           </div>

@@ -9,6 +9,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { IoAdd } from "react-icons/io5";
 import CouponsForm from "@/components/Forms/CouponsForm";
+import HomeLayout from '../Layout/HomeLayout'
 
 const Coupons = () => {
   const [allCoupons, setAllCoupons] = useState([]);
@@ -97,6 +98,7 @@ const Coupons = () => {
   }, []);
 
   return (
+    <HomeLayout>
     <div>
       <div className="flex justify-between ">
         <div>
@@ -155,7 +157,7 @@ const Coupons = () => {
                 Discount
               </th>
               <th scope="col" class="px-6 py-3">
-             \Active/inactive
+             Active/inactive
               </th>
               <th scope="col" class="px-6 py-3">
                 Start Date
@@ -291,13 +293,13 @@ const Coupons = () => {
         <div className="fixed inset-0 z-40 min-h-full    transition flex items-center justify-center">
           <div
             className="fixed inset-0 bg-black/50"
-            onClick={() => setAddCouponPopUp(false)}
+            onClick={() => setEditCouponPopUp(false)}
           ></div>
 
           <div className="relative w-full max-w-4xl p-4 mx-auto bg-white rounded-xl z-50">
             <button
               type="button"
-              onClick={() => setAddCouponPopUp(false)}
+              onClick={() => setEditCouponPopUp(false)}
               className="absolute top-2 right-2 cursor-pointer"
             >
               <svg
@@ -474,6 +476,7 @@ const Coupons = () => {
         </div>
       )}
     </div>
+    </HomeLayout>
   );
 };
 

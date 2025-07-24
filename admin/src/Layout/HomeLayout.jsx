@@ -14,16 +14,19 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { adminLogout } from "@/Redux/Slices/authSlice";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
 // import { useDispatch } from "react-redux";
-// import { toast } from "sonner";
 // import { logout } from "@/Redux/AuthSlice";
 
 const menuItems = [
-  { icon: Home, label: "Dashboard", path: "/dashboard" },
+  { icon: Home, label: "Dashboard", path: "/" },
   { icon: Tag, label: "Manage Category", path: "/manage-category" },
+  { icon: Tag, label: "Manage Variations", path: "/manage-variations" },
   { icon: Tag, label: "Manage Coupons", path: "/manage-coupons" },
   { icon: Package, label: "Manage Products", path: "/manage-products" },
-  { icon: ShoppingCart, label: "Orders", path: "/orders" },
+  { icon: ShoppingCart, label: "Orders", path: "/manage-orders" },
   { icon: Users, label: "Customers", path: "/customers" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
@@ -33,13 +36,14 @@ const AdminLayout = ({ children }) => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-  // const handleLogout = () => {
-  //   dispatch(logout());
-  //   toast.success("Logged out successfully");
-  //   navigate("/login");
-  // };
+  const handleLogout = async () => {
+    const res = await dispatch(adminLogout());
+    console.log(res);
+    toast.success("Logged out successfully");
+    navigate("/login");
+  };
 
   const toggleSidebar = () => {
     setIsOpen(!isOpen);
@@ -137,10 +141,7 @@ const AdminLayout = ({ children }) => {
                   <MenuItem key={item.path} item={item} isMobile={true} />
                 ))}
                 <div className="mt-6 pt-6 border-t border-gray-100">
-                  <button
-                    // onClick={handleLogout}
-                    className="flex items-center gap-3 px-4 py-3.5 w-full text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors group"
-                  >
+                  <button className="flex items-center gap-3 px-4 py-3.5 w-full text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors group">
                     <LogOut
                       size={20}
                       className="group-hover:scale-110 transition-transform"
@@ -184,7 +185,7 @@ const AdminLayout = ({ children }) => {
           ))}
           <div className="mt-6 pt-6 border-t border-gray-100">
             <button
-              // onClick={handleLogout}
+              onClick={handleLogout}
               className={`flex items-center gap-3 px-4 py-3.5  w-full text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors group
                                 ${!isOpen ? "justify-center px-2" : ""}`}
               title={!isOpen ? "Logout" : ""}

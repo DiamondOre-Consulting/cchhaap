@@ -6,6 +6,7 @@ import { MdOutlineModeEdit } from "react-icons/md";
 import { MdOutlineDeleteOutline } from "react-icons/md";
 import { motion } from "framer-motion";
 import { useDispatch } from "react-redux";
+import HomeLayout from '../Layout/HomeLayout'
 import {
   createSubCategory,
   // createSubCategoryCategory,
@@ -156,6 +157,7 @@ const Category = () => {
   };
 
   return (
+    <HomeLayout>
     <div className="">
       <div className="flex justify-between ">
         <div>
@@ -165,7 +167,7 @@ const Category = () => {
       </div>
 
       <div>
-        <div class="relative overflow-x-auto mt-4 shadow-md sm:rounded-lg">
+        <div class="relative overflow-x-auto mt-10 shadow-md sm:rounded-lg">
           <div class="flex px-5 py-2 items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white dark:bg-gray-900">
             <div className="flex gap-x-4">
               <div className="flex  items-center gap-x-2 ">
@@ -610,6 +612,7 @@ const Category = () => {
         </motion.div>
       )}
     </div>
+    </HomeLayout>
   );
 };
 
