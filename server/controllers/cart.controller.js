@@ -119,3 +119,39 @@ export const getCart = asyncHandler(async (req, res) => {
 
   sendResponse(res, 200, cart, "Cart fetched successfully");
 });
+
+
+ 
+
+export const removeItemFromCart = asyncHandler(async(req,res)=>{
+    
+    const {productId} = req.validatedData.params
+    const userId = req.user.id
+
+    const cart = await Cart.findOne({userId})
+     
+    if(!cart){
+        throw new ApiError("User not found")
+    }
+
+  
+
+    const existingProductInCartIndex = cart.products.findIndex(product=>product.productId.toString()==productId.toString())
+    
+    if(existingProductInCartIndex<0){
+        throw new ApiError("Product not found in the cart",400)
+    }
+    else{
+        cart.products.splice(existingProductInCartIndex,1)
+    }
+
+    await cart.save()
+
+    sendResponse(res,200,null,"Item removed from the cart")
+})
+
+
+
+
+
+
