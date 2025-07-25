@@ -76,6 +76,9 @@ const productSchema = new mongoose.Schema(
           type: Boolean,
           default: true,
         },
+        stock:{
+          type: Number
+        },
         soldCount: { type: Number, default: 0 },
 
         thumbnailImage: {

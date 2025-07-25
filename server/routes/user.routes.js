@@ -4,6 +4,8 @@ import { forgotPasswordBodySchema, resetPasswordBodySchema, resetPasswordParamsS
 import validate from "../middlewares/zod.validator.js"
 import { userMiddleware } from "../middlewares/user.middleware.js"
 import { addAddressBodySchema, deleteAddressParamsSchema, editAddressBodySchema, editAddressParamsSchema } from "../validator/address.validator.js"
+import { updateCartParamsSchema } from "../validator/cart.validator.js"
+import { getCart, updateCart } from "../controllers/cart.controller.js"
 
 
 
@@ -59,6 +61,26 @@ userRouter.get('/all-address' , userMiddleware , getAllAddress)
  userRouter.put('/edit-address/:addressId',userMiddleware,validate({
     body: editAddressBodySchema, params:editAddressParamsSchema
  }),editAddress)
+
+
+
+
+userRouter.put('/update-cart/:quantity/:productId/:variationId',userMiddleware,validate({
+     params:updateCartParamsSchema
+}),updateCart)
+
+
+
+ userRouter.get("/get-cart",userMiddleware,getCart)
+
+
+
+
+
+
+
+
+
 
 
 

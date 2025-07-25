@@ -19,8 +19,7 @@ export const userMiddleware = asyncHandler(async(req,res,next)=>{
     const decodedToken = jwt.verify(accessToken, process.env.USER_SECRET_KEY);
     
     const user = await User.findById(decodedToken.id).select('-password -refreshToken -resetPasswordToken -resetPasswordExpires');
-   
-
+  
     if (!user) {
         throw new ApiError("User not found", 401);
     }

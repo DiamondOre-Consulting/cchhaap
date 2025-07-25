@@ -41,7 +41,7 @@ const Categories = () => {
               />
             </div>
             <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-90 px-6 py-2  shadow-md">
-              <p className="text-sm  tracking-wider text-black">
+              <p className="text-sm  tracking-wider text-[#C6953F]">
                 {item.category}
               </p>
             </div>

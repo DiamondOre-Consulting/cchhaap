@@ -9,11 +9,11 @@ import { MoveRight } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const slides = [
-  {
-    title: "Residential",
-    subtitle: "Projects",
-    image: "https://images.pexels.com/photos/32997072/pexels-photo-32997072.jpeg",
-  },
+  // {
+  //   title: "Residential",
+  //   subtitle: "Projects",
+  //   image: "https://images.pexels.com/photos/32997072/pexels-photo-32997072.jpeg",
+  // },
   {
     title: "Commercial",
     subtitle: "Projects",
