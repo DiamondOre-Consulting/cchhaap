@@ -16,3 +16,21 @@ export const userSigninBodySchema = z.object({
     email : z.string().email().trim(),
     password : z.string().min(6).trim(),
 })
+
+
+
+
+export const forgotPasswordBodySchema = z.object({
+    email : z.string().email().trim()
+ })
+ 
+ 
+ 
+ export const resetPasswordBodySchema = z.object({
+     newPassword: z.string().trim()
+ })
+
+ 
+export const resetPasswordParamsSchema = z.object({
+    resetToken : z.string().trim()
+})

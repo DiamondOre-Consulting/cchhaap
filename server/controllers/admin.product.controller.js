@@ -32,12 +32,10 @@ export const createProduct = asyncHandler(async (req, res) => {
     attributes: variation.attributes ? { ...variation.attributes } : null
   }));
     
-  // console.log(req)
 
 
   const groupedUploads = await multipleFileUpload(req.files, "products");
-    console.log("files",req.files)
-  console.log("grouped",groupedUploads)
+    
 
   const variationWithImages = parsedVariations.map((variation, index) => {
     // Correct field name patterns
