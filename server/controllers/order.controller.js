@@ -23,7 +23,7 @@ export const createOrder = asyncHandler(async(req,res)=>{
     const cartQuery = productId
   ? [{ userId, "products.productId": productId }]
   : [{ userId }];
-
+    
     const cart = await Cart.findOne(...cartQuery).populate("products.productId")
     
 

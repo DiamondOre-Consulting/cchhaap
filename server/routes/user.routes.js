@@ -6,6 +6,8 @@ import { userMiddleware } from "../middlewares/user.middleware.js"
 import { addAddressBodySchema, deleteAddressParamsSchema, editAddressBodySchema, editAddressParamsSchema } from "../validator/address.validator.js"
 import { removeItemFromCartParamsSchema, updateCartParamsSchema } from "../validator/cart.validator.js"
 import { getCart, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
+import { createOrder } from "../controllers/order.controller.js"
+import { createOrderBodySchema, createOrderQuerySchema } from "../validator/order.validator.js"
 
 
 
@@ -78,6 +80,15 @@ userRouter.put('/update-cart/:quantity/:productId/:variationId',userMiddleware,v
  userRouter.put('/remove-item-from-cart/:productId',userMiddleware,validate({
     params:removeItemFromCartParamsSchema
 }),removeItemFromCart)
+
+
+
+
+
+ userRouter.post('/create-order',userMiddleware,validate({
+      query: createOrderQuerySchema,
+      body: createOrderBodySchema
+ }),createOrder) 
 
 
 
