@@ -210,8 +210,8 @@ export const editProduct = asyncHandler(async (req, res) => {
         imagesToDelete.push(existingVar.thumbnailImage.publicId);
       }
       if (Array.isArray(existingVar.images)) {
-        existingVar.images.forEach(img => {
-          if (img.publicId) imagesToDelete.push(img.publicId);
+        existingVar.images.forEach(image => {
+          if (image.publicId) imagesToDelete.push(image.publicId);
         });
       }
     }
@@ -235,39 +235,44 @@ export const editProduct = asyncHandler(async (req, res) => {
     // Handle images
     const imagesField = `variations[${index}][images]`;
     let updatedImages = [];
-    const incomingImages = Array.isArray(variation.images) ? variation.images : [];
-    const existingImages = existingVariation?.images || [];
-    // Remove deleted images
-    existingImages.forEach(existingImg => {
-      const isImageKept = incomingImages.some(img => img.uniqueId === existingImg.uniqueId);
-      if (!isImageKept && existingImg.publicId) {
-        imagesToDelete.push(existingImg.publicId);
-      }
-    });
-    // Add/keep images
-    if (groupedUploads[imagesField]) {
-      updatedImages = incomingImages.map(img => {
-        const existingImg = existingImages.find(ei => ei.uniqueId === img.uniqueId);
-        const uploadedFile = groupedUploads[imagesField].find(uf => uf.uniqueId === img.uniqueId);
-        if (uploadedFile) {
-          if (existingImg?.publicId) {
-            imagesToDelete.push(existingImg.publicId);
-          }
-          return {
-            ...img,
-            publicId: uploadedFile.uploadResult.publicId,
-            secureUrl: uploadedFile.uploadResult.secureUrl,
-            uniqueId: img.uniqueId
-          };
-        } else if (existingImg) {
-          return existingImg;
-        }
-        return img;
-      }).filter(Boolean);
+    // If images is undefined, keep existing images
+    if (variation.images === undefined) {
+      updatedImages = existingVariation?.images || [];
     } else {
-      updatedImages = incomingImages.map(img => {
-        return existingImages.find(ei => ei.uniqueId === img.uniqueId) || img;
+      const incomingImages = Array.isArray(variation.images) ? variation.images : [];
+      const existingImages = existingVariation?.images || [];
+      // Remove deleted images
+      existingImages.forEach(existingImg => {
+        const isImageKept = incomingImages.some(img => img.uniqueId === existingImg.uniqueId);
+        if (!isImageKept && existingImg.publicId) {
+          imagesToDelete.push(existingImg.publicId);
+        }
       });
+      // Add/keep images
+      if (groupedUploads[imagesField]) {
+        updatedImages = incomingImages.map(img => {
+          const existingImg = existingImages.find(ei => ei.uniqueId === img.uniqueId);
+          const uploadedFile = groupedUploads[imagesField].find(uf => uf.uniqueId === img.uniqueId);
+          if (uploadedFile) {
+            if (existingImg?.publicId) {
+              imagesToDelete.push(existingImg.publicId);
+            }
+            return {
+              ...img,
+              publicId: uploadedFile.uploadResult.publicId,
+              secureUrl: uploadedFile.uploadResult.secureUrl,
+              uniqueId: img.uniqueId
+            };
+          } else if (existingImg) {
+            return existingImg;
+          }
+          return img;
+        }).filter(Boolean);
+      } else {
+        updatedImages = incomingImages.map(img => {
+          return existingImages.find(ei => ei.uniqueId === img.uniqueId) || img;
+        });
+      }
     }
     // Merge all fields
     return {
