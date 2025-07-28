@@ -82,7 +82,7 @@ const productSchema = new mongoose.Schema(
         soldCount: { type: Number, default: 0 },
 
         thumbnailImage: {
-          secureUrl: { type: String },
+          secureUrl:{ type: String },
           publicId: { type: String },
           uniqueId: { type: String },
         },

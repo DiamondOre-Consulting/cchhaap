@@ -1,67 +1,70 @@
-import cloudinary from "cloudinary"
-import ApiError from "./apiError.js"
+import cloudinary from "cloudinary";
+import ApiError from "./apiError.js";
 
-export const fileUpload = async(fileBuffer,folder)=>{
-    try{
-
-        return new Promise((resolve, reject) => {
-            const uploadStream = cloudinary.v2.uploader.upload_stream(
-                { folder:folder },
-                (error, result) => {
-                    if (error) return reject(new Error("Upload failed: " + error.message));
-                    resolve({ publicId: result.public_id, secureUrl: result.secure_url });
-                }
-            );
-            uploadStream.end(fileBuffer);
-        });
-    }
-    catch (err) {
-        throw new ApiError('File can not get uploaded', 500)
-    }
-}
-
-
-export const fileDestroy = async (publicId) => {
-    try {
-        return new Promise((resolve, reject) => {
-            cloudinary.v2.uploader.destroy(publicId, (error, result) => {
-                if (error || result.result !== "ok") {
-                    return reject(new ApiError("File deletion failed", 500));
-                }
-                resolve({ success: true, message: "File deleted successfully" });
-            });
-        });
-    } catch (err) {
-        console.log(err)
-        throw new ApiError("Error deleting file", 500);
-    }
+// Upload a single file (image/video)
+export const fileUpload = async (fileBuffer, folder) => {
+  try {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.v2.uploader.upload_stream(
+        { folder, resource_type: "auto" }, // ✅ supports video & image
+        (error, result) => {
+          if (error) return reject(new Error("Upload failed: " + error.message));
+          resolve({ publicId: result.public_id, secureUrl: result.secure_url });
+        }
+      );
+      uploadStream.end(fileBuffer);
+    });
+  } catch (err) {
+    throw new ApiError("File can not get uploaded", 500);
+  }
 };
 
+// Delete a file by publicId
+export const fileDestroy = async (publicId) => {
+  try {
+    return new Promise((resolve, reject) => {
+      cloudinary.v2.uploader.destroy(
+        publicId,
+        { resource_type: "auto" }, // ✅ ensure videos can be deleted
+        (error, result) => {
+          if (error || result.result !== "ok") {
+            return reject(new ApiError("File deletion failed", 500));
+          }
+          resolve({ success: true, message: "File deleted successfully" });
+        }
+      );
+    });
+  } catch (err) {
+    console.log(err);
+    throw new ApiError("Error deleting file", 500);
+  }
+};
 
+// Upload multiple files (image/video), grouped by fieldname
 export const multipleFileUpload = async (files, folder) => {
   try {
     const groupedUploads = {};
 
-    // Process files in parallel for better performance
-    const uploadPromises = files.map(file => {
+    const uploadPromises = files.map((file) => {
       return new Promise((resolve, reject) => {
         const uploadStream = cloudinary.v2.uploader.upload_stream(
-          { folder },
+          { folder, resource_type: "auto" }, // ✅ auto detects type
           (error, result) => {
             if (error) {
               console.error("Upload error:", error);
               return reject(new Error("Upload failed: " + error.message));
             }
-             const fileNameWithExtension = file.originalname;
-             const fileName = fileNameWithExtension.split(".").slice(0, -1).join(".");
+
+            const fileNameWithExtension = file.originalname;
+            const fileName = fileNameWithExtension.split(".").slice(0, -1).join(".");
 
             resolve({
               fieldname: file.fieldname,
-              uniqueId:fileName,
+              uniqueId: fileName,
               uploadResult: {
                 publicId: result.public_id,
-                secureUrl: result.secure_url
-              }
+                secureUrl: result.secure_url,
+              },
             });
           }
         );
@@ -70,8 +73,7 @@ export const multipleFileUpload = async (files, folder) => {
     });
 
     const results = await Promise.all(uploadPromises);
-    
-    // Group the results
+
     results.forEach(({ fieldname, uploadResult }) => {
       if (!groupedUploads[fieldname]) {
         groupedUploads[fieldname] = [];
