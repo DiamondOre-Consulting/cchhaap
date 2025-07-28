@@ -82,9 +82,6 @@ userRouter.put('/update-cart/:quantity/:productId/:variationId',userMiddleware,v
 }),removeItemFromCart)
 
 
-
-
-
  userRouter.post('/create-order',userMiddleware,validate({
       query: createOrderQuerySchema,
       body: createOrderBodySchema

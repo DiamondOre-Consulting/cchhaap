@@ -11,7 +11,9 @@ import { createCouponSchema, deleteCouponParamsSchema, editCouponBodySchema, edi
 import { createAttributeDefinition, deleteAttributeDefinition, editAttributeDefinition, getAllAttributeDefinition, getSingleAttributeDefinition } from '../controllers/attributeDefinition.controller.js';
 import { createAttributeDefinitionSchema, editAttributeDefinitionBodySchema, getAttributeDefinitionParamsSchema } from '../validator/attributeDefinition.validator.js';
 import { createProductBodySchema, deleteProductParamsSchema, getAdminAllProductsParamsSchema } from '../validator/admin.product.validator.js';
-import { createProduct, deleteProduct, getAdminAllProducts, getAdminSingleProduct } from '../controllers/admin.product.controller.js';
+import { createProduct, deleteProduct, editProduct, getAdminAllProducts, getAdminSingleProduct } from '../controllers/admin.product.controller.js';
+
+
 
 
 
@@ -82,6 +84,9 @@ adminRouter.get('/get-all-product/:limit/:page',validate({
 }),getAdminAllProducts)
 
 adminRouter.get('/get-single-product/:productId',validate({params:deleteProductParamsSchema}),getAdminSingleProduct)
+
+
+adminRouter.put("/edit-product/:productId",multipleImageUpload.any(),editProduct);
 
 
 
