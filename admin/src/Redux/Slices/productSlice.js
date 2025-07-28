@@ -2,25 +2,60 @@ import adminAxiosInstance from "@/Helper/axiosInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { toast } from "sonner";
 
-export const createProduct = createAsyncThunk('/admin/create-product' , async(data)=>{
+export const createProduct = createAsyncThunk(
+  "/admin/create-product",
+  async (data) => {
     try {
-        const response = await adminAxiosInstance.post('/add-new-product' , data);
-        console.log(response)
-        return response.data;
+      const response = await adminAxiosInstance.post("/add-new-product", data);
+      console.log(response);
+      toast.success(response?.data?.message);
+      return response.data;
     } catch (error) {
-        console.log(error)
-        throw error;
+      console.log(error);
+      throw error;
     }
-})
+  }
+);
 
-export const getAllProduct = createAsyncThunk('/admin/get-all-product' , async()=>{
+export const editProduct = createAsyncThunk(
+  "/admin/edit-product",
+  async ({ id, formData }) => {
     try {
-        const response = await adminAxiosInstance.get(`/get-all-product/${10}/${1}`)
-        return response?.data
+      const response = await adminAxiosInstance.put(
+        `/edit-product/${id}`,
+        formData
+      );
+      toast.success(response?.data?.message);
     } catch (error) {
-        console.log(error)
+      console.log(error);
     }
-})
+  }
+);
+
+export const deleteProduct = createAsyncThunk(
+  "/admin/delete-product",
+  async (id) => {
+    try {
+      const res = await adminAxiosInstance.delete(`/delete-product/${id}`);
+      toast.success(res?.data?.message);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+export const getAllProduct = createAsyncThunk(
+  "/admin/get-all-product",
+  async () => {
+    try {
+      const response = await adminAxiosInstance.get(
+        `/get-all-product/${10}/${1}`
+      );
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
 const productSlice = createSlice({
   name: "product",

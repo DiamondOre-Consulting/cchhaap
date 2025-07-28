@@ -1,6 +1,8 @@
+import { userForgotPassword, userSignin } from "@/Redux/Slices/authSlice";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 // import { userForgotPassword, userSignin } from "../Redux/Slices/auth.slice";
 // import { toast } from "sonner";
 // import { getNavbarCartCount } from "../Redux/Slices/cart";
@@ -36,8 +38,8 @@ const Login = () => {
       const response = await dispatch(userSignin(formData));
       console.log(response);
       if (response?.payload?.statusCode === 200) {
-        toast.success("user loggedin successfully")
-        dispatch(getNavbarCartCount())
+        toast.success("user logged in successfully")
+        // dispatch(getNavbarCartCount())
         navigate("/");
       }
    
@@ -78,7 +80,7 @@ const Login = () => {
             <form onSubmit={handleSignIn}>
               <div className="py-4 w-md space-y-4 ">
                 <div className="flex flex-col space-y-1">
-                  <label className="text-sm text-gray-700">Email</label>
+                  <label className="text-xs  uppercase text-gray-100">Email</label>
                   <input
                     type="text"
                     className="border px-1 py-1"
@@ -90,7 +92,7 @@ const Login = () => {
                 </div>
 
                 <div className="flex flex-col space-y-1">
-                  <label className="text-sm text-gray-700">password</label>
+                  <label className="text-xs  uppercase text-gray-100">password</label>
                   <input
                     type={showPassword ? "text" : "password"}
                     className="border px-1 py-1 "
@@ -111,7 +113,7 @@ const Login = () => {
 
                 <button
                   type="submit"
-                  className="bg-black cursor-pointer w-full py-2 text-white"
+                  className="bg-c2 text-c1 cursor-pointer w-full py-2 text-white"
                 >
                   {loader ? (
                     <div
@@ -164,7 +166,7 @@ const Login = () => {
             role="main"
             className="w-full z-40  absolute  max-w-xl mx-auto p-6"
           >
-            <div className=" bg-white h-96 -mt-8  rounded-xl shadow-lg">
+            <div className=" bg-c2 h-96 -mt-8  rounded-xl shadow-lg">
               <div className="p-4 sm:p-7">
                 <div className="text-center">
                   <h1 className="block text-2xl myfont  text-gray-900 ">
@@ -187,7 +189,7 @@ const Login = () => {
                       <div>
                         <label
                           for="email"
-                          className="block text-sm  ml-1 mb-2 "
+                          className="block text-xs uppercase text-c1 ml-1 mb-2 "
                         >
                           Email
                         </label>
@@ -198,12 +200,12 @@ const Login = () => {
                             name="email"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="py-3 px-4 block w-full border-2 border-gray-200 rounded-md text-sm focus:border-blue-500 focus:ring-blue-500 shadow-sm"
+                            className="py-3 px-4 block text-black w-full border-2 border-gray-600 focus:outline-none rounded-md text-sm focus:border-black focus:ring-black shadow-sm"
                             required
                           />
                         </div>
                         <p
-                          className="hidden text-xs text-red-600 mt-2"
+                          className=" text-xs text-red-600 mt-2"
                           id="email-error"
                         >
                           Please include a valid email address so we can get
@@ -212,7 +214,7 @@ const Login = () => {
                       </div>
                       <button
                         type="submit"
-                        className="py-3 px-4 cursor-pointer inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-black text-white  focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm "
+                        className="py-3 px-4 cursor-pointer inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-c1 text-white  focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm "
                       >
                         {loader ? (
                           <div

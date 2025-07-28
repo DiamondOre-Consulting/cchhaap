@@ -191,7 +191,8 @@ export const editProduct = asyncHandler(async (req, res) => {
       throw new ApiError(400, "SKU already exists");
     }
   }
-
+  console.log(req.body)
+console.log(req.files)
   // 3. Process file uploads
   const groupedUploads = await multipleFileUpload(req.files, "products");
   const imagesToDelete = [];
@@ -296,7 +297,9 @@ export const editProduct = asyncHandler(async (req, res) => {
   );
 
   // 6. Clean up old images in background
+  console.log( "1", imagesToDelete)
   if (imagesToDelete.length > 0) {
+console.log("2" , imagesToDelete)
     Promise.all(imagesToDelete.map(publicId => fileDestroy(publicId)))
       .catch(err => console.error("Error deleting old images:", err));
   }

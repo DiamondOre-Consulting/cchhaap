@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
-import { userResetPassword } from "../Redux/Slices/auth.slice";
+import { userResetPassword } from "@/Redux/Slices/authSlice";
+
 
 const ResetPassword = () => {
   const { token, expiry } = useParams();
@@ -68,7 +69,7 @@ const ResetPassword = () => {
       );
       console.log(response);
       if (response?.payload?.statusCode === 200) {
-        navigate("/signin");
+        navigate("/login");
       }
     } catch (err) {
       console.log(err);
@@ -84,13 +85,13 @@ const ResetPassword = () => {
       <div className="h-screen flex w-full items-center justify-center">
         <div className="h-screen flex justify-center md:-mt-42 items-center w-full">
           <form onSubmit={handleResetPassowrd}>
-            <div className="bg-white px-10 py-8 rounded-xl w-screen shadow-xl max-w-lg">
+            <div className="bg-c2 px-10 py-8 rounded-xl w-screen shadow-xl max-w-lg">
               <div className="space-y-4">
-                <h1 className="text-center text-2xl font-semibold text-gray-700">
+                <h1 className="text-center text-2xl font-semibold text-gray-900">
                   Reset Password
                 </h1>
 
-                <div className="flex border border-dotted items-center p-1  justify-center gap-4 text-black">
+                <div className="flex border border-dotted items-center p-1 border-black justify-center gap-4 text-black">
                   <h2 className=" text-lg font-semibold">Expiring in </h2>
                   <div className="flex items-center  justify-center gap-1">
                     <div className="flex  items-center">
@@ -117,7 +118,7 @@ const ResetPassword = () => {
                     <div className="py-2 text-center text-[1rem] font-semibold">
                       Reset Password Link Expired. <br /> Please request a new
                       <span
-                        onClick={() => navigate("/signin")}
+                        onClick={() => navigate("/login")}
                         className="text-blue-800 underline cursor-pointer"
                       >
                         {" "}
@@ -128,17 +129,17 @@ const ResetPassword = () => {
                   </div>
                 ) : (
                   <>
-                    <div className="flex items-center border-1 py-3 px-3 rounded-md">
+                    <div className="flex items-center border-1 border-black/60 py-3 px-3 rounded-md">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-gray-400"
+                        className="h-5 w-5 text-gray-800"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
                         <path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" />
                       </svg>
                       <input
-                        className="pl-2 outline-none border-none w-full "
+                        className="pl-2 outline-none border-none text-black w-full "
                         type={showPassword ? "text" : "password"}
                         name="password"
                         id="password"
@@ -149,17 +150,17 @@ const ResetPassword = () => {
                       />
                     </div>
 
-                    <div className="flex items-center border-1 py-3 px-3 rounded-md">
+                    <div className="flex items-center border-1 border-black/60 py-3 px-3 rounded-md">
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
-                        className="h-5 w-5 text-gray-400"
+                        className="h-5 w-5 text-gray-800"
                         viewBox="0 0 20 20"
                         fill="currentColor"
                       >
                         <path d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" />
                       </svg>
                       <input
-                        className="pl-2 outline-none border-none w-full "
+                        className="pl-2 outline-none border-none w-full text-black "
                         type={showPassword ? "text" : "password"}
                         name="confirmPassword"
                         id="confirmPassword"

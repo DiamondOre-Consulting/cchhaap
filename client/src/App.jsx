@@ -8,12 +8,13 @@ import Login from './pages/Auth/Login';
 import Signup from './pages/Auth/Signup';
 import ProfilePage from './pages/ProfilePage';
 import Wishlist from './components/Profile/Wishlist';
+import ResetPassword from './pages/Auth/ResetPassword';
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
 const App = () => {
   return (
-    <Router>
+
       <HomeLayout>
         
         <Routes>
@@ -21,11 +22,16 @@ const App = () => {
           <Route path='/products' element={<Products/>}/>
           <Route path="/each-product" element={<EachProductPage/>} /> 
           <Route path='/my-account' element={<ProfilePage/>}/>
-          {/* <Route path='/login' element={<Login/>}/> */}
-          {/* <Route path='/signup' element={<Signup/>}/> */}
+          <Route path='/login' element={<Login/>}/>
+          <Route path='/signup' element={<Signup/>}/>
+            <Route
+            path="/reset-password/:token/:email/:expiry"
+            element={<ResetPassword />}
+          />
+      
         </Routes>
       </HomeLayout>
-    </Router>
+ 
   );
 };
 

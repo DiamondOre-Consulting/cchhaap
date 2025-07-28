@@ -7,9 +7,15 @@ import JoditEditor from "jodit-react";
 import { HexColorPicker } from "react-colorful";
 import { getAllAttributes } from "@/Redux/Slices/attributesSlice";
 import { v4 as uuidv4 } from "uuid";
-import { createProduct } from "@/Redux/Slices/productSlice";
+import { createProduct, editProduct } from "@/Redux/Slices/productSlice";
 
-const ProductForm = ({ formState, allAttributes }) => {
+const ProductForm = ({
+  formState,
+  allAttributes,
+  setProductPopUp,
+  singleData,
+  handleGetAllProducts
+}) => {
   const [categories, setCategories] = useState([]);
   const [subOptions, setSubOptions] = useState([]);
 
@@ -22,6 +28,7 @@ const ProductForm = ({ formState, allAttributes }) => {
     watch,
     control,
     setValue,
+    reset,
     getValues,
     formState: { errors },
   } = useForm({ defaultValues: productDefaultValues });
@@ -94,23 +101,29 @@ const ProductForm = ({ formState, allAttributes }) => {
     }
   };
 
-  const handleImagesChange = (e, idx) => {
+  const handleMediaChange = (e, idx) => {
     const files = Array.from(e.target.files);
     const uniqueCode =
       getValues(`variations.${idx}.uniqueCode`) || getUniqueCode();
-    const currentImages = getValues(`variations.${idx}.images`) || [];
 
-    const newImages = files.map((file, i) => {
+    const currentMedia = getValues(`variations.${idx}.images`) || [];
+
+    const newMedia = files.map((file, i) => {
       const fileName = generateFileName(file, `${uniqueCode}-${i}`);
       return {
         secureUrl: URL.createObjectURL(file),
         publicId: "",
         uniqueId: fileName,
-        file: file, // Store the actual file object
+        file: file,
+        type: file.type.startsWith("video") ? "video" : "image",
       };
     });
 
-    setValue(`variations.${idx}.images`, [...currentImages, ...newImages]);
+    const updatedMedia = [...currentMedia, ...newMedia];
+    setValue(`variations.${idx}.images`, updatedMedia, {
+      shouldValidate: true,
+      shouldDirty: true,
+    });
   };
 
   const removeImageAtIndex = (idx, imageIdx) => {
@@ -165,7 +178,6 @@ const ProductForm = ({ formState, allAttributes }) => {
     );
 
     if (labelName && selectedValue) {
-      // Reset the form fields
       setValue(`variations.${idx}.attributeDefinition`, "");
       setSelectedAttributeDefinition(null);
       setSelectedLabel(null);
@@ -180,7 +192,7 @@ const ProductForm = ({ formState, allAttributes }) => {
     formData.append("brandName", data.brandName);
     formData.append("category", data.category);
     formData.append("description", data.description);
-    formData.append("fabric", data.fabric);
+    // formData.append("fabric", data.fabric);
     formData.append("gender", data.gender);
     formData.append("discountType", data.discountType);
     formData.append("isActive", data.isActive);
@@ -192,29 +204,43 @@ const ProductForm = ({ formState, allAttributes }) => {
     });
 
     data.variations.forEach((variation, index) => {
-      // Only append if the field has a value
-      if (variation.size) formData.append(`variations[${index}][size]`, variation.size);
-      if (variation.color?.name) formData.append(
-        `variations[${index}][color][name]`,
-        variation.color.name
-      );
-      if (variation.color?.hex) formData.append(`variations[${index}][color][hex]`, variation.color.hex);
-      if (variation.price !== undefined && variation.price !== null) formData.append(`variations[${index}][price]`, variation.price);
-      if (variation.gender) formData.append(`variations[${index}][gender]`, variation.gender);
-      if (variation.discountPrice !== undefined && variation.discountPrice !== null) formData.append(
-        `variations[${index}][discountPrice]`,
-        variation.discountPrice
-      );
-      if (variation.quantity !== undefined && variation.quantity !== null) formData.append(`variations[${index}][quantity]`, variation.quantity);
-      if (variation.sku) formData.append(`variations[${index}][sku]`, variation.sku);
+      if (variation.size)
+        formData.append(`variations[${index}][size]`, variation.size);
+      if (variation.color?.name)
+        formData.append(
+          `variations[${index}][color][name]`,
+          variation.color.name
+        );
+      if (variation.color?.hex)
+        formData.append(
+          `variations[${index}][color][hex]`,
+          variation.color.hex
+        );
+      if (variation.price !== undefined && variation.price !== null)
+        formData.append(`variations[${index}][price]`, variation.price);
+      if (variation.gender)
+        formData.append(`variations[${index}][gender]`, variation.gender);
+      if (
+        variation.discountPrice !== undefined &&
+        variation.discountPrice !== null
+      )
+        formData.append(
+          `variations[${index}][discountPrice]`,
+          variation.discountPrice
+        );
+      if (variation.quantity !== undefined && variation.quantity !== null)
+        formData.append(`variations[${index}][quantity]`, variation.quantity);
+      // if (variation.sku) formData.append(`variations[${index}][sku]`, variation.sku);
+      formData.append(`variations[${index}][fabric]`, variation.fabric);
       formData.append(`variations[${index}][inStock]`, variation.inStock);
-      if (variation.soldCount !== undefined && variation.soldCount !== null) formData.append(`variations[${index}][soldCount]`, variation.soldCount);
-      if (variation.attributeDefinition) formData.append(
-        `variations[${index}][attributeDefinition]`,
-        variation.attributeDefinition
-      );
+      if (variation.soldCount !== undefined && variation.soldCount !== null)
+        formData.append(`variations[${index}][soldCount]`, variation.soldCount);
+      if (variation.attributeDefinition)
+        formData.append(
+          `variations[${index}][attributeDefinition]`,
+          variation.attributeDefinition
+        );
 
-      // Append thumbnail image file if it exists
       if (variation.thumbnailImage?.file) {
         formData.append(
           `variations[${index}][thumbnailImage]`,
@@ -226,10 +252,7 @@ const ProductForm = ({ formState, allAttributes }) => {
       if (variation.images && variation.images.length > 0) {
         variation.images.forEach((img, imgIndex) => {
           if (img.file) {
-            formData.append(
-              `variations[${index}][images]`,
-              img.file
-            );
+            formData.append(`variations[${index}][images]`, img.file);
           }
         });
       }
@@ -239,27 +262,34 @@ const ProductForm = ({ formState, allAttributes }) => {
       });
     });
     console.log("form Data", data);
-    
-    // Debug: Log what's being appended to FormData
+
     console.log("FormData contents:");
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
-    
-    // Debug: Log the actual data object
     console.log("Data object:", data);
     console.log("Variations:", data.variations);
-    
+
     try {
-      const resp = await dispatch(createProduct(formData));
-      console.log("Response:", resp);
-      if (resp.payload) {
-        console.log("Product created successfully!");
-        // You can add success toast or redirect here
+      let res;
+
+      if (singleData?._id) {
+        res = await dispatch(editProduct({ id: singleData._id, formData }));
+      } else {
+        res = await dispatch(createProduct(formData));
+        console.log("Response:", resp);
+
+        if (resp.payload) {
+          console.log("Product created successfully!");
+          // You can add success toast or redirect here
+        }
       }
     } catch (error) {
       console.error("Error creating product:", error);
-      // You can add error toast here
+    } finally {
+      setProductPopUp(false);
+      await handleGetAllProducts()
+      
     }
   };
 
@@ -273,12 +303,69 @@ const ProductForm = ({ formState, allAttributes }) => {
       sku: "",
       inStock: true,
       soldCount: 0,
-      thumbnailImage: { secureUrl: "", publicId: "", uniqueId: uuidv4(), file: null },
+      thumbnailImage: {
+        secureUrl: "",
+        publicId: "",
+        uniqueId: uuidv4(),
+        file: null,
+      },
       images: [],
       attributes: {},
       attributeDefinition: "",
     });
   };
+
+  console.log("varitaions ", variationFields);
+
+  console.log("singledata ", singleData);
+  console.log(watch("category"));
+
+  useEffect(() => {
+    if (singleData && categories.length > 0) {
+      const formattedData = {
+        productName: singleData.productName || "",
+        brandName: singleData.brandName || "",
+        category: singleData.category?._id || "",
+        subCategory: singleData.subCategory || [""],
+        description: singleData.description || "",
+        isActive: singleData.isActive ?? true,
+        sku: singleData.sku || "",
+        quantity: singleData.quantity || "",
+        variations: (singleData.variations || []).map((v) => ({
+          size: v.size || "",
+          color: {
+            name: v.color?.name || "",
+            hex: v.color?.hex || "#000000",
+          },
+          price: v.price || 0,
+          discountPrice: v.discountPrice || 0,
+          quantity: v.quantity || 0,
+          discountType: v.discountType || "",
+          gender: v.gender || "",
+          inStock: v.inStock ?? true,
+          soldCount: v.soldCount || 0,
+          fabric: v.fabric || "",
+          attributeDefinition: v.attributeDefinition || "",
+          attributes: v.attributes || {},
+          thumbnailImage: {
+            secureUrl: v.thumbnailImage?.secureUrl || "",
+            publicId: v.thumbnailImage?.publicId || "",
+            uniqueId: v.thumbnailImage?.uniqueId || uuidv4(),
+            file: null,
+          },
+          images: (v.images || []).map((img, i) => ({
+            secureUrl: img.secureUrl || "",
+            publicId: img.publicId || "",
+            uniqueId: img.uniqueId || `${uuidv4()}-${i}`,
+            file: null,
+            type: img.secureUrl?.includes(".mp4") ? "video" : "image",
+          })),
+        })),
+      };
+
+      reset(formattedData);
+    }
+  }, [singleData, categories, reset]);
 
   return (
     <form
@@ -437,6 +524,30 @@ const ProductForm = ({ formState, allAttributes }) => {
                 </div>
 
                 <div className="flex flex-col text-sm">
+                  <label className="px-1"> Fabric</label>
+                  <select
+                    {...register(`variations.${idx}.fabric`)}
+                    className="border rounded px-2 py-2 bg-white"
+                  >
+                    <option value="">Select Fabric </option>
+                    {[
+                      "Cotton",
+                      "Silk",
+                      "Rayon",
+                      "Polyester",
+                      "Linen",
+                      "Wool",
+                      "Blended",
+                      "Other",
+                    ].map((s) => (
+                      <option key={s} value={s}>
+                        {s}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="flex flex-col text-sm">
                   <label className="px-1">Price</label>
                   <input
                     type="number"
@@ -497,14 +608,14 @@ const ProductForm = ({ formState, allAttributes }) => {
                 </div>
 
                 {/* SKU */}
-                <div className="flex flex-col text-sm">
+                {/* <div className="flex flex-col text-sm">
                   <label className="px-1">SKU</label>
                   <input
                     {...register(`variations.${idx}.sku`)}
                     placeholder="Variation SKU"
                     className="border rounded px-2 py-2 bg-white"
                   />
-                </div>
+                </div> */}
               </div>
 
               <div className="col-span-full space-y-2">
@@ -632,9 +743,9 @@ const ProductForm = ({ formState, allAttributes }) => {
                 <input
                   type="file"
                   id={`product-images-input-${idx}`}
-                  accept="image/*"
+                  accept="image/*,video/*"
                   multiple
-                  onChange={(e) => handleImagesChange(e, idx)}
+                  onChange={(e) => handleMediaChange(e, idx)}
                   className="hidden"
                 />
                 <button
@@ -650,25 +761,38 @@ const ProductForm = ({ formState, allAttributes }) => {
                 </button>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                  {variation.images?.map((img, imgIdx) => (
-                    <div
-                      key={img.uniqueId}
-                      className="relative w-24 h-24 inline-block"
-                    >
-                      <img
-                        src={img.secureUrl}
-                        alt={`Preview ${imgIdx + 1}`}
-                        className="absolute inset-0 w-full h-full rounded"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeImageAtIndex(idx, imgIdx)}
-                        className="absolute -top-2 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center"
-                        title="Remove Image"
-                      >
-                        ×
-                      </button>
-                    </div>
+                  {variation?.images?.map((img, imgIdx) => (
+                    <>
+                      {img?.secureUrl && (
+                        <div
+                          key={img?.uniqueId}
+                          className="relative w-24 h-24 inline-block"
+                        >
+                          {img.type === "video" ? (
+                            <video
+                              src={img.secureUrl}
+                              className="absolute inset-0 w-full h-full rounded"
+                              controls
+                            />
+                          ) : (
+                            <img
+                              src={img?.secureUrl}
+                              alt={`Preview ${imgIdx + 1}`}
+                              className="absolute inset-0 w-full h-full rounded"
+                            />
+                          )}
+
+                          <button
+                            type="button"
+                            onClick={() => removeImageAtIndex(idx, imgIdx)}
+                            className="absolute -top-2 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center"
+                            title="Remove Image"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      )}
+                    </>
                   ))}
                 </div>
               </div>

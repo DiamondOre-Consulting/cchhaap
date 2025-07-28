@@ -7,14 +7,20 @@ import { motion } from "framer-motion";
 import HomeLayout from "../Layout/HomeLayout";
 import { getAllAttributes } from "@/Redux/Slices/attributesSlice";
 import { useDispatch } from "react-redux";
-import { getAllProduct } from "@/Redux/Slices/productSlice";
+import { deleteProduct, getAllProduct } from "@/Redux/Slices/productSlice";
+import { Eye } from "lucide-react";
 
 const Products = () => {
   const [productPopUp, setProductPopUp] = useState(false);
   const [deletePopUp, setDeletePopUp] = useState(false);
-  const dispatch = useDispatch()
+  const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
-  const [allAttributes, setAllAttributes] = useState([]); 
+  const [allAttributes, setAllAttributes] = useState([]);
+  const [allProducts, setAllProducts] = useState();
+  const [singleDataPopUP, setSingleDataPopUp] = useState(false);
+  const [singleData, setSingleData] = useState();
+  const [id , setId] = useState()
+  console.log(singleData);
 
   const handleGetAllAttributes = async () => {
     try {
@@ -26,16 +32,16 @@ const Products = () => {
     }
   };
 
-
-   const handleGetAllProducts = async() =>{
+  const handleGetAllProducts = async () => {
     const res = await dispatch(getAllProduct());
-    console.log(res)
-  }
+    console.log(res?.payload?.data?.products);
+    setAllProducts(res?.payload?.data?.products);
+  };
 
-  useEffect(()=>{
-    handleGetAllProducts()
-    handleGetAllAttributes()
-  } , [])
+  useEffect(() => {
+    handleGetAllProducts();
+    handleGetAllAttributes();
+  }, []);
 
   const formState = [
     {
@@ -57,8 +63,6 @@ const Products = () => {
       },
     },
 
-    
-
     {
       label: "Product Name",
       name: "productName",
@@ -77,37 +81,44 @@ const Products = () => {
     },
 
     {
-      label: "Gender",
-      name: "gender",
-      inputType: "select",
+      label: "SKU",
+      name: "sku",
+      inputType: "text",
       required: true,
-      options: ["Men", "Women", "Unisex", "Kids"],
       validation: {
-        // required: "Gender is required",
+        // required: "SKU is required",
       },
     },
+    // {
+    //   label: "Gender",
+    //   name: "gender",
+    //   inputType: "select",
+    //   required: true,
+    //   options: ["Men", "Women", "Unisex", "Kids"],
+    //   validation: {
+    //     // required: "Gender is required",
+    //   },
+    // },
 
-    
-
-    {
-      label: "Fabric",
-      name: "fabric",
-      inputType: "select",
-      required: true,
-      options: [
-        "Cotton",
-        "Silk",
-        "Rayon",
-        "Polyester",
-        "Linen",
-        "Wool",
-        "Blended",
-        "Other",
-      ],
-      validation: {
-        // required: "Fabric is required",
-      },
-    },
+    // {
+    //   label: "Fabric",
+    //   name: "fabric",
+    //   inputType: "select",
+    //   required: true,
+    //   options: [
+    //     "Cotton",
+    //     "Silk",
+    //     "Rayon",
+    //     "Polyester",
+    //     "Linen",
+    //     "Wool",
+    //     "Blended",
+    //     "Other",
+    //   ],
+    //   validation: {
+    //     // required: "Fabric is required",
+    //   },
+    // },
     {
       label: "Description",
       name: "description",
@@ -117,23 +128,24 @@ const Products = () => {
         required: "Description is required",
       },
     },
-    {
-      label: "SKU",
-      name: "sku",
-      inputType: "text",
-      required: true,
-      validation: {
-        // required: "SKU is required",
-      },
-    },
-
-   
   ];
 
+  const isVideo = (url) => {
+    return url.toLowerCase().endsWith(".mp4");
+  };
 
- 
-
-  
+  const handleDeleteProduct = async() =>{
+    try {
+      const response = await dispatch(deleteProduct(id))
+      console.log(response)
+    } catch (error) {
+      console.log(error)
+    }
+    finally{
+      setDeletePopUp(false)
+      await handleGetAllProducts()
+    }
+  }
 
   return (
     <HomeLayout>
@@ -208,15 +220,15 @@ const Products = () => {
                 <th scope="col" class="px-6 py-3">
                   SKU
                 </th>
-                <th scope="col" class="px-6 py-3">
+                {/* <th scope="col" class="px-6 py-3">
                   price
-                </th>
-                <th scope="col" class="px-6 py-3">
+                </th> */}
+                {/* <th scope="col" class="px-6 py-3">
                   Sale Price
-                </th>
-                <th scope="col" class="px-6 py-3">
+                </th> */}
+                {/* <th scope="col" class="px-6 py-3">
                   Stock
-                </th>
+                </th> */}
 
                 <th scope="col" class="px-6 py-3">
                   Status
@@ -227,44 +239,57 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600">
-                <th
-                  scope="row"
-                  class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+              {allProducts?.map((product, index) => (
+                <tr
+                  key={index}
+                  class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
                 >
-                  <img
-                    class="w-20 h-20 "
-                    src="https://shopmulmul.com/cdn/shop/files/258_93ea39ca-fb67-4945-bd43-a31738aef3da_700x.jpg?v=1751977210"
-                    alt="Jese image"
-                  />
-                  <div class="ps-3  text-wrap">
-                    <div class="text-base font-semibold">
-                      Beige Organza Saree
-                    </div>
-                  </div>
-                </th>
-                <td class="px-6 py-4">Saree</td>
-                <td class="px-6 py-4">S21</td>
-                <td class="px-6 py-4">240</td>
-                <td class="px-6 py-4">200</td>
-                <td class="px-6 py-4">10</td>
-
-                <td class="px-6 py-4">
-                  <div class="flex items-center">
-                    <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
-                    Active
-                  </div>
-                </td>
-                <td class="px-6 py-4">
-                  <p className="gap-x-4 flex text-xl">
-                    <FaRegEdit className="cursor-pointer hover:text-red-600" />
-                    <MdOutlineDeleteOutline
-                      onClick={() => setDeletePopUp(true)}
-                      className="cursor-pointer hover:text-red-600"
+                  <th
+                    scope="row"
+                    class="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap dark:text-white"
+                  >
+                    <img
+                      class="w-20 h-20 "
+                      src={product?.category?.categoryImage?.secureUrl}
+                      alt="Jese image"
                     />
-                  </p>
-                </td>
-              </tr>
+                    <div class="ps-3  text-wrap">
+                      <div class="text-base font-semibold">
+                        {product?.productName}
+                      </div>
+                    </div>
+                  </th>
+                  <td class="px-6 py-4">{product?.category?.categoryName}</td>
+                  {/* <td class="px-6 py-4">S21</td>
+                <td class="px-6 py-4">240</td>
+                <td class="px-6 py-4">200</td> */}
+                  <td class="px-6 py-4">10</td>
+
+                  <td class="px-6 py-4">
+                    <div class="flex items-center">
+                      <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
+                      Active
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <p className="gap-x-4 flex text-xl">
+                      <FaRegEdit onClick={()=> {setSingleData(product) ,   setProductPopUp(true)}} className="cursor-pointer hover:text-red-600" />
+                      <MdOutlineDeleteOutline
+                        onClick={() => 
+                        {
+
+                          setDeletePopUp(true)
+                          setId(product?._id)
+                        
+                        }
+                        }
+                        className="cursor-pointer hover:text-red-600"
+                      />
+                      <Eye onClick={() => {setSingleData(product) ,setSingleDataPopUp(true)} } />
+                    </p>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
@@ -295,7 +320,13 @@ const Products = () => {
                   />
                 </svg>
               </button>
-              <ProductForm formState={formState} allAttributes={allAttributes}/>
+              <ProductForm
+                formState={formState}
+                allAttributes={allAttributes}
+                setProductPopUp={setProductPopUp}
+                singleData={singleData}
+                handleGetAllProducts={handleGetAllProducts}
+              />
             </div>
           </div>
         )}
@@ -321,7 +352,7 @@ const Products = () => {
               <div className="flex justify-center gap-x-6 p-2">
                 <button
                   className="px-5 py-2 bg-c1 cursor-pointer text-white font-semibold rounded shadow transition duration-300 hover:shadow-red-500/50"
-                  // onClick={handleDeleteCategory}
+                  onClick={handleDeleteProduct}
                 >
                   {loader ? (
                     <>
@@ -360,6 +391,123 @@ const Products = () => {
               </div>
             </motion.div>
           </motion.div>
+        )}
+
+        {singleDataPopUP && singleData && (
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg shadow-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+              <button
+                onClick={() => setSingleDataPopUp(false)}
+                className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl"
+              >
+                &times;
+              </button>
+
+              <h2 className="text-2xl font-bold mb-2">
+                {singleData?.productName}
+              </h2>
+              <p>
+                <strong>Brand:</strong> {singleData?.brandName}
+              </p>
+              <p>
+                <strong>Category:</strong> {singleData.category?.categoryName}
+              </p>
+              <p>
+                <strong>SubCategory:</strong>{" "}
+                {singleData.subCategory?.join(", ")}
+              </p>
+              <div
+                dangerouslySetInnerHTML={{ __html: singleData.description }}
+                className="text-gray-700 my-2"
+              />
+              <p>
+                <strong>SKU:</strong> {singleData.sku}
+              </p>
+              <p>
+                <strong>Status:</strong>{" "}
+                {singleData.isActive ? "Active" : "Inactive"}
+              </p>
+
+              {singleData.variations?.map((variation, index) => (
+                <div
+                  key={variation._id}
+                  className="border border-gray-300 p-4 mt-4 rounded-lg"
+                >
+                  <h3 className="text-xl font-semibold mb-2">
+                    Variation {index + 1}
+                  </h3>
+                  <p>
+                    <strong>Color:</strong>{" "}
+                    <span style={{ color: variation.color?.hex }}>
+                      {variation.color?.name}
+                    </span>
+                  </p>
+                  <p>
+                    <strong>Size:</strong> {variation.size}
+                  </p>
+                  <p>
+                    <strong>Gender:</strong> {variation.gender}
+                  </p>
+                  <p>
+                    <strong>Price:</strong> ₹{variation.price}
+                  </p>
+                  <p>
+                    <strong>Discount Price:</strong> ₹{variation.discountPrice}
+                  </p>
+                  <p>
+                    <strong>Quantity:</strong> {variation.quantity}
+                  </p>
+                  <p>
+                    <strong>In Stock:</strong>{" "}
+                    {variation.inStock ? "Yes" : "No"}
+                  </p>
+                  <p>
+                    <strong>Discount Type:</strong> {variation.discountType}
+                  </p>
+                  <p>
+                    <strong>Sold Count:</strong> {variation.soldCount}
+                  </p>
+
+                  <div className="mt-2">
+                    <p className="font-medium">Attributes:</p>
+                    {variation.attributes &&
+                      Object.entries(variation.attributes).map(
+                        ([key, value]) => (
+                          <p key={key}>
+                            {key}: {value}
+                          </p>
+                        )
+                      )}
+                  </div>
+
+                  <img
+                    src={variation.thumbnailImage.secureUrl}
+                    alt="Thumbnail"
+                    className="h-80 mt-6 w-60  rounded border"
+                  />
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {variation?.images?.map((img) =>
+                      isVideo(img?.secureUrl) ? (
+                        <video
+                          key={img._id}
+                          src={img.secureUrl}
+                          controls
+                          className="h-24 w-24 rounded border object-cover"
+                        />
+                      ) : (
+                        <img
+                          key={img._id}
+                          src={img.secureUrl}
+                          alt="product"
+                          className="h-24 w-24 object-cover rounded border"
+                        />
+                      )
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     </HomeLayout>

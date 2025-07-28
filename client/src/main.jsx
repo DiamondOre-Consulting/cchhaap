@@ -4,11 +4,21 @@ import "./index.css";
 import App from "./App.jsx";
 import { Provider } from "react-redux";
 import { BrowserRouter } from "react-router-dom";
+import { Toaster } from "sonner";
+import { store } from "./Redux/store";
+
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    {/* <BrowserRouter> */}
-      <App />
-    {/* </BrowserRouter> */}
+   <StrictMode>
+    <Provider store={store}>
+      <BrowserRouter>
+        <App />
+          <Toaster
+          richColors
+          toastOptions={{ duration: 2000 }}
+          position="bottom-right"
+        />
+      </BrowserRouter>
+    </Provider>
   </StrictMode>
 );

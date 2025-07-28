@@ -8,7 +8,6 @@ export const productDefaultValues = {
   category: "",
   subCategory: [""],
   description: "",
-  fabric: "",
   quantity: 0,
   gender: "",
   discountType: "percentage",
@@ -18,16 +17,17 @@ export const productDefaultValues = {
     {
       size: "",
       color: { name: "", hex: "" },
+        fabric: "",
       price: 0,
       gender:'',
       discountPrice: 0,
       quantity: 0,
-      sku: "",
+      // sku: "",
       inStock: true,
       soldCount: 0,
       thumbnailImage: { secureUrl: "", publicId: ""  , uniqueId:""},
       images: [{ secureUrl: "", publicId: ""  , uniqueId:"" }],
-      attributes: {}, // example: { Occasion: "Party" }
+      attributes: {}, 
       attributeDefinition: ""
     }
   ]

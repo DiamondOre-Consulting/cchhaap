@@ -1,7 +1,6 @@
+import { sendOtp, userSignUp } from "@/Redux/Slices/authSlice";
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
-// import { sendOtp, userSignUp } from "../Redux/Slices/auth.slice";
-// import { toast } from "sonner";
 import {Link, useNavigate} from 'react-router-dom'
 
 const Signup = () => {
@@ -67,7 +66,7 @@ const Signup = () => {
       console.log(formData)
       const response = await dispatch(userSignUp(formData));
       if (response?.payload?.statusCode === 200) {
-            navigate('/signin')
+            navigate('/login')
       }
     } catch (error) {
       console.log(error);
@@ -82,7 +81,7 @@ const Signup = () => {
 
       <form className="py-6 w-md space-y-4">
         <div className="flex flex-col space-y-1">
-          <label className="text-sm text-gray-700">Email</label>
+          <label className="text-xs text-gray-50 uppercase">Email</label>
           <input
             type="email"
             className="border px-1 py-1"
@@ -96,7 +95,7 @@ const Signup = () => {
         {otpField && passwordField && (
           <>
             <div className="flex flex-col w-full">
-              <label className="pb-1">OTP</label>
+              <label className="pb-1 text-xs text-gray-100 ">OTP</label>
               <div className="flex justify-start gap-2">
                 <input
                   type="text"
@@ -110,7 +109,7 @@ const Signup = () => {
             </div>
 
             <div className="flex flex-col space-y-1">
-              <label className="text-sm text-gray-700">Password</label>
+              <label className="text-xs uppercase text-gray-100">Password</label>
               <input
                 type={showPassword ? "text" : "password"}
                 className="border px-1 py-1"
@@ -132,7 +131,7 @@ const Signup = () => {
 
         <button
           onClick={otpField && passwordField ? handleSignup : handleSendOtp}
-          className="cursor-pointer bg-black w-full py-2 text-white"
+          className="cursor-pointer bg-c2 w-full py-2 text-c1"
           disabled={loader}
         >
           {loader ? (
@@ -161,7 +160,7 @@ const Signup = () => {
             "Send Otp"
           )}
         </button>
-        <p className="text-center">Already have an account <Link className="underline" to={'/signin'}>signin</Link>?</p>
+        <p className="text-center">Already have an account <Link className="underline" to={'/login'}>signin</Link>?</p>
       </form>
 
 
