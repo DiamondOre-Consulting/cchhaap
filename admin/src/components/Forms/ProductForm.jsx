@@ -89,6 +89,7 @@ const ProductForm = ({ formState, allAttributes }) => {
         secureUrl: previewUrl,
         publicId: "",
         uniqueId: fileName,
+        file: file, // Store the actual file object
       });
     }
   };
@@ -105,6 +106,7 @@ const ProductForm = ({ formState, allAttributes }) => {
         secureUrl: URL.createObjectURL(file),
         publicId: "",
         uniqueId: fileName,
+        file: file, // Store the actual file object
       };
     });
 
@@ -190,46 +192,75 @@ const ProductForm = ({ formState, allAttributes }) => {
     });
 
     data.variations.forEach((variation, index) => {
-      formData.append(`variations[${index}][size]`, variation.size);
-      formData.append(
+      // Only append if the field has a value
+      if (variation.size) formData.append(`variations[${index}][size]`, variation.size);
+      if (variation.color?.name) formData.append(
         `variations[${index}][color][name]`,
         variation.color.name
       );
-      formData.append(`variations[${index}][color][hex]`, variation.color.hex);
-      formData.append(`variations[${index}][price]`, variation.price);
-      formData.append(`variations[${index}][gender]`, variation.gender);
-      formData.append(
+      if (variation.color?.hex) formData.append(`variations[${index}][color][hex]`, variation.color.hex);
+      if (variation.price !== undefined && variation.price !== null) formData.append(`variations[${index}][price]`, variation.price);
+      if (variation.gender) formData.append(`variations[${index}][gender]`, variation.gender);
+      if (variation.discountPrice !== undefined && variation.discountPrice !== null) formData.append(
         `variations[${index}][discountPrice]`,
         variation.discountPrice
       );
-      formData.append(`variations[${index}][quantity]`, variation.quantity);
-      formData.append(`variations[${index}][sku]`, variation.sku);
+      if (variation.quantity !== undefined && variation.quantity !== null) formData.append(`variations[${index}][quantity]`, variation.quantity);
+      if (variation.sku) formData.append(`variations[${index}][sku]`, variation.sku);
       formData.append(`variations[${index}][inStock]`, variation.inStock);
-      formData.append(`variations[${index}][soldCount]`, variation.soldCount);
-      formData.append(
+      if (variation.soldCount !== undefined && variation.soldCount !== null) formData.append(`variations[${index}][soldCount]`, variation.soldCount);
+      if (variation.attributeDefinition) formData.append(
         `variations[${index}][attributeDefinition]`,
         variation.attributeDefinition
       );
 
-      formData.append(
-        `variations[${index}][thumbnailImage][uniqueId]`,
-        variation.thumbnailImage.uniqueId
-      );
-
-      variation.images.forEach((img, imgIndex) => {
+      // Append thumbnail image file if it exists
+      if (variation.thumbnailImage?.file) {
         formData.append(
-          `variations[${index}][images][${imgIndex}][uniqueId]`,
-          img.uniqueId
+          `variations[${index}][thumbnailImage]`,
+          variation.thumbnailImage.file
         );
-      });
+      }
+
+      // Append image files if they exist
+      if (variation.images && variation.images.length > 0) {
+        variation.images.forEach((img, imgIndex) => {
+          if (img.file) {
+            formData.append(
+              `variations[${index}][images]`,
+              img.file
+            );
+          }
+        });
+      }
 
       Object.entries(variation.attributes || {}).forEach(([key, value]) => {
         formData.append(`variations[${index}][attributes][${key}]`, value);
       });
     });
     console.log("form Data", data);
-    const resp = await dispatch(createProduct(formData));
-    console.log(resp);
+    
+    // Debug: Log what's being appended to FormData
+    console.log("FormData contents:");
+    for (let [key, value] of formData.entries()) {
+      console.log(key, value);
+    }
+    
+    // Debug: Log the actual data object
+    console.log("Data object:", data);
+    console.log("Variations:", data.variations);
+    
+    try {
+      const resp = await dispatch(createProduct(formData));
+      console.log("Response:", resp);
+      if (resp.payload) {
+        console.log("Product created successfully!");
+        // You can add success toast or redirect here
+      }
+    } catch (error) {
+      console.error("Error creating product:", error);
+      // You can add error toast here
+    }
   };
 
   const addVariation = () => {
@@ -242,7 +273,7 @@ const ProductForm = ({ formState, allAttributes }) => {
       sku: "",
       inStock: true,
       soldCount: 0,
-      thumbnailImage: { secureUrl: "", publicId: "", uniqueId: uuidv4() },
+      thumbnailImage: { secureUrl: "", publicId: "", uniqueId: uuidv4(), file: null },
       images: [],
       attributes: {},
       attributeDefinition: "",
@@ -585,6 +616,7 @@ const ProductForm = ({ formState, allAttributes }) => {
                           secureUrl: "",
                           publicId: "",
                           uniqueId: uuidv4(),
+                          file: null,
                         })
                       }
                       className="absolute top-0 size-5 cursor-pointer right-0 bg-red-500 text-white p-1 rounded-full text-xs"

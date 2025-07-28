@@ -6,8 +6,10 @@ export const createProduct = createAsyncThunk('/admin/create-product' , async(da
     try {
         const response = await adminAxiosInstance.post('/add-new-product' , data);
         console.log(response)
+        return response.data;
     } catch (error) {
         console.log(error)
+        throw error;
     }
 })
 
