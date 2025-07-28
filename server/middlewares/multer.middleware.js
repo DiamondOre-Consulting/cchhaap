@@ -31,7 +31,7 @@ export const singleImageUpload = multer({
     limits :{ fileSize: 5 * 1024 * 1024},
     fileFilter: (req, file, cb) => {
         if (!file) return cb(null, true);
-        if (!allowedImageMimeTypes.includes(file.mimetype)) {
+        if (!allowedMimeTypes.includes(file.mimetype)) {
 
             return cb(new Error("Only image and videos files are allowed"));
         }
@@ -45,7 +45,7 @@ export const multipleImageUpload = multer({
     limits : {fileSize: 30 * 1024 *1024},
     fileFilter: (req, file, cb) => {
         if (!file) return cb(null, true);
-        if (!allowedImageMimeTypes.includes(file.mimetype)) {
+        if (!allowedMimeTypes.includes(file.mimetype)) {
           
             return cb(new Error("Only image files are allowed"));
         }
