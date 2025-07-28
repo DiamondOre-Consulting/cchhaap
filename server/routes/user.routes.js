@@ -8,6 +8,8 @@ import { removeItemFromCartParamsSchema, updateCartParamsSchema } from "../valid
 import { getCart, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
 import { createOrder } from "../controllers/order.controller.js"
 import { createOrderBodySchema, createOrderQuerySchema } from "../validator/order.validator.js"
+import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
+import { deleteProductParamsSchema, getAdminAllProductsParamsSchema } from "../validator/admin.product.validator.js"
 
 
 
@@ -86,6 +88,14 @@ userRouter.put('/update-cart/:quantity/:productId/:variationId',userMiddleware,v
       query: createOrderQuerySchema,
       body: createOrderBodySchema
  }),createOrder) 
+
+
+
+ userRouter.get('/get-all-product/:limit/:page',validate({
+   params:getAdminAllProductsParamsSchema
+}),getAdminAllProducts)
+
+userRouter.get('/get-single-product/:productId',validate({params:deleteProductParamsSchema}),getAdminSingleProduct)
 
 
 
