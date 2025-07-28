@@ -2,10 +2,15 @@ import Cart from "../models/cart.model.js";
 import ApiError from "../utils/apiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import Coupon from "../models/coupon.model.js";
-import Order from "../models/orders.model.js";
-import { sendMail } from "../utils/mail.utils.js";
+
+
 import Product from "../models/product.model.js";
 import sendResponse from "../utils/sendResponse.js";
+import Order from "../models/order.model.js";
+import { sendMail } from "../utils/mail.util.js";
+
+
+
 
 
 
