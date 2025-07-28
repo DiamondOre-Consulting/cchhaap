@@ -91,7 +91,7 @@ userRouter.put('/update-cart/:quantity/:productId/:variationId',userMiddleware,v
 
 
 
- userRouter.get('/get-all-product/:limit/:page',validate({
+userRouter.get('/get-all-product/:limit/:page',validate({
    params:getAdminAllProductsParamsSchema
 }),getAdminAllProducts)
 

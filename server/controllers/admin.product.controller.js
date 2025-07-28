@@ -195,14 +195,36 @@ export const editProduct = asyncHandler(async (req, res) => {
   // 3. Process file uploads
   const groupedUploads = await multipleFileUpload(req.files, "products");
   const imagesToDelete = [];
+  const variationsArray = Array.isArray(variations) ? variations : [];
 
-  // 4. Prepare updated variations with proper image handling
-  const updatedVariations = variations.map((variation, index) => {
-    const existingVariation = existingProduct.variations.id(variation._id) || {};
-    
+  // 4. Prepare updated variations
+  // Track existing variation IDs for removal detection
+  const incomingVariationIds = variationsArray.filter(v => v._id).map(v => v._id.toString());
+  const existingVariationIds = existingProduct.variations.map(v => v._id.toString());
+
+  // Find removed variations and schedule their images for deletion
+  existingProduct.variations.forEach(existingVar => {
+    if (!incomingVariationIds.includes(existingVar._id.toString())) {
+      // Remove all images for this variation
+      if (existingVar.thumbnailImage?.publicId) {
+        imagesToDelete.push(existingVar.thumbnailImage.publicId);
+      }
+      if (Array.isArray(existingVar.images)) {
+        existingVar.images.forEach(img => {
+          if (img.publicId) imagesToDelete.push(img.publicId);
+        });
+      }
+    }
+  });
+
+  // Build updated variations array
+  const updatedVariations = variationsArray.map((variation, index) => {
+    let existingVariation = variation._id
+      ? existingProduct.variations.id(variation._id)
+      : null;
     // Handle thumbnail image
     const thumbnailField = `variations[${index}][thumbnailImage]`;
-    let thumbnailImage = existingVariation.thumbnailImage;
+    let thumbnailImage = existingVariation?.thumbnailImage || null;
     if (groupedUploads[thumbnailField]?.[0]) {
       // Delete old thumbnail if it exists
       if (thumbnailImage?.publicId) {
@@ -210,38 +232,24 @@ export const editProduct = asyncHandler(async (req, res) => {
       }
       thumbnailImage = groupedUploads[thumbnailField][0];
     }
-
-    // Handle multiple images with unique ID logic
+    // Handle images
     const imagesField = `variations[${index}][images]`;
     let updatedImages = [];
-    
-    // Filter out deleted images (those not present in incoming variation)
-    const existingImages = existingVariation.images || [];
+    const incomingImages = Array.isArray(variation.images) ? variation.images : [];
+    const existingImages = existingVariation?.images || [];
+    // Remove deleted images
     existingImages.forEach(existingImg => {
-      const isImageKept = variation.images.some(
-        img => img.uniqueId === existingImg.uniqueId
-      );
-      
+      const isImageKept = incomingImages.some(img => img.uniqueId === existingImg.uniqueId);
       if (!isImageKept && existingImg.publicId) {
         imagesToDelete.push(existingImg.publicId);
       }
     });
-
-    // Process new/updated images
+    // Add/keep images
     if (groupedUploads[imagesField]) {
-      updatedImages = variation.images.map(img => {
-        // Find existing image by uniqueId
-        const existingImg = existingImages.find(
-          ei => ei.uniqueId === img.uniqueId
-        );
-        
-        // Find uploaded file by uniqueId (fileName)
-        const uploadedFile = groupedUploads[imagesField].find(
-          uf => uf.uniqueId === img.uniqueId
-        );
-
+      updatedImages = incomingImages.map(img => {
+        const existingImg = existingImages.find(ei => ei.uniqueId === img.uniqueId);
+        const uploadedFile = groupedUploads[imagesField].find(uf => uf.uniqueId === img.uniqueId);
         if (uploadedFile) {
-          // New or updated image
           if (existingImg?.publicId) {
             imagesToDelete.push(existingImg.publicId);
           }
@@ -252,39 +260,38 @@ export const editProduct = asyncHandler(async (req, res) => {
             uniqueId: img.uniqueId
           };
         } else if (existingImg) {
-          // Existing image not being updated
           return existingImg;
         }
         return img;
       }).filter(Boolean);
     } else {
-      // No new images uploaded, keep existing ones that match uniqueIds
-      updatedImages = variation.images.map(img => {
+      updatedImages = incomingImages.map(img => {
         return existingImages.find(ei => ei.uniqueId === img.uniqueId) || img;
       });
     }
-
+    // Merge all fields
     return {
-      ...existingVariation.toObject(),
+      ...(existingVariation ? existingVariation.toObject() : {}),
       ...variation,
       thumbnailImage,
       images: updatedImages
     };
   });
 
-  // 5. Update product data
+  // 5. Update product data (only update fields present in request)
+  const updateData = {};
+  if (productName !== undefined) updateData.productName = productName;
+  if (brandName !== undefined) updateData.brandName = brandName;
+  if (category !== undefined) updateData.category = category;
+  if (subCategory !== undefined) updateData.subCategory = subCategory;
+  if (description !== undefined) updateData.description = description;
+  if (sku !== undefined) updateData.sku = sku;
+  if (isActive !== undefined) updateData.isActive = isActive;
+  updateData.variations = updatedVariations;
+
   const updatedProduct = await Product.findByIdAndUpdate(
     productId,
-    {
-      productName: productName || existingProduct.productName,
-      brandName: brandName || existingProduct.brandName,
-      category: category || existingProduct.category,
-      subCategory: subCategory || existingProduct.subCategory,
-      description: description || existingProduct.description,
-      sku: sku || existingProduct.sku,
-      isActive: isActive !== undefined ? isActive : existingProduct.isActive,
-      variations: updatedVariations
-    },
+    updateData,
     { new: true, runValidators: true }
   );
 
