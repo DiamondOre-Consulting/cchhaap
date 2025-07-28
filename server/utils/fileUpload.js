@@ -20,15 +20,21 @@ export const fileUpload = async (fileBuffer, folder) => {
 };
 
 // Delete a file by publicId
-export const fileDestroy = async (publicId) => {
+export const fileDestroy = async (publicId, strict = false) => {
   try {
     return new Promise((resolve, reject) => {
       cloudinary.v2.uploader.destroy(
         publicId,
-        { resource_type: "auto" }, // ✅ ensure videos can be deleted
+        { resource_type: "auto" },
         (error, result) => {
           if (error || result.result !== "ok") {
-            return reject(new ApiError("File deletion failed", 500));
+            console.error("Cloudinary deletion error:", error, result);
+            if (strict) {
+              return reject(new ApiError("File deletion failed", 500));
+            } else {
+              // Non-strict: log and resolve
+              return resolve({ success: false, message: "File deletion failed", error, result });
+            }
           }
           resolve({ success: true, message: "File deleted successfully" });
         }
@@ -36,7 +42,8 @@ export const fileDestroy = async (publicId) => {
     });
   } catch (err) {
     console.log(err);
-    throw new ApiError("Error deleting file", 500);
+    if (strict) throw new ApiError("Error deleting file", 500);
+    return { success: false, message: "Error deleting file", error: err };
   }
 };
 
