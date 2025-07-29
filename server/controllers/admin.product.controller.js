@@ -24,8 +24,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   } = req.body;
 
   console.log(variations[0])
-
-  return
+console.log(req.files)
 
   // Convert null prototype objects to plain objects
   const parsedVariations = variations.map(variation => ({
@@ -43,7 +42,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
   const variationWithImages = parsedVariations.map((variation, index) => {
     // Correct field name patterns
-    const thumbnailField = `variations[${index}][thumbnailImage]`;
+    const thumbnailField = `variations[${index}][thumbnailImage][file]`;
     const imagesField = `variations[${index}][images]`;
     
     const thumbnailImage = groupedUploads[thumbnailField]?.[0] || null;
@@ -137,7 +136,7 @@ export const getAdminAllProducts = asyncHandler(async (req, res) => {
 
     const products = await Product.find({}).populate("category").limit(limit).skip((page-1)*limit).sort({createdAt:-1})
 
-
+console.log(products[0].variations[0])
     if (products.length === 0) {
         throw new ApiError("No products found", 404);
     }
@@ -213,7 +212,7 @@ console.log("groupedUploads",groupedUploads)
   const existingVariationIds = existingProduct.variations.map(v => v._id.toString());
 
   console.log("incomingVariationIds",incomingVariationIds)
-  console.log("incomingVariationIds",existingVariationIds)
+  console.log("existingVariationIds",existingVariationIds)
 
   // Find removed variations and schedule their images for deletion
   existingProduct.variations.forEach(existingVar => {

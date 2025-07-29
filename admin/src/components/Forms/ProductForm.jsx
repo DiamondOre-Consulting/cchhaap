@@ -16,6 +16,8 @@ const ProductForm = ({
   singleData,
   handleGetAllProducts
 }) => {
+
+  console.log(singleData)
   const [categories, setCategories] = useState([]);
   const [subOptions, setSubOptions] = useState([]);
 
@@ -72,7 +74,7 @@ const ProductForm = ({
   }, [watch("category"), categories]);
 
   const getUniqueCode = () => {
-    return uuidv4().slice(0, 10);
+    return uuidv4().slice(0, 8);
   };
 
   const getFileExtention = (fileName) => {
@@ -93,29 +95,31 @@ const ProductForm = ({
       const fileName = generateFileName(file, uniqueCode);
       console.log("filename", fileName);
       const previewUrl = URL.createObjectURL(file);
+      console.log(new File([file], fileName, { type: file.type }))
       setValue(`variations.${idx}.thumbnailImage`, {
         secureUrl: previewUrl,
         publicId: "",
         uniqueId: uniqueCode,
-        file: file, // Store the actual file object
+        file: new File([file], fileName, { type: file.type }), // Store the actual file object
       });
     }
   };
 
   const handleMediaChange = (e, idx) => {
     const files = Array.from(e.target.files);
-    const uniqueCode =
-      getValues(`variations.${idx}.uniqueCode`) || getUniqueCode();
-
+    
+   
     const currentMedia = getValues(`variations.${idx}.images`) || [];
-
     const newMedia = files.map((file, i) => {
-      const fileName = generateFileName(file, `${uniqueCode}-${i}`);
+    const uniqueCode =getValues(`variations.${idx}.uniqueCode`) || getUniqueCode();
+    
+      const fileName = generateFileName(file, `${uniqueCode}`);
+     
       return {
         secureUrl: URL.createObjectURL(file),
         publicId: "",
         uniqueId: uniqueCode,
-        file: file,
+        file: new File([file], fileName, { type: file.type }), // Store the actual file object,
         type: file.type.startsWith("video") ? "video" : "image",
       };
     });
@@ -248,6 +252,10 @@ console.log(1)
           `variations[${index}][thumbnailImage][uniqueId]`,
           variation.thumbnailImage.uniqueId
         );
+        formData.append(
+          `variations[${index}][thumbnailImage][file]`,
+          variation.thumbnailImage.file
+        );
       }
 
       console.log(3)
@@ -258,7 +266,9 @@ console.log(1)
       variation.images.forEach((img, imgIndex) => {
         if (img.file) {
           console.log(5)
+            formData.append(`variations[${index}][images]`, img.file)
           formData.append(`variations[${index}][images][${imgIndex}][uniqueId]`, img.uniqueId);
+          // formData.append(`variations[${index}][images][${imgIndex}][file]`, img.file);
         }
       });
     }
@@ -331,6 +341,7 @@ console.log(7)
 
   useEffect(() => {
     if (singleData && categories.length > 0) {
+      console.log(singleData)
       const formattedData = {
         productName: singleData.productName || "",
         brandName: singleData.brandName || "",
@@ -371,7 +382,7 @@ console.log(7)
           })),
         })),
       };
-
+console.log("hello",formattedData)
       reset(formattedData);
     }
   }, [singleData, categories, reset]);
