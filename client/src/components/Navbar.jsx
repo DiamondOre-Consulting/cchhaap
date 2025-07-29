@@ -22,8 +22,9 @@ import {
 } from "@/components/ui/popover";
 import CartDrawer from "./CartDrawer";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SearchDrawer from "./SearchDrawer";
+import { useSelector } from "react-redux";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
@@ -84,8 +85,6 @@ const Navbar = () => {
     };
   }, []);
 
- 
-
   const handleOpenCart = () => {
     setCartDrawer((prev) => !prev);
   };
@@ -94,14 +93,21 @@ const Navbar = () => {
     setSearchDrawer((prev) => !prev);
   };
 
+  const userState = useSelector((state) => state?.user) || {};
+  const navigate = useNavigate()
+  const { user, isLoggedIn } = userState;
+  console.log("user data", user, isLoggedIn);
+
   return (
     <div>
       <div className="  flex bg-c2  text-white justify-center items-center py-2 w-full">
         <p> छाप - Live Now</p>
       </div>
-      <header className={`${
-            isSticky ? "fixed top-0 left-0 w-full bg-[#edb141]  z-20" : ""
-          }  px-4 md:px-6 `}>
+      <header
+        className={`${
+          isSticky ? "fixed top-0 left-0 w-full bg-[#edb141]  z-20" : ""
+        }  px-4 md:px-6 `}
+      >
         <div className="flex  h-16 items-center justify-between gap-4">
           <div className="flex items-center   w-full">
             <Popover>
@@ -195,7 +201,7 @@ const Navbar = () => {
               </PopoverContent>
             </Popover>
 
-            <Link to={'/'} className="text-primary text-white text-4xl">
+            <Link to={"/"} className="text-primary text-white text-4xl">
               छाप
             </Link>
           </div>
@@ -224,7 +230,6 @@ const Navbar = () => {
                                   href={item.href}
                                   className="py-1.5"
                                 >
-                                
                                   {link.type === "icon" && "icon" in item && (
                                     <div className="flex items-center gap-2">
                                       {item.icon === "BookOpenIcon" && (
@@ -291,9 +296,29 @@ const Navbar = () => {
 
           <div className="flex cursor-pointer  justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-white  gap-2">
             <IoSearch onClick={handleOpenSearch} />
-           <Link to={'/my-account'}><FaRegUser /></Link>
-           <Link to={'/my-account'}> <FaRegHeart /></Link>
-            <AiOutlineShoppingCart onClick={handleOpenCart} />
+          
+              <FaRegUser  onClick={()=>{
+                if(!isLoggedIn){
+                  navigate('/login')
+                }
+                else{
+                  navigate('/my-account')
+                }
+              }}/>
+           
+            <Link to={"/my-account"}>
+              {" "}
+              <FaRegHeart />
+            </Link>
+            <AiOutlineShoppingCart onClick={()=>{
+              if(!isLoggedIn){
+                  navigate('/login')
+              }else{
+                 {handleOpenCart}
+              }
+            }}
+
+            />
           </div>
         </div>
       </header>

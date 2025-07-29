@@ -20,7 +20,7 @@ const App = () => {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path='/products' element={<Products/>}/>
-          <Route path="/each-product" element={<EachProductPage/>} /> 
+          {/* <Route path="/each-product" element={<EachProductPage/>} />  */}
           <Route path='/my-account' element={<ProfilePage/>}/>
           <Route path='/login' element={<Login/>}/>
           <Route path='/signup' element={<Signup/>}/>
@@ -28,7 +28,7 @@ const App = () => {
             path="/reset-password/:token/:email/:expiry"
             element={<ResetPassword />}
           />
-      
+          <Route path='/each-product/:id' element={<EachProductPage/>}/>
         </Routes>
       </HomeLayout>
  

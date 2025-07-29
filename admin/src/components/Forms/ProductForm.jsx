@@ -84,6 +84,7 @@ const ProductForm = ({
     return `${uniqueCode}.${fileExtension}`;
   };
 
+  const [thumbnailImage , setThumbnailImage] = useState();
   const handleThumbnailChange = (e, idx) => {
     const file = e.target.files[0];
     if (file) {
@@ -95,7 +96,7 @@ const ProductForm = ({
       setValue(`variations.${idx}.thumbnailImage`, {
         secureUrl: previewUrl,
         publicId: "",
-        uniqueId: fileName,
+        uniqueId: uniqueCode,
         file: file, // Store the actual file object
       });
     }
@@ -113,7 +114,7 @@ const ProductForm = ({
       return {
         secureUrl: URL.createObjectURL(file),
         publicId: "",
-        uniqueId: fileName,
+        uniqueId: uniqueCode,
         file: file,
         type: file.type.startsWith("video") ? "video" : "image",
       };
@@ -240,33 +241,41 @@ const ProductForm = ({
           `variations[${index}][attributeDefinition]`,
           variation.attributeDefinition
         );
-
+console.log(1)
       if (variation.thumbnailImage?.file) {
+        console.log(2)
         formData.append(
-          `variations[${index}][thumbnailImage]`,
-          variation.thumbnailImage.file
+          `variations[${index}][thumbnailImage][uniqueId]`,
+          variation.thumbnailImage.uniqueId
         );
       }
 
+      console.log(3)
+
       // Append image files if they exist
       if (variation.images && variation.images.length > 0) {
-        variation.images.forEach((img, imgIndex) => {
-          if (img.file) {
-            formData.append(`variations[${index}][images]`, img.file);
-          }
-        });
-      }
+        console.log(4)
+      variation.images.forEach((img, imgIndex) => {
+        if (img.file) {
+          console.log(5)
+          formData.append(`variations[${index}][images][${imgIndex}][uniqueId]`, img.uniqueId);
+        }
+      });
+    }
+console.log(6)
 
       Object.entries(variation.attributes || {}).forEach(([key, value]) => {
         formData.append(`variations[${index}][attributes][${key}]`, value);
       });
     });
     console.log("form Data", data);
-
+console.log(7)
     console.log("FormData contents:");
     for (let [key, value] of formData.entries()) {
       console.log(key, value);
     }
+
+    console.log(8)
     console.log("Data object:", data);
     console.log("Variations:", data.variations);
 
@@ -277,9 +286,9 @@ const ProductForm = ({
         res = await dispatch(editProduct({ id: singleData._id, formData }));
       } else {
         res = await dispatch(createProduct(formData));
-        console.log("Response:", resp);
+        console.log("Response:", res);
 
-        if (resp.payload) {
+        if (res.payload) {
           console.log("Product created successfully!");
           // You can add success toast or redirect here
         }
@@ -287,7 +296,7 @@ const ProductForm = ({
     } catch (error) {
       console.error("Error creating product:", error);
     } finally {
-      setProductPopUp(false);
+      // setProductPopUp(false);
       await handleGetAllProducts()
       
     }

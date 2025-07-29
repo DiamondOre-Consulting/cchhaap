@@ -1,7 +1,10 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
+import { useDispatch } from "react-redux";
+import { getSingleProduct } from "@/Redux/Slices/productsSlice";
+import { useParams } from "react-router-dom";
 
 const product = {
   title: "Elusha Lime Organza Kurta Set",
@@ -64,32 +67,40 @@ const product = {
 };
 
 const ProductPreviews = ({ previews }) => {
+  // console.log("Previews:", previews);
+
   const [index, setIndex] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isZoomed, setIsZoomed] = useState(false);
-  const isVideo = (item) => !!item.previewVedio;
+
+  const isVideo = (url) => {
+    return url?.toLowerCase().endsWith(".mp4");
+  };
+
+  const currentPreview = previews?.[index];
+  const isCurrentVideo = isVideo(currentPreview?.secureUrl);
+
   return (
     <div className="lg:mr-6">
-      <div className="text-center flex gap-8  overflow-hidden m-2">
+      <div className="text-center flex gap-8 overflow-hidden m-2">
         <ul className="flex flex-nowrap gap-3 flex-col">
-          {previews.map((preview, i) => {
-            const isCurrent = isVideo(preview)
-              ? preview.previewVedio === previews[index].previewVedio
-              : preview.previewUrl === previews[index].previewUrl;
+          {previews?.map((preview, i) => {
+            const isSelected = i === index;
+            const url = preview?.secureUrl;
 
             return (
               <li
-                key={i}
+                key={preview._id || i}
                 className={`${
-                  isCurrent
+                  isSelected
                     ? "border-2 border-[#620A1A]"
                     : "border-2 border-transparent"
                 } rounded overflow-hidden p-1 cursor-pointer`}
                 onClick={() => setIndex(i)}
               >
-                {isVideo(preview) ? (
+                {isVideo(url) ? (
                   <video
-                    src={preview.thumbVedio}
+                    src={url}
                     className="w-auto max-h-[150px] rounded object-cover"
                     muted
                     playsInline
@@ -98,7 +109,7 @@ const ProductPreviews = ({ previews }) => {
                   />
                 ) : (
                   <img
-                    src={preview.thumbUrl}
+                    src={url}
                     alt=""
                     className="w-auto max-h-[150px] rounded object-cover"
                   />
@@ -107,10 +118,11 @@ const ProductPreviews = ({ previews }) => {
             );
           })}
         </ul>
+
         <div className="max-w-[650px] w-full">
-          {isVideo(previews[index]) ? (
+          {isCurrentVideo ? (
             <video
-              src={previews[index].previewVedio}
+              src={currentPreview?.secureUrl}
               className="w-full max-h-[650px] object-cover rounded"
               controls
               autoPlay
@@ -119,7 +131,7 @@ const ProductPreviews = ({ previews }) => {
           ) : (
             <div className="overflow-hidden">
               <img
-                src={previews[index].previewUrl}
+                src={currentPreview?.secureUrl}
                 alt=""
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
@@ -130,7 +142,7 @@ const ProductPreviews = ({ previews }) => {
                   const y = ((e.clientY - top) / height) * 100;
                   setMousePosition({ x, y });
                 }}
-                className=" max-w-[600px] overflow-hidden object-cover max-w-full w-full"
+                className="max-w-[600px] object-cover w-full"
                 style={{
                   transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
                   transform: isZoomed ? "scale(4)" : "scale(1)",
@@ -144,9 +156,7 @@ const ProductPreviews = ({ previews }) => {
   );
 };
 
-ProductPreviews.propTypes = {
-  previews: PropTypes.array.isRequired,
-};
+
 
 const ColorVariant = () => {
   const [selectedColor, setSelectedColor] = useState("Multi");
@@ -231,6 +241,24 @@ const SizeVariant = () => {
 };
 
 const EachProductPage = () => {
+ const {id} = useParams()
+  const dispatch = useDispatch()
+  const [singleData , setSingleData] = useState();
+
+  const handleGetSingleProduct = async () => {
+    try {
+      const response = await dispatch(getSingleProduct(id));
+      console.log("single",response)
+      setSingleData(response?.payload?.data)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    handleGetSingleProduct();
+  }, []);
+
   const [formData, setFormData] = useState({
     color: "Multi",
     size: "XL",
@@ -253,19 +281,19 @@ const EachProductPage = () => {
   };
 
   const [qty, setQty] = useState(0);
-
+console.log(singleData, "sddfg")
   return (
     <div>
       <section className="py-14 md:py-10    relative overflow-hidden z-10">
         <div className="container px-6 md:px-20 mx-auto">
           <div className="grid grid-cols-5 gap-6">
             <div className="col-span-5 lg:col-span-3">
-              <ProductPreviews previews={product.previews} />
+              <ProductPreviews previews={singleData?.variations[0].images} />
             </div>
             <div className="col-span-2 lg:col-span-2">
               <div className="mb-4">
                 <h1 className="text-2xl leading-none md:text-4xl font-medium mb-4">
-                  {product.title}
+                  {singleData?.productName}
                 </h1>
                 <p className="opacity-70 mb-6">
                   {/* <span>{product.rating}</span>{" "} */}
@@ -283,7 +311,7 @@ const EachProductPage = () => {
                   <div className="flex items-center   gap-x-4">
                     <h3 className="text-2xl  font-medium">
                       {" "}
-                      {product.price.toLocaleString("en-US", {
+                      {singleData.variations[0].price.toLocaleString("en-US", {
                         style: "currency",
                         currency: "INR",
                       })}
@@ -306,7 +334,7 @@ const EachProductPage = () => {
 
                 <div className="w-full bg-white/40 mt-10 h-[1px]"></div>
                 <p className="text-red-400 text-sm py-2">
-                  Only 2 items left !{" "}
+                  Only {singleData?.variations[0].quantity} items left !{" "}
                 </p>
               </div>
 

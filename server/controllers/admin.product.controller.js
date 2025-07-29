@@ -23,7 +23,9 @@ export const createProduct = asyncHandler(async (req, res) => {
     variations,
   } = req.body;
 
-  console.log(variations)
+  console.log(variations[0])
+
+  return
 
   // Convert null prototype objects to plain objects
   const parsedVariations = variations.map(variation => ({
