@@ -35,6 +35,8 @@ export const createProduct = asyncHandler(async (req, res) => {
 
 
   const groupedUploads = await multipleFileUpload(req.files, "products");
+
+  console.log("groupedUploads",groupedUploads)
     
 
   const variationWithImages = parsedVariations.map((variation, index) => {
@@ -44,6 +46,9 @@ export const createProduct = asyncHandler(async (req, res) => {
     
     const thumbnailImage = groupedUploads[thumbnailField]?.[0] || null;
     const images = groupedUploads[imagesField] || [];
+
+    console.log("thumbnailImage",thumbnailImage)
+    console.log("image",images)
 
     return {
       ...variation,
@@ -195,6 +200,8 @@ export const editProduct = asyncHandler(async (req, res) => {
 console.log(req.files)
   // 3. Process file uploads
   const groupedUploads = await multipleFileUpload(req.files, "products");
+
+console.log("groupedUploads",groupedUploads)
   const imagesToDelete = [];
   const variationsArray = Array.isArray(variations) ? variations : [];
 
@@ -202,6 +209,9 @@ console.log(req.files)
   // Track existing variation IDs for removal detection
   const incomingVariationIds = variationsArray.filter(v => v._id).map(v => v._id.toString());
   const existingVariationIds = existingProduct.variations.map(v => v._id.toString());
+
+  console.log("incomingVariationIds",incomingVariationIds)
+  console.log("incomingVariationIds",existingVariationIds)
 
   // Find removed variations and schedule their images for deletion
   existingProduct.variations.forEach(existingVar => {
@@ -232,14 +242,28 @@ console.log(req.files)
         imagesToDelete.push(thumbnailImage.publicId);
       }
       thumbnailImage = groupedUploads[thumbnailField][0];
-    }
+    } else if (variation.thumbnailImage !== undefined) {
+      // If explicitly set to null or removed, remove thumbnail
+      thumbnailImage = variation.thumbnailImage;
+    } // else preserve existing
+
     // Handle images
     const imagesField = `variations[${index}][images]`;
-    let updatedImages = [];
-    // If images is undefined, keep existing images
-    if (variation.images === undefined) {
-      updatedImages = existingVariation?.images || [];
-    } else {
+    let updatedImages = existingVariation?.images || [];
+    if (groupedUploads[imagesField] && groupedUploads[imagesField].length > 0) {
+      // New images uploaded: delete all old images and use only new uploads for this variation
+      if (existingVariation?.images && Array.isArray(existingVariation.images)) {
+        existingVariation.images.forEach(img => {
+          if (img.publicId) imagesToDelete.push(img.publicId);
+        });
+      }
+      updatedImages = groupedUploads[imagesField].map(uploadedFile => ({
+        publicId: uploadedFile.publicId || uploadedFile.uploadResult?.publicId,
+        secureUrl: uploadedFile.secureUrl || uploadedFile.uploadResult?.secureUrl,
+        uniqueId: uploadedFile.uniqueId || (uploadedFile.uploadResult?.publicId || "")
+      }));
+    } else if (variation.images !== undefined) {
+      // images array is present but no new uploads: update only this variation's images
       const incomingImages = Array.isArray(variation.images) ? variation.images : [];
       const existingImages = existingVariation?.images || [];
       // Remove deleted images
@@ -249,32 +273,12 @@ console.log(req.files)
           imagesToDelete.push(existingImg.publicId);
         }
       });
-      // Add/keep images
-      if (groupedUploads[imagesField]) {
-        updatedImages = incomingImages.map(img => {
-          const existingImg = existingImages.find(ei => ei.uniqueId === img.uniqueId);
-          const uploadedFile = groupedUploads[imagesField].find(uf => uf.uniqueId === img.uniqueId);
-          if (uploadedFile) {
-            if (existingImg?.publicId) {
-              imagesToDelete.push(existingImg.publicId);
-            }
-            return {
-              ...img,
-              publicId: uploadedFile.uploadResult.publicId,
-              secureUrl: uploadedFile.uploadResult.secureUrl,
-              uniqueId: img.uniqueId
-            };
-          } else if (existingImg) {
-            return existingImg;
-          }
-          return img;
-        }).filter(Boolean);
-      } else {
-        updatedImages = incomingImages.map(img => {
-          return existingImages.find(ei => ei.uniqueId === img.uniqueId) || img;
-        });
-      }
-    }
+      updatedImages = incomingImages.map(img => {
+        const existingImg = existingImages.find(ei => ei.uniqueId === img.uniqueId);
+        return existingImg || img;
+      });
+    } // else, keep existing images
+
     // Merge all fields
     return {
       ...(existingVariation ? existingVariation.toObject() : {}),
@@ -305,8 +309,9 @@ console.log(req.files)
   console.log( "1", imagesToDelete)
   if (imagesToDelete.length > 0) {
 console.log("2" , imagesToDelete)
-    Promise.all(imagesToDelete.map(publicId => fileDestroy(publicId)))
+   const res= Promise.all(imagesToDelete.map(publicId => fileDestroy(publicId)))
       .catch(err => console.error("Error deleting old images:", err));
+      console.log("res",res)
   }
 
   return sendResponse(res, 200, updatedProduct, "Product updated successfully");

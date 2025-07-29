@@ -110,7 +110,7 @@ const productSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-productSchema.index({ sku: 1 }, { unique: true });
+
 
 const Product = mongoose.model("Product", productSchema);
 
