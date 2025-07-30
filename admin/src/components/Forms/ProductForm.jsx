@@ -324,10 +324,7 @@ const ProductForm = ({
     }
   };
 
-console.log("singleData", singleData.variations.map(v => {
-  console.log(v._id);
-  return v._id; // You need to return something from the map callback
-}));
+
 
   useEffect(() => {
     if (singleData && categories.length > 0) {

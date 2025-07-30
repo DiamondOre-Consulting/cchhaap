@@ -176,7 +176,7 @@ const ProductItem = ({ product }) => {
               </SwiperSlide>
             ))}
 
-            <Link to={'/each-product/68874cdf76806e1f170137ca'} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white  px-6 py-2 z-40 shadow-md">
+            <Link to={'/each-product/68886bfa6e557e27a8ef3e53'} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white  px-6 py-2 z-40 shadow-md">
               Quick View
             </Link>
           </Swiper>

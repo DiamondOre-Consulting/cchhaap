@@ -1,10 +1,71 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  userGetCart,
+  userRomoveProductFromCart,
+  userUpdateCart,
+} from "@/Redux/Slices/cart";
 
 const CartDrawer = ({ isOpen, onClose }) => {
-    const [qty, setQty] = useState(1);
-  
+  const [qty, setQty] = useState(0);
+  const dispatch = useDispatch();
+  const [cartData, setCartData] = useState([]);
+  const [customLoader, setCustomLoader] = useState(true);
+  const navigate = useNavigate();
+  const { user, isLoggedin } = useSelector((state) => state?.user);
+  const [variationId, setVariationId] = useState("");
+  console.log(user);
+
+  const handleGetCart = async () => {
+    try {
+      setCustomLoader(true);
+      const response = await dispatch(userGetCart());
+      // setCartData(response)
+      setCartData(response?.payload?.data || []);
+      console.log("getting cart data", response);
+      if (response?.payload?.data?.products.length === 0) {
+        navigate("/");
+        onClose();
+        // await dispatch(getNavbarCartCount());
+      }
+    } catch (error) {
+      console.error("Error fetching cart:", error);
+    } finally {
+      setCustomLoader(false);
+    }
+  };
+  useEffect(() => {
+    if (isOpen) {
+      handleGetCart();
+    }
+  }, [isOpen]);
+
+  const handleDeleteProductFromCart = async (productId) => {
+    try {
+      await dispatch(userRomoveProductFromCart(productId));
+
+      handleGetCart();
+    } catch (err) {
+      console.error("Error removing product:", err);
+    }
+  };
+
+  const updateCart = async (newQuantity, productId) => {
+    console.log(variationId);
+    // if (newQuantity < 1) return;
+    try {
+      await dispatch(
+        userUpdateCart({ quantity: newQuantity, productId, variationId })
+      );
+      handleGetCart();
+    } catch (error) {
+      console.error("Error updating cart:", error);
+    }
+  };
+
+  console.log("cart data thihs ", cartData);
   return (
     <div>
       <>
@@ -20,7 +81,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex py-4 shadow-sm px-4 text-xl justify-between">
+          <div className="flex py-4 fixed w-full top-0 shadow-sm px-4 bg-white text-black text-xl justify-between">
             <div className="flex items-center gap-x-2">
               <AiOutlineShoppingCart />
               Cart
@@ -30,84 +91,150 @@ const CartDrawer = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          <div className="flex flex-col gap-y-6 py-6">
-            <div className="flex  border-black px-8 gap-x-4 items-center">
-              <img
-                src="https://shopmulmul.com/cdn/shop/files/2_dd55b873-fc4f-4601-ae43-f44a0b851462.jpg?v=1752212130&width=700"
-                className="max-h-32 object-cover "
-                alt=""
-              />
-              <div className="flex  w-full justify-between">
-                <div className="flex flex-col">
-                  <p className="text-sm">Elusha Lime Organza Kura Set</p>
-                  <p>XS || XS</p>
+          <div className="flex flex-col bg-white gap-y-6 py-6 text-black pt-20 h-full">
+            {cartData?.products?.map((item) => {
+              // Find the exact variation that matches the variationId in the cart
+              const variation =
+                item.productId.variations.find(
+                  (v) => v._id === item.variationId
+                ) || item.productId.variations[0];
+              return (
+                <div
+                  key={item._id}
+                  className="flex border-black px-8 gap-x-4 items-center"
+                >
+                  <img
+                    src={
+                      variation?.thumbnailImage?.secureUrl ||
+                      "https://via.placeholder.com/150"
+                    }
+                    className="max-h-32 object-cover"
+                    alt={item.productId.productName}
+                  />
+                  <div className="flex w-full justify-between">
+                    <div className="flex flex-col">
+                      <p className="text-sm font-medium">
+                        {item.productId.productName}
+                      </p>
+                      <p className="text-sm text-gray-600">
+                        {variation?.color?.name || "Color not specified"} |{" "}
+                        {variation?.size || "Size not specified"}
+                      </p>
 
-                  <div className="flex items-end w-full gap-x-4 mt-2">
-                   <div className="flex items-center w-full border mt-1 border-black/30 px-4  max-w-[200px] justify-between text-black/50">
-                      <button
-                        type="button"
-                        onClick={() => setQty(Math.max(qty - 1, 0))}
-                        className="text-2xl font-bold px-2 cursor-pointer"
-                      >
-                        -
-                      </button>
-                      <span className="text-lg">{qty}</span>
-                      <button
-                        type="button"
-                        onClick={() => setQty(qty + 1)}
-                        className="text-2xl font-bold px-2 cursor-pointer"
-                      >
-                        +
-                      </button>
+                      <div className="flex items-end w-full gap-x-4 mt-2">
+                        <div className="flex items-center w-full border mt-1 border-black/30 px-4 max-w-[200px] justify-between text-black/50">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setVariationId(item.variationId);
+                              updateCart(
+                                item.quantity - 1,
+                                item.productId._id,
+                                item.variationId
+                              );
+                            }}
+                            className="text-2xl font-bold px-2 cursor-pointer hover:text-black"
+                          >
+                            -
+                          </button>
+                          <span className="text-lg">{item.quantity}</span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setVariationId(item.variationId);
+                              updateCart(
+                                item.quantity + 1,
+                                item.productId._id,
+                                item.variationId
+                              );
+                            }}
+                            className="text-2xl font-bold px-2 cursor-pointer hover:text-black"
+                          >
+                            +
+                          </button>
+                        </div>
+
+                        <button
+                          onClick={() =>
+                            handleDeleteProductFromCart(item?.productId?._id)
+                          }
+                          className="underline text-xs text-black/60 hover:text-red-500"
+                        >
+                          Remove
+                        </button>
+                      </div>
                     </div>
 
-                    <p className="underline text-xs text-black/60">Remove</p>
+                    <div className="text-right">
+                      <p className="font-medium">
+                        ₹
+                        {(variation?.price * item.quantity).toLocaleString(
+                          "en-IN"
+                        )}
+                      </p>
+                      {variation?.discountPrice > 0 && (
+                        <p className="text-sm line-through text-gray-500">
+                          ₹
+                          {(
+                            variation.price + variation.discountPrice
+                          ).toLocaleString("en-IN")}
+                        </p>
+                      )}
+                      <p className="text-xs text-gray-500">
+                        {item.quantity} × ₹
+                        {variation?.price?.toLocaleString("en-IN")}
+                      </p>
                     </div>
+                  </div>
                 </div>
+              );
+            })}
 
-                <div>₹ 100,00</div>
-              </div>
-            </div>
-
-
-
-               <div className="flex  border-black px-8 gap-x-4 items-center">
-              <img
-                src="https://shopmulmul.com/cdn/shop/files/2_dd55b873-fc4f-4601-ae43-f44a0b851462.jpg?v=1752212130&width=700"
-                className="max-h-32 object-cover "
-                alt=""
-              />
-              <div className="flex  w-full justify-between">
-                <div className="flex flex-col">
-                  <p className="text-sm">Elusha Lime Organza Kura Set</p>
-                  <p>XS || XS</p>
-
-                  <div className="flex items-end w-full gap-x-4 mt-2">
-                   <div className="flex items-center w-full border mt-1 border-black/30 px-4  max-w-[200px] justify-between text-black/50">
-                      <button
-                        type="button"
-                        onClick={() => setQty(Math.max(qty - 1, 0))}
-                        className="text-2xl font-bold px-2 cursor-pointer"
-                      >
-                        -
-                      </button>
-                      <span className="text-lg">{qty}</span>
-                      <button
-                        type="button"
-                        onClick={() => setQty(qty + 1)}
-                        className="text-2xl font-bold px-2 cursor-pointer"
-                      >
-                        +
-                      </button>
-                    </div>
-
-                    <p className="underline text-xs text-black/60">Remove</p>
-                    </div>
+            {cartData?.products?.length > 0 ? (
+              <div className="absolute bottom-0 left-0 right-0 bg-white border-t p-4 mt-auto">
+                <div className="flex justify-between text-lg font-medium mb-4">
+                  <span>Subtotal:</span>
+                  <span>
+                    ₹
+                    {cartData.products
+                      .reduce((total, item) => {
+                        const variation = item.productId.variations.find(
+                          (v) => v._id === item.variationId
+                        );
+                        return (
+                          total +
+                          (variation?.price || item.price || 0) * item.quantity
+                        );
+                      }, 0)
+                      .toLocaleString("en-IN")}
+                  </span>
                 </div>
-
-                <div>₹ 100,00</div>
+                <button
+                  onClick={() => {
+                    navigate("/checkout");
+                    onClose();
+                  }}
+                  className="w-full bg-c1 text-white py-3 hover:bg-gray-800 transition-colors"
+                >
+                  Proceed to Checkout (
+                  {cartData.products.reduce(
+                    (total, item) => total + item.quantity,
+                    0
+                  )}{" "}
+                  items)
+                </button>
               </div>
-            </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center h-full">
+                <p className="text-lg mb-4">Your cart is empty</p>
+                <button
+                  onClick={onClose}
+                  className="bg-c1 text-white px-6 py-2 hover:bg-gray-800 transition-colors"
+                >
+                  Continue Shopping
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </>

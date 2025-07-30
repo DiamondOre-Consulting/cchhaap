@@ -19,7 +19,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
-          <div className="flex py-4 shadow-sm px-4 text-xl w-full justify-between">
+          <div className="flex py-4 shadow-sm px-4 text-xl text-black w-full justify-between">
             <div className="flex items-center gap-x-2">
               <CiSearch />
               <input
@@ -33,7 +33,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          <div className="flex flex-col gap-y-6 py-6">
+          <div className="flex flex-col  text-black gap-y-6 py-6">
             <div className="flex border-black px-8 gap-x-4 items-center">
               <img
                 src="https://shopmulmul.com/cdn/shop/files/2_dd55b873-fc4f-4601-ae43-f44a0b851462.jpg?v=1752212130&width=700"

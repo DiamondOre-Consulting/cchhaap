@@ -7,6 +7,8 @@ import { FaRegUser } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { FaRegHeart } from "react-icons/fa";
+import logo from "../assets/logo.png";
+
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -94,14 +96,17 @@ const Navbar = () => {
   };
 
   const userState = useSelector((state) => state?.user) || {};
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { user, isLoggedIn } = userState;
   console.log("user data", user, isLoggedIn);
 
   return (
     <div>
       <div className="  flex bg-c2  text-white justify-center items-center py-2 w-full">
-        <p> छाप - Live Now</p>
+        <p className="flex">
+          {" "}
+          <img src={logo} alt="" className="w-[36px]" />- Live Now
+        </p>
       </div>
       <header
         className={`${
@@ -202,7 +207,7 @@ const Navbar = () => {
             </Popover>
 
             <Link to={"/"} className="text-primary text-white text-4xl">
-              छाप
+              <img src={logo} alt="" className="w-18" />
             </Link>
           </div>
           <div className="flex items-center w-full justify-center  gap-6">
@@ -296,28 +301,31 @@ const Navbar = () => {
 
           <div className="flex cursor-pointer  justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-white  gap-2">
             <IoSearch onClick={handleOpenSearch} />
-          
-              <FaRegUser  onClick={()=>{
-                if(!isLoggedIn){
-                  navigate('/login')
+
+            <FaRegUser
+              onClick={() => {
+                if (!isLoggedIn) {
+                  navigate("/login");
+                } else {
+                  navigate("/my-account");
                 }
-                else{
-                  navigate('/my-account')
-                }
-              }}/>
-           
+              }}
+            />
+
             <Link to={"/my-account"}>
               {" "}
               <FaRegHeart />
             </Link>
-            <AiOutlineShoppingCart onClick={()=>{
-              if(!isLoggedIn){
-                  navigate('/login')
-              }else{
-                 {handleOpenCart}
-              }
-            }}
-
+            <AiOutlineShoppingCart
+            onClick={handleOpenCart}
+              // onClick={() => {
+              //   // handleOpenCart();
+              //   if(isLoggedIn){
+              //       navigate('/login')
+              //   }else{
+              //      handleOpenCart()
+              //   }
+              // }}
             />
           </div>
         </div>
