@@ -65,7 +65,7 @@
               const fileNameWithExtension = file.originalname;
               const fileName = fileNameWithExtension.split(".").slice(0, -1).join(".");
 
-              console.log(fileName)
+              // console.log(fileName)
 
               resolve({
                 fieldname: file.fieldname,

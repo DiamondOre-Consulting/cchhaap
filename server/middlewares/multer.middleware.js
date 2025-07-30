@@ -45,6 +45,7 @@ export const multipleImageUpload = multer({
     limits : {fileSize: 30 * 1024 *1024},
     fileFilter: (req, file, cb) => {
         if (!file) return cb(null, true);
+        // console.log("file mime type",file.mimetype)
         if (!allowedMimeTypes.includes(file.mimetype)) {
           
             return cb(new Error("Only image files are allowed"));

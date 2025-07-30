@@ -197,90 +197,126 @@ export const editProduct = asyncHandler(async (req, res) => {
       throw new ApiError(400, "SKU already exists");
     }
   }
-  console.log(req.body)
-console.log(req.files)
+
   // 3. Process file uploads
   const groupedUploads = await multipleFileUpload(req.files, "products");
-
-console.log("groupedUploads",groupedUploads)
+  // console.log("req.files",req.files)
+  // console.log(req.body.variations[0])
+  // console.log(req.body.variations[1])
+  // console.log("groupedUploads",groupedUploads)
   const imagesToDelete = [];
   const variationsArray = Array.isArray(variations) ? variations : [];
 
   // 4. Prepare updated variations
-  // Track existing variation IDs for removal detection
-  const incomingVariationIds = variationsArray.filter(v => v._id).map(v => v._id.toString());
-  const existingVariationIds = existingProduct.variations.map(v => v._id.toString());
-
-  console.log("incomingVariationIds",incomingVariationIds)
-  console.log("existingVariationIds",existingVariationIds)
-
-  // Find removed variations and schedule their images for deletion
-  existingProduct.variations.forEach(existingVar => {
-    if (!incomingVariationIds.includes(existingVar._id.toString())) {
-      // Remove all images for this variation
-      if (existingVar.thumbnailImage?.publicId) {
-        imagesToDelete.push(existingVar.thumbnailImage.publicId);
-      }
-      if (Array.isArray(existingVar.images)) {
-        existingVar.images.forEach(image => {
-          if (image.publicId) imagesToDelete.push(image.publicId);
-        });
-      }
-    }
-  });
-
-  // Build updated variations array
   const updatedVariations = variationsArray.map((variation, index) => {
+    console.log("data",variation)
     let existingVariation = variation._id
       ? existingProduct.variations.id(variation._id)
       : null;
-    // Handle thumbnail image
+
+    // --- Handle thumbnail image ---
     const thumbnailField = `variations[${index}][thumbnailImage]`;
     let thumbnailImage = existingVariation?.thumbnailImage || null;
+    // console.log("variation.thumbnailImage",existingVariation)
+    console.log("variation.images",variation.thumbnailImage)
+    // console.log(existingVariation)
+    // console.log(thumbnailImage)
+    
+    // Check if new thumbnail file is uploaded
     if (groupedUploads[thumbnailField]?.[0]) {
-      // Delete old thumbnail if it exists
+      // New thumbnail uploaded: delete old if exists, use new
+      console.log(7)
+      // console.log("thumb",thumbnailImage)
       if (thumbnailImage?.publicId) {
         imagesToDelete.push(thumbnailImage.publicId);
+         console.log(8)
       }
       thumbnailImage = groupedUploads[thumbnailField][0];
-    } else if (variation.thumbnailImage !== undefined) {
-      // If explicitly set to null or removed, remove thumbnail
-      thumbnailImage = variation.thumbnailImage;
-    } // else preserve existing
-
-    // Handle images
-    const imagesField = `variations[${index}][images]`;
-    let updatedImages = existingVariation?.images || [];
-    if (groupedUploads[imagesField] && groupedUploads[imagesField].length > 0) {
-      // New images uploaded: delete all old images and use only new uploads for this variation
-      if (existingVariation?.images && Array.isArray(existingVariation.images)) {
-        existingVariation.images.forEach(img => {
-          if (img.publicId) imagesToDelete.push(img.publicId);
-        });
-      }
-      updatedImages = groupedUploads[imagesField].map(uploadedFile => ({
-        publicId: uploadedFile.publicId || uploadedFile.uploadResult?.publicId,
-        secureUrl: uploadedFile.secureUrl || uploadedFile.uploadResult?.secureUrl,
-        uniqueId: uploadedFile.uniqueId || (uploadedFile.uploadResult?.publicId || "")
-      }));
-    } else if (variation.images !== undefined) {
-      // images array is present but no new uploads: update only this variation's images
-      const incomingImages = Array.isArray(variation.images) ? variation.images : [];
-      const existingImages = existingVariation?.images || [];
-      // Remove deleted images
-      existingImages.forEach(existingImg => {
-        const isImageKept = incomingImages.some(img => img.uniqueId === existingImg.uniqueId);
-        if (!isImageKept && existingImg.publicId) {
-          imagesToDelete.push(existingImg.publicId);
+       console.log(9)
+    } else {
+      // No new file uploaded, check if thumbnail should be preserved or removed
+      if (variation.thumbnailImage.uniqueId==="") {
+        // Explicitly set to null - remove thumbnail
+        console.log(1)
+        if (thumbnailImage?.publicId) {
+          imagesToDelete.push(thumbnailImage.publicId);
+            console.log(2)
         }
-      });
-      updatedImages = incomingImages.map(img => {
-        const existingImg = existingImages.find(ei => ei.uniqueId === img.uniqueId);
-        return existingImg || img;
-      });
-    } // else, keep existing images
+          console.log(3)
+        thumbnailImage = null;
+      } else if (variation.thumbnailImage && variation.thumbnailImage.publicId) {
+        // Keep existing thumbnail if it's still referenced
+          console.log(4)
+        thumbnailImage = variation.thumbnailImage;
+          console.log(5)
+      }
+      // If variation.thumbnailImage is undefined, preserve existing thumbnail
+    }
 
-    // Merge all fields
+    // --- Handle images array ---
+    const imagesField = `variations[${index}][images]`;
+    const existingImages = existingVariation?.images || [];
+    const uploadedImages = (groupedUploads[imagesField] || []).reduce((acc, img) => {
+      acc[img.uniqueId] = img.uploadResult || img;
+      return acc;
+    }, {});
+
+    // Get incoming images from request body
+    const incomingImages = Array.isArray(variation.images) ? variation.images : [];
+    
+    // Create maps for efficient lookup
+    const existingImagesMap = existingImages.reduce((acc, img) => {
+      if (img.uniqueId) {
+        acc[img.uniqueId] = img;
+      }
+      return acc;
+    }, {});
+
+    const incomingUniqueIds = incomingImages.map(img => img.uniqueId).filter(Boolean);
+    
+    // 1. Delete images that are in existing but not in incoming
+    existingImages.forEach(img => {
+      if (img.uniqueId && !incomingUniqueIds.includes(img.uniqueId) && img.publicId) {
+        imagesToDelete.push(img.publicId);
+      }
+    });
+
+    // 2. Build updated images array
+    const updatedImages = incomingImages.map(img => {
+      // Case 1: New upload with matching uniqueId
+      if (uploadedImages[img.uniqueId]) {
+        // Delete old image if it exists
+        if (existingImagesMap[img.uniqueId]?.publicId) {
+          imagesToDelete.push(existingImagesMap[img.uniqueId].publicId);
+        }
+        return {
+          ...img,
+          publicId: uploadedImages[img.uniqueId].publicId,
+          secureUrl: uploadedImages[img.uniqueId].secureUrl,
+          uniqueId: img.uniqueId
+        };
+      }
+      
+      // Case 2: Keep existing image with matching uniqueId
+      if (existingImagesMap[img.uniqueId]) {
+        return existingImagesMap[img.uniqueId];
+      }
+      
+      // Case 3: New reference (already uploaded) with uniqueId
+      if (img.publicId && img.secureUrl && img.uniqueId) {
+        return img;
+      }
+      
+      // Case 4: New reference without uniqueId (legacy or new upload)
+      if (img.publicId && img.secureUrl && !img.uniqueId) {
+        return img;
+      }
+      
+      // Case 5: Invalid image data, skip
+      return null;
+    }).filter(Boolean);
+
+    // --- Merge all fields ---
     return {
       ...(existingVariation ? existingVariation.toObject() : {}),
       ...variation,
@@ -307,12 +343,9 @@ console.log("groupedUploads",groupedUploads)
   );
 
   // 6. Clean up old images in background
-  console.log( "1", imagesToDelete)
   if (imagesToDelete.length > 0) {
-console.log("2" , imagesToDelete)
-   const res= Promise.all(imagesToDelete.map(publicId => fileDestroy(publicId)))
+    Promise.all(imagesToDelete.map(publicId => fileDestroy(publicId)))
       .catch(err => console.error("Error deleting old images:", err));
-      console.log("res",res)
   }
 
   return sendResponse(res, 200, updatedProduct, "Product updated successfully");

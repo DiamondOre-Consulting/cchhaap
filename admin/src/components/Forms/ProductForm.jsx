@@ -14,15 +14,16 @@ const ProductForm = ({
   allAttributes,
   setProductPopUp,
   singleData,
-  handleGetAllProducts
+  handleGetAllProducts,
 }) => {
-
-  console.log(singleData)
   const [categories, setCategories] = useState([]);
   const [subOptions, setSubOptions] = useState([]);
-
+  const [selectedAttributeDefinition, setSelectedAttributeDefinition] =
+    useState(null);
+  const [selectedLabel, setSelectedLabel] = useState(null);
   const dispatch = useDispatch();
   const editor = useRef(null);
+  const fileInputRefs = useRef({});
 
   const {
     register,
@@ -34,11 +35,6 @@ const ProductForm = ({
     getValues,
     formState: { errors },
   } = useForm({ defaultValues: productDefaultValues });
-
-  const [selectedAttributeDefinition, setSelectedAttributeDefinition] =
-    useState(null);
-  const [selectedLabel, setSelectedLabel] = useState(null);
-  const [selectedOption, setSelectedOption] = useState(null);
 
   const {
     fields: variationFields,
@@ -73,59 +69,73 @@ const ProductForm = ({
     setSubOptions(cat?.subCategories || []);
   }, [watch("category"), categories]);
 
-  const getUniqueCode = () => {
-    return uuidv4().slice(0, 8);
-  };
+  const getUniqueCode = () => uuidv4().slice(0, 8);
 
-  const getFileExtention = (fileName) => {
-    return fileName.split(".").pop();
-  };
-
-  const generateFileName = (file, uniqueCode) => {
-    const fileExtension = getFileExtention(file.name);
-    return `${uniqueCode}.${fileExtension}`;
-  };
-
-  const [thumbnailImage , setThumbnailImage] = useState();
   const handleThumbnailChange = (e, idx) => {
     const file = e.target.files[0];
     if (file) {
-      // const uniqueId = uuidv4();
-      const uniqueCode = getUniqueCode();
-      const fileName = generateFileName(file, uniqueCode);
-      console.log("filename", fileName);
+      const existingThumbnail = getValues(`variations.${idx}.thumbnailImage`);
+      const uniqueCode = existingThumbnail?.uniqueId || getUniqueCode();
+      const fileName = `${uniqueCode}.${file.name.split(".").pop()}`;
       const previewUrl = URL.createObjectURL(file);
-      console.log(new File([file], fileName, { type: file.type }))
       setValue(`variations.${idx}.thumbnailImage`, {
         secureUrl: previewUrl,
         publicId: "",
         uniqueId: uniqueCode,
-        file: new File([file], fileName, { type: file.type }), // Store the actual file object
+        file: new File([file], fileName, { type: file.type }),
+        isNew: true,
       });
     }
+    e.target.value = null;
+  };
+
+  const handleImageReplace = (e, idx, imgIdx) => {
+    const file = e.target.files[0];
+    if (file) {
+      const currentImages = [...getValues(`variations.${idx}.images`)];
+      const existingImage = currentImages[imgIdx];
+      const uniqueCode =
+        existingImage?.uniqueId || `${getUniqueCode()}-${imgIdx}`;
+      const fileName = `${uniqueCode}.${file.name.split(".").pop()}`;
+
+      currentImages[imgIdx] = {
+        secureUrl: URL.createObjectURL(file),
+        publicId: "",
+        uniqueId: uniqueCode,
+        file: new File([file], fileName, { type: file.type }),
+        type: file.type.startsWith("video") ? "video" : "image",
+        isNew: true,
+      };
+
+      setValue(`variations.${idx}.images`, currentImages, {
+        shouldValidate: true,
+        shouldDirty: true,
+      });
+    }
+    e.target.value = null;
   };
 
   const handleMediaChange = (e, idx) => {
     const files = Array.from(e.target.files);
-    
-   
+    if (files.length === 0) return;
+
     const currentMedia = getValues(`variations.${idx}.images`) || [];
+
     const newMedia = files.map((file, i) => {
-    const uniqueCode =getValues(`variations.${idx}.uniqueCode`) || getUniqueCode();
-    
-      const fileName = generateFileName(file, `${uniqueCode}`);
-     
+      const uniqueCode = `${getUniqueCode()}`;
+      const fileName = `${uniqueCode}.${file.name.split(".").pop()}`;
       return {
         secureUrl: URL.createObjectURL(file),
         publicId: "",
         uniqueId: uniqueCode,
-        file: new File([file], fileName, { type: file.type }), // Store the actual file object,
+        file: new File([file], fileName, { type: file.type }),
         type: file.type.startsWith("video") ? "video" : "image",
+        isNew: true,
       };
     });
 
-    const updatedMedia = [...currentMedia, ...newMedia];
-    setValue(`variations.${idx}.images`, updatedMedia, {
+    e.target.value = null;
+    setValue(`variations.${idx}.images`, [...currentMedia, ...newMedia], {
       shouldValidate: true,
       shouldDirty: true,
     });
@@ -133,6 +143,14 @@ const ProductForm = ({
 
   const removeImageAtIndex = (idx, imageIdx) => {
     const currentImages = getValues(`variations.${idx}.images`);
+    const imageToRemove = currentImages[imageIdx];
+
+    if (imageToRemove.publicId) {
+      console.log(
+        `Image with publicId ${imageToRemove.publicId} should be deleted`
+      );
+    }
+
     const updatedImages = currentImages.filter((_, i) => i !== imageIdx);
     setValue(`variations.${idx}.images`, updatedImages);
   };
@@ -142,9 +160,7 @@ const ProductForm = ({
     const selectedDefinition = allAttributes.find(
       (attr) => attr._id === selectedId
     );
-    console.log(selectedDefinition);
     setValue(`variations.${idx}.attributeDefinition`, selectedDefinition?._id);
-
     setSelectedAttributeDefinition(selectedDefinition);
     setSelectedLabel(null);
   };
@@ -161,7 +177,6 @@ const ProductForm = ({
 
   const handleOptionChange = (e, idx) => {
     const selectedOption = e.target.value;
-    console.log(selectedOption);
     const labelName = selectedLabel?.name;
 
     if (!labelName) return;
@@ -186,8 +201,31 @@ const ProductForm = ({
       setValue(`variations.${idx}.attributeDefinition`, "");
       setSelectedAttributeDefinition(null);
       setSelectedLabel(null);
-      setSelectedOption(null);
     }
+  };
+
+  const addVariation = () => {
+    appendVariation({
+      size: "",
+      color: { name: "", hex: "" },
+      price: 0,
+      gender:"",
+      discountPrice: 0,
+      quantity: 0,
+      sku: "",
+      inStock: true,
+      soldCount: 0,
+      thumbnailImage: {
+        secureUrl: "",
+        publicId: "",
+        uniqueId: getUniqueCode(),
+        file: null,
+        isNew: false,
+      },
+      images: [],
+      attributes: {},
+      attributeDefinition: "",
+    });
   };
 
   const onSubmit = async (data) => {
@@ -197,18 +235,19 @@ const ProductForm = ({
     formData.append("brandName", data.brandName);
     formData.append("category", data.category);
     formData.append("description", data.description);
-    // formData.append("fabric", data.fabric);
-    formData.append("gender", data.gender);
-    formData.append("discountType", data.discountType);
     formData.append("isActive", data.isActive);
     formData.append("sku", data.sku);
-    formData.append("quantity", data.quantity);
 
     data.subCategory.forEach((sub, i) => {
       formData.append(`subCategory[${i}]`, sub);
     });
 
+      
     data.variations.forEach((variation, index) => {
+      if (variation._id) {
+        console.log("enter",variation._id)
+        formData.append(`variations[${index}][_id]`, variation._id);
+      }
       if (variation.size)
         formData.append(`variations[${index}][size]`, variation.size);
       if (variation.color?.name)
@@ -221,127 +260,77 @@ const ProductForm = ({
           `variations[${index}][color][hex]`,
           variation.color.hex
         );
-      if (variation.price !== undefined && variation.price !== null)
+      if (variation.price !== undefined)
         formData.append(`variations[${index}][price]`, variation.price);
-      if (variation.gender)
+      if (variation.gender !== undefined)
         formData.append(`variations[${index}][gender]`, variation.gender);
-      if (
-        variation.discountPrice !== undefined &&
-        variation.discountPrice !== null
-      )
+      if (variation.discountPrice !== undefined)
         formData.append(
           `variations[${index}][discountPrice]`,
           variation.discountPrice
         );
-      if (variation.quantity !== undefined && variation.quantity !== null)
+      if (variation.quantity !== undefined)
         formData.append(`variations[${index}][quantity]`, variation.quantity);
-      // if (variation.sku) formData.append(`variations[${index}][sku]`, variation.sku);
-      formData.append(`variations[${index}][fabric]`, variation.fabric);
       formData.append(`variations[${index}][inStock]`, variation.inStock);
-      if (variation.soldCount !== undefined && variation.soldCount !== null)
-        formData.append(`variations[${index}][soldCount]`, variation.soldCount);
       if (variation.attributeDefinition)
         formData.append(
           `variations[${index}][attributeDefinition]`,
           variation.attributeDefinition
         );
-console.log(1)
-      if (variation.thumbnailImage?.file) {
-        console.log(2)
-        formData.append(
-          `variations[${index}][thumbnailImage][uniqueId]`,
-          variation.thumbnailImage.uniqueId
+
+      if (variation.thumbnailImage?.isNew && variation.thumbnailImage.file) {
+        // Create new File with uniqueId name
+        const renamedFile = new File(
+          [variation.thumbnailImage.file],
+          `${
+            variation.thumbnailImage.uniqueId
+          }.${variation.thumbnailImage.file.name.split(".").pop()}`,
+          { type: variation.thumbnailImage.file.type }
         );
-        formData.append(
-          `variations[${index}][thumbnailImage][file]`,
-          variation.thumbnailImage.file
-        );
+        formData.append(`variations[${index}][thumbnailImage]`, renamedFile);
       }
+      formData.append(
+        `variations[${index}][thumbnailImage][uniqueId]`,
+        variation.thumbnailImage.uniqueId
+      );
 
-      console.log(3)
-
-      // Append image files if they exist
       if (variation.images && variation.images.length > 0) {
-        console.log(4)
-      variation.images.forEach((img, imgIndex) => {
-        if (img.file) {
-          console.log(5)
-            formData.append(`variations[${index}][images]`, img.file)
-          formData.append(`variations[${index}][images][${imgIndex}][uniqueId]`, img.uniqueId);
-          // formData.append(`variations[${index}][images][${imgIndex}][file]`, img.file);
-        }
-      });
-    }
-console.log(6)
+        variation.images.forEach((img, imgIndex) => {
+          if (img.isNew && img.file) {
+            formData.append(`variations[${index}][images]`, img.file);
+          }
+          formData.append(
+            `variations[${index}][images][${imgIndex}][uniqueId]`,
+            img.uniqueId
+          );
+        });
+      }
 
       Object.entries(variation.attributes || {}).forEach(([key, value]) => {
         formData.append(`variations[${index}][attributes][${key}]`, value);
       });
     });
-    console.log("form Data", data);
-console.log(7)
-    console.log("FormData contents:");
-    for (let [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
-
-    console.log(8)
-    console.log("Data object:", data);
-    console.log("Variations:", data.variations);
 
     try {
-      let res;
-
       if (singleData?._id) {
-        res = await dispatch(editProduct({ id: singleData._id, formData }));
+        await dispatch(editProduct({ id: singleData._id, formData }));
       } else {
-        res = await dispatch(createProduct(formData));
-        console.log("Response:", res);
-
-        if (res.payload) {
-          console.log("Product created successfully!");
-          // You can add success toast or redirect here
-        }
+        await dispatch(createProduct(formData));
       }
+      await handleGetAllProducts();
+      setProductPopUp(false);
     } catch (error) {
-      console.error("Error creating product:", error);
-    } finally {
-      // setProductPopUp(false);
-      await handleGetAllProducts()
-      
+      console.error("Error saving product:", error);
     }
   };
 
-  const addVariation = () => {
-    appendVariation({
-      size: "",
-      color: { name: "", hex: "" },
-      price: 0,
-      discountPrice: 0,
-      quantity: 0,
-      sku: "",
-      inStock: true,
-      soldCount: 0,
-      thumbnailImage: {
-        secureUrl: "",
-        publicId: "",
-        uniqueId: uuidv4(),
-        file: null,
-      },
-      images: [],
-      attributes: {},
-      attributeDefinition: "",
-    });
-  };
-
-  console.log("varitaions ", variationFields);
-
-  console.log("singledata ", singleData);
-  console.log(watch("category"));
+console.log("singleData", singleData.variations.map(v => {
+  console.log(v._id);
+  return v._id; // You need to return something from the map callback
+}));
 
   useEffect(() => {
     if (singleData && categories.length > 0) {
-      console.log(singleData)
       const formattedData = {
         productName: singleData.productName || "",
         brandName: singleData.brandName || "",
@@ -350,49 +339,52 @@ console.log(7)
         description: singleData.description || "",
         isActive: singleData.isActive ?? true,
         sku: singleData.sku || "",
-        quantity: singleData.quantity || "",
         variations: (singleData.variations || []).map((v) => ({
+          _id: v._id,
           size: v.size || "",
           color: {
             name: v.color?.name || "",
             hex: v.color?.hex || "#000000",
           },
+          gender:v.gender||"",
           price: v.price || 0,
           discountPrice: v.discountPrice || 0,
           quantity: v.quantity || 0,
-          discountType: v.discountType || "",
-          gender: v.gender || "",
           inStock: v.inStock ?? true,
           soldCount: v.soldCount || 0,
-          fabric: v.fabric || "",
           attributeDefinition: v.attributeDefinition || "",
           attributes: v.attributes || {},
           thumbnailImage: {
             secureUrl: v.thumbnailImage?.secureUrl || "",
             publicId: v.thumbnailImage?.publicId || "",
-            uniqueId: v.thumbnailImage?.uniqueId || uuidv4(),
+            uniqueId: v.thumbnailImage?.uniqueId || getUniqueCode(),
             file: null,
+            isNew: false,
           },
-          images: (v.images || []).map((img, i) => ({
+          images: (v.images || []).map((img) => ({
             secureUrl: img.secureUrl || "",
             publicId: img.publicId || "",
-            uniqueId: img.uniqueId || `${uuidv4()}-${i}`,
+            uniqueId: img.uniqueId || getUniqueCode(),
             file: null,
             type: img.secureUrl?.includes(".mp4") ? "video" : "image",
+            isNew: false,
           })),
         })),
       };
-console.log("hello",formattedData)
       reset(formattedData);
     }
   }, [singleData, categories, reset]);
+  
+  console.log("formData".formData)
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="space-y-2 h-[80vh] overflow-y-auto"
+      className="space-y-2 h-[80vh] overflow-y-auto p-4"
     >
-      <h2 className="text-xl font-semibold mb-4">Add New Product</h2>
+      <h2 className="text-xl font-semibold mb-4">
+        {singleData ? "Edit Product" : "Add New Product"}
+      </h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {formState.map((f) => {
@@ -491,7 +483,7 @@ console.log("hello",formattedData)
         })}
       </div>
 
-      <div>
+      <div className="mt-6">
         <h3 className="font-semibold mb-2">Variations</h3>
         {variationFields.map((vf, idx) => {
           const variation = watch(`variations.${idx}`);
@@ -544,12 +536,12 @@ console.log("hello",formattedData)
                 </div>
 
                 <div className="flex flex-col text-sm">
-                  <label className="px-1"> Fabric</label>
+                  <label className="px-1">Fabric</label>
                   <select
                     {...register(`variations.${idx}.fabric`)}
                     className="border rounded px-2 py-2 bg-white"
                   >
-                    <option value="">Select Fabric </option>
+                    <option value="">Select Fabric</option>
                     {[
                       "Cotton",
                       "Silk",
@@ -593,12 +585,12 @@ console.log("hello",formattedData)
                 </div>
 
                 <div className="flex flex-col text-sm">
-                  <label className="px-1"> Gender</label>
+                  <label className="px-1">Gender</label>
                   <select
                     {...register(`variations.${idx}.gender`)}
                     className="border rounded px-2 py-2 bg-white"
                   >
-                    <option value="">Select Gender </option>
+                    <option value="">Select Gender</option>
                     {["Men", "Women", "Unisex", "Kids"].map((s) => (
                       <option key={s} value={s}>
                         {s}
@@ -626,16 +618,6 @@ console.log("hello",formattedData)
                     className="border rounded px-2 py-2 bg-white"
                   />
                 </div>
-
-                {/* SKU */}
-                {/* <div className="flex flex-col text-sm">
-                  <label className="px-1">SKU</label>
-                  <input
-                    {...register(`variations.${idx}.sku`)}
-                    placeholder="Variation SKU"
-                    className="border rounded px-2 py-2 bg-white"
-                  />
-                </div> */}
               </div>
 
               <div className="col-span-full space-y-2">
@@ -662,7 +644,6 @@ console.log("hello",formattedData)
                   </label>
                   <select
                     onChange={(e) => handleAttributeDefChange(e, idx)}
-                    // onChange={handleAttributeDefChange}
                     className="w-full border px-3 py-2 rounded text-sm mb-4"
                   >
                     <option value="">Select Definition</option>
@@ -729,32 +710,48 @@ console.log("hello",formattedData)
                 </label>
                 <input
                   type="file"
+                  id={`thumbnail-input-${idx}`}
                   accept="image/*"
                   onChange={(e) => handleThumbnailChange(e, idx)}
-                  className="border p-2 w-full"
+                  className="hidden"
+                  ref={(el) => (fileInputRefs.current[`thumbnail-${idx}`] = el)}
                 />
-                {variation.thumbnailImage?.secureUrl && (
+                {variation.thumbnailImage?.secureUrl ? (
                   <div className="relative inline-block w-24 h-32 mt-2">
                     <img
                       src={variation.thumbnailImage.secureUrl}
                       alt="Thumbnail Preview"
-                      className="absolute inset-0 w-full h-full rounded"
+                      className="absolute inset-0 w-full h-full rounded object-cover cursor-pointer"
+                      onClick={() =>
+                        fileInputRefs.current[`thumbnail-${idx}`]?.click()
+                      }
                     />
                     <button
                       type="button"
-                      onClick={() =>
+                      onClick={() => {
                         setValue(`variations.${idx}.thumbnailImage`, {
                           secureUrl: "",
                           publicId: "",
-                          uniqueId: uuidv4(),
+                          uniqueId:"",
                           file: null,
-                        })
-                      }
+                          isNew: false,
+                        });
+                      }}
                       className="absolute top-0 size-5 cursor-pointer right-0 bg-red-500 text-white p-1 rounded-full text-xs"
                     >
                       ×
                     </button>
                   </div>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      fileInputRefs.current[`thumbnail-${idx}`]?.click()
+                    }
+                    className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
+                  >
+                    + Add Thumbnail
+                  </button>
                 )}
               </div>
 
@@ -767,13 +764,12 @@ console.log("hello",formattedData)
                   multiple
                   onChange={(e) => handleMediaChange(e, idx)}
                   className="hidden"
+                  ref={(el) => (fileInputRefs.current[`images-${idx}`] = el)}
                 />
                 <button
                   type="button"
                   onClick={() =>
-                    document
-                      .getElementById(`product-images-input-${idx}`)
-                      .click()
+                    fileInputRefs.current[`images-${idx}`]?.click()
                   }
                   className="bg-c1 text-sm text-white px-4 py-1 rounded hover:bg-c1/90"
                 >
@@ -781,39 +777,58 @@ console.log("hello",formattedData)
                 </button>
 
                 <div className="mt-4 flex flex-wrap gap-3">
-                  {variation?.images?.map((img, imgIdx) => (
-                    <>
-                      {img?.secureUrl && (
-                        <div
-                          key={img?.uniqueId}
-                          className="relative w-24 h-24 inline-block"
+                  {variation?.images?.map((img, imgIdx) => {
+                    const inputId = `image-replace-${idx}-${imgIdx}`;
+                    return (
+                      <div
+                        key={img?.uniqueId || imgIdx}
+                        className="relative w-24 h-24 inline-block"
+                      >
+                        <input
+                          type="file"
+                          id={inputId}
+                          accept="image/*,video/*"
+                          onChange={(e) => handleImageReplace(e, idx, imgIdx)}
+                          className="hidden"
+                          ref={(el) =>
+                            (fileInputRefs.current[`replace-${idx}-${imgIdx}`] =
+                              el)
+                          }
+                        />
+                        {img.type === "video" ? (
+                          <video
+                            src={img.secureUrl}
+                            className="absolute inset-0 w-full h-full rounded object-cover cursor-pointer"
+                            controls
+                            onClick={() =>
+                              fileInputRefs.current[
+                                `replace-${idx}-${imgIdx}`
+                              ]?.click()
+                            }
+                          />
+                        ) : (
+                          <img
+                            src={img?.secureUrl}
+                            alt={`Preview ${imgIdx + 1}`}
+                            className="absolute inset-0 w-full h-full rounded object-cover cursor-pointer"
+                            onClick={() =>
+                              fileInputRefs.current[
+                                `replace-${idx}-${imgIdx}`
+                              ]?.click()
+                            }
+                          />
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => removeImageAtIndex(idx, imgIdx)}
+                          className="absolute -top-2 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center"
+                          title="Remove Image"
                         >
-                          {img.type === "video" ? (
-                            <video
-                              src={img.secureUrl}
-                              className="absolute inset-0 w-full h-full rounded"
-                              controls
-                            />
-                          ) : (
-                            <img
-                              src={img?.secureUrl}
-                              alt={`Preview ${imgIdx + 1}`}
-                              className="absolute inset-0 w-full h-full rounded"
-                            />
-                          )}
-
-                          <button
-                            type="button"
-                            onClick={() => removeImageAtIndex(idx, imgIdx)}
-                            className="absolute -top-2 -right-1 bg-red-600 text-white w-5 h-5 rounded-full text-xs flex items-center justify-center"
-                            title="Remove Image"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      )}
-                    </>
-                  ))}
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -845,17 +860,23 @@ console.log("hello",formattedData)
         </button>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-2 mt-4">
         <input type="checkbox" {...register("isActive")} />
         <label className="font-medium">Product is Active</label>
       </div>
 
-      <button
-        type="submit"
-        className="bg-c1 w-full text-white px-6 py-2 rounded"
-      >
-        Submit Product
-      </button>
+      <div className="flex justify-end gap-4 mt-6">
+        <button
+          type="button"
+          onClick={() => setProductPopUp(false)}
+          className="bg-gray-500 text-white px-6 py-2 rounded"
+        >
+          Cancel
+        </button>
+        <button type="submit" className="bg-c1 text-white px-6 py-2 rounded">
+          {singleData ? "Update Product" : "Create Product"}
+        </button>
+      </div>
     </form>
   );
 };

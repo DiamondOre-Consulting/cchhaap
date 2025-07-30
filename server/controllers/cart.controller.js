@@ -100,10 +100,12 @@ export const getCart = asyncHandler(async (req, res) => {
 
   if (!cart) throw new ApiError("Cart not found", 400);
 
-  cart.products.forEach((product) => {
+    cart.products.forEach((product) => {
     const variation = product.productId.variations.find(
       (v) => v._id.toString() === product.variationId.toString()
     );
+
+
 
     if (!variation) {
       product.price = 0;
@@ -112,8 +114,8 @@ export const getCart = asyncHandler(async (req, res) => {
 
     const unitPrice = variation.discountPrice ?? variation.price;
     product.price = unitPrice * product.quantity;
-    product.variation = variation; // optional: to send variation details
-  });
+    product.variationId = variation; 
+  }); 
 
   cart.totalPrice = cart.products.reduce((sum, p) => sum + p.price, 0);
 
