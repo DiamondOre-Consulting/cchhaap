@@ -143,6 +143,10 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
  userRouter.get('/get-checkout-values',userMiddleware,getCheckoutValues)
 
 
+ userRouter.get('/get-all-categories',getAllCategories)
+ 
+
+
 
 
 
