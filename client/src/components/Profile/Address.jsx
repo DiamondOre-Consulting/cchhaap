@@ -146,7 +146,7 @@ const Address = () => {
   return (
     <div className="">
       <div className="flex flex-col items-center justify-center  mb-4">
-        <h1 className="text-3xl  font-semibold">Address</h1>
+        <h1 className="text-3xl  font-semibold mt-4">Address</h1>
         <div className="flex flex-wrap max-w-5xl   mt-6    flex-wrap">
             {allAddress?.addresses?.map((address, index) => (
           <div  key={index} className=" p-4 flex border border-white/40 justify-between items-center w-80">
@@ -192,7 +192,7 @@ const Address = () => {
             ))}
           <div
             onClick={() => setAddressDrawer(true)}
-            className="bg-[#edb141]/10 p-4 cursor-pointer flex flex-col space-y-4 text-white  justify-center border items-center w-80 h-40 "
+            className="bg-[#edb141]/10 p-4 cursor-pointer flex flex-col space-y-4 text-white  justify-center border items-center w-80 h-48 "
           >
             <p>
               <MapPinPlus className="text-white " />

@@ -25,6 +25,7 @@ import {
   userEditAddress,
   userGetAllAddress,
 } from "@/Redux/Slices/authSlice";
+import { userGetCheckoutValues } from "@/Redux/Slices/checkoutSlice";
 
 const steps = [
   {
@@ -95,6 +96,7 @@ const CheckOutPage = () => {
   const handleGetCheckOutValue = async () => {
     try {
       const response = await dispatch(userGetCheckoutValues());
+      console.log("checkout value",response)
       setCheckOutValues(response?.payload?.data);
     } catch (error) {
       console.log(error);
@@ -560,30 +562,40 @@ const CheckOutPage = () => {
                   </form>
                 </div>
                 <div className=" w-full border p-4 rounded border-white/40   ">
-                  <p className="uppercase">Price Details (1 Item)</p>
+                  <p className="uppercase">Price Details ({checkoutvalues?.totalItems})</p>
                   <div className="flex gap-y-2 text-sm mt-6 flex-col">
                     <div className="flex justify-between">
                       <p>Total MRP</p>
-                      <p>₹20034</p>
+                     
+                      <p>{checkoutvalues?.totalMRP.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
 
                     <div className="flex justify-between">
                       <p>Discount On MRP</p>
-                      <p>₹2034</p>
+                      <p>{checkoutvalues?.totalDiscountedPrice?.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
 
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <p>Coupon Discount</p>
                       <p>₹234</p>
-                    </div>
-                    <div className="flex justify-between">
+                    </div> */}
+                    {/* <div className="flex justify-between">
                       <p>Plateform Fee</p>
                       <p>₹20</p>
-                    </div>
+                    </div> */}
 
                     <div className="flex border-t border-white/40 py-2 justify-between">
                       <p>Total Amount</p>
-                      <p>₹20000</p>
+                      <p>{checkoutvalues?.totalPriceAfterDiscount.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
                   </div>
                   <button
@@ -659,31 +671,41 @@ const CheckOutPage = () => {
               </div>
 
               <div className="min-w-sm mx-auto">
-                <div className="border p-4 rounded border-white/40   ">
-                  <p className="uppercase">Price Details (1 Item)</p>
+                  <div className=" w-full border p-4 rounded border-white/40   ">
+                  <p className="uppercase">Price Details ({checkoutvalues?.totalItems})</p>
                   <div className="flex gap-y-2 text-sm mt-6 flex-col">
                     <div className="flex justify-between">
                       <p>Total MRP</p>
-                      <p>₹20034</p>
+                     
+                      <p>{checkoutvalues?.totalMRP.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
 
                     <div className="flex justify-between">
                       <p>Discount On MRP</p>
-                      <p>₹2034</p>
+                      <p>{checkoutvalues?.totalDiscountedPrice?.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
 
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <p>Coupon Discount</p>
                       <p>₹234</p>
-                    </div>
-                    <div className="flex justify-between">
+                    </div> */}
+                    {/* <div className="flex justify-between">
                       <p>Plateform Fee</p>
                       <p>₹20</p>
-                    </div>
+                    </div> */}
 
                     <div className="flex border-t border-white/40 py-2 justify-between">
                       <p>Total Amount</p>
-                      <p>₹20000</p>
+                      <p>{checkoutvalues?.totalPriceAfterDiscount.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
                   </div>
                   <button
@@ -885,33 +907,41 @@ const CheckOutPage = () => {
             </div>
             <div>
               <div className="min-w-sm mx-auto">
-                <div className="border p-4 rounded border-white/40   ">
-                  <p className="uppercase">
-                    Price Details (({checkoutvalues?.totalItems}))
-                  </p>
+                    <div className=" w-full border p-4 rounded border-white/40   ">
+                  <p className="uppercase">Price Details ({checkoutvalues?.totalItems})</p>
                   <div className="flex gap-y-2 text-sm mt-6 flex-col">
                     <div className="flex justify-between">
                       <p>Total MRP</p>
-                      <p>₹20034</p>
+                     
+                      <p>{checkoutvalues?.totalMRP.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
 
                     <div className="flex justify-between">
                       <p>Discount On MRP</p>
-                      <p>₹2034</p>
+                      <p>{checkoutvalues?.totalDiscountedPrice?.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
 
-                    <div className="flex justify-between">
+                    {/* <div className="flex justify-between">
                       <p>Coupon Discount</p>
                       <p>₹234</p>
-                    </div>
-                    <div className="flex justify-between">
+                    </div> */}
+                    {/* <div className="flex justify-between">
                       <p>Plateform Fee</p>
                       <p>₹20</p>
-                    </div>
+                    </div> */}
 
                     <div className="flex border-t border-white/40 py-2 justify-between">
                       <p>Total Amount</p>
-                      <p>₹20000</p>
+                      <p>{checkoutvalues?.totalPriceAfterDiscount.toLocaleString("en-US" , {
+                        style:"currency",
+                        currency:"INR"
+                      })}</p>
                     </div>
                   </div>
                   <button
@@ -1300,7 +1330,7 @@ const CheckOutPage = () => {
 
                     <button
                       type="submit"
-                      className="bg-white rounded-md cursor-pointer w-full mt-4 py-2 text-white"
+                      className="bg-c1 rounded-md cursor-pointer w-full mt-4 py-2 text-white"
                     >
                       {loader ? (
                         <div

@@ -312,7 +312,7 @@ const Navbar = () => {
               }}
             />
 
-            <Link to={"/my-account"}>
+            <Link to={"/my-account?tab=tab-3"}>
               {" "}
               <FaRegHeart />
             </Link>

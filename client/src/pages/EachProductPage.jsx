@@ -2,9 +2,9 @@ import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { getSingleProduct } from "@/Redux/Slices/productsSlice";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { userUpdateCart } from "@/Redux/Slices/cart";
 
 const ProductPreviews = ({ previews }) => {
@@ -25,7 +25,7 @@ const ProductPreviews = ({ previews }) => {
 
   return (
     <div className="lg:mr-6">
-      <div className="text-center flex md:flex-row flex-col-reverse   gap-8 overflow-hidden m-2">
+      <div className="text-center flex md:flex-row flex-col-reverse gap-8 overflow-hidden m-2">
         <ul className="flex flex-nowrap gap-3 flex-row md:flex-col">
           {previews?.map((preview, i) => {
             const isSelected = i === index;
@@ -99,9 +99,10 @@ const ProductPreviews = ({ previews }) => {
   );
 };
 
-const ColorVariant = ({ variations, selectedVariation, onColorChange }) => {
+const ColorVariant = ({ groupedByColor, selectedVariation, onColorChange }) => {
+  // Get all available colors from the groupedByColor object
+  const availableColors = Object.keys(groupedByColor || {});
 
-  console.log(variations)
   return (
     <div className="">
       <h5 className="font-medium mb-2">
@@ -109,52 +110,95 @@ const ColorVariant = ({ variations, selectedVariation, onColorChange }) => {
         <span className="opacity-50">{selectedVariation?.color?.name}</span>
       </h5>
       <div className="flex flex-wrap gap-2 mb-2">
-        {variations?.map((variation, i) => (
-          <div
-            key={i}
-            onClick={() => onColorChange(variation)}
-            className={`cursor-pointer ${
-              selectedVariation?._id === variation._id
-                ? "ring-2 ring-[#620A1A]"
-                : ""
-            }`}
-          >
-            <img
-              src={variation?.thumbnailImage?.secureUrl}
-              alt={variation?.color?.name}
-              className="w-20 h-20 object-cover"
-              title={variation?.color?.name}
-            />
-          </div>
-        ))}
+        {availableColors.map((colorName) => {
+          const colorGroup = groupedByColor[colorName];
+          const isSelected = selectedVariation?.color?.name === colorName;
+
+          return (
+            <div
+              key={colorName}
+              onClick={() => {
+                const firstVariation = colorGroup.variations[0];
+                onColorChange(firstVariation);
+              }}
+              className={`cursor-pointer ${
+                isSelected ? "ring-2 ring-[#620A1A]" : ""
+              }`}
+            >
+              <img
+                src={colorGroup.thumbnailImage?.secureUrl}
+                alt={colorName}
+                className="w-20 h-20 object-cover"
+                title={colorName}
+              />
+            </div>
+          );
+        })}
       </div>
     </div>
   );
 };
 
-const SizeVariant = ({ sizes, selectedSize, onSizeChange }) => {
+const SizeVariant = ({
+  selectedSize,
+  onSizeChange,
+  selectedVariation,
+  colorSizeMap,
+  groupedByColor,
+}) => {
+  // All possible sizes to display
+  const allSizes = ["XS", "S", "M", "L", "XL", "XXL", "Free Size"];
+
+  // Get available sizes for the currently selected color
+  const availableSizesForColor =
+    colorSizeMap[selectedVariation?.color?.name] || [];
+
   return (
     <div className="mb-6">
       <h5 className="text-sm font-medium mb-2">
         Available Size:
         <span className="opacity-50 ml-1">{selectedSize}</span>
       </h5>
-      <div className="flex gap-2 mb-2">
-        {sizes.map((size) => (
-          <button
-            key={size}
-            type="button"
-            onClick={() => onSizeChange(size)}
-            className={`px-4 py-2 rounded transition-all duration-200 cursor-pointer
-              ${
-                selectedSize === size
-                  ? "bg-c2 text-white"
-                  : "bg-gray-200 text-black"
+      <div className="flex gap-2 mb-2 flex-wrap">
+        {allSizes.map((size) => {
+          const isAvailable = availableSizesForColor.includes(size);
+          const isSelected = selectedSize === size;
+
+          return (
+            <button
+              key={size}
+              type="button"
+              onClick={() => {
+                if (isAvailable) {
+                  // Find the variation with this size and current color
+                  const colorGroup =
+                    groupedByColor[selectedVariation.color.name];
+                  const variation = colorGroup.variations.find(
+                    (v) => v.size === size
+                  );
+                  if (variation) {
+                    onSizeChange(size, variation);
+                  }
+                }
+              }}
+              className={`px-4 py-2 rounded transition-all duration-200 ${
+                isSelected
+                  ? "bg-c2 border border-blue-900 text-white border-2 border-c2"
+                  : isAvailable
+                  ? "bg-c2 text-black border-2 border-gray-200 cursor-pointer hover:bg-gray-300"
+                  : "bg-gray-100 text-gray-400 line-through border-2 border-gray-100 cursor-not-allowed"
               }`}
-          >
-            {size}
-          </button>
-        ))}
+              disabled={!isAvailable}
+              title={
+                !isAvailable
+                  ? "This size is not available for the selected color"
+                  : ""
+              }
+            >
+              {size}
+            </button>
+          );
+        })}
       </div>
     </div>
   );
@@ -165,16 +209,21 @@ const EachProductPage = () => {
   const dispatch = useDispatch();
   const [singleData, setSingleData] = useState();
   const [selectedVariation, setSelectedVariation] = useState(null);
-  const [selectedSize, setSelectedSize] = useState("XS");
+  const [selectedSize, setSelectedSize] = useState("");
+  const { user, isLoggedIn } = useSelector((state) => state?.user);
   const [isWish, setIsWish] = useState(false);
+  const navigate = useNavigate();
   const [qty, setQty] = useState(0);
-
+  console.log(user, isLoggedIn);
+  console.log("singleData", singleData);
   const handleGetSingleProduct = async () => {
     try {
       const response = await dispatch(getSingleProduct(id));
       setSingleData(response?.payload?.data);
       if (response?.payload?.data?.variations?.length > 0) {
-        setSelectedVariation(response.payload.data.variations[0]);
+        const firstVariation = response.payload.data.variations[0];
+        setSelectedVariation(firstVariation);
+        setSelectedSize(firstVariation.size);
       }
     } catch (error) {
       console.log(error);
@@ -187,20 +236,14 @@ const EachProductPage = () => {
     setQty(0);
   };
 
-  const handleSizeChange = (size) => {
+  const handleSizeChange = (size, variation) => {
     setSelectedSize(size);
+    setSelectedVariation(variation);
     setQty(0);
   };
 
   const toggleWishList = () => {
     setIsWish((prev) => !prev);
-  };
-
-  const getAvailableSizes = () => {
-    if (!singleData || !selectedVariation) return [];
-    return singleData.variations
-      .filter((v) => v.color.name === selectedVariation.color.name)
-      .map((v) => v.size);
   };
 
   useEffect(() => {
@@ -222,16 +265,79 @@ const EachProductPage = () => {
           variationId: selectedVariation._id,
         })
       );
-
-
-      console.log(response)
-      // await dispatch(getNavbarCartCount());
-
+      console.log(response);
     } catch (error) {
       console.error("Error updating cart:", error);
     }
   };
 
+  const [selectedAttributes, setSelectedAttributes] = useState({});
+
+  useEffect(() => {
+    if (singleData?.attributes) {
+      const initialAttributes = {};
+      Object.entries(singleData.attributes).forEach(([key, value]) => {
+        if (Array.isArray(value)) {
+          initialAttributes[key] = value[0];
+        } else {
+          initialAttributes[key] = value;
+        }
+      });
+      setSelectedAttributes(initialAttributes);
+    }
+  }, [singleData]);
+
+  const handleAttributeClick = (attributeName, option) => {
+    setSelectedAttributes((prev) => ({
+      ...prev,
+      [attributeName]: option,
+    }));
+  };
+
+  const renderAttributeOptions = () => {
+    if (!singleData?.attributes) return null;
+
+    return (
+      <div className="space-y-6">
+        {Object.entries(singleData.attributes).map(
+          ([attributeName, options]) => {
+            const optionsArray = Array.isArray(options) ? options : [options];
+
+            return (
+              <div key={attributeName}>
+                <p className="font-medium">{attributeName}</p>
+                <div className="flex w-full gap-x-4 mt-1">
+                  {optionsArray.map((option) => (
+                    <button
+                      key={option}
+                      type="button"
+                      className={` w-full text-sm py-2 border ${
+                        selectedAttributes[attributeName] === option
+                          ? "bg-c2 text-c1"
+                          : "border-white"
+                      }`}
+                      onClick={() =>
+                        handleAttributeClick(attributeName, option)
+                      }
+                    >
+                      {option}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          }
+        )}
+      </div>
+    );
+  };
+
+  //   const handleAttributeClick = (attributeName, option) => {
+  //   setSelectedAttributes(prev => ({
+  //     ...prev,
+  //     [attributeName]: option
+  //   }));
+  // };
   return (
     <div>
       <section className="py-14 md:py-10 relative overflow-hidden z-10">
@@ -293,24 +399,33 @@ const EachProductPage = () => {
               <form action="#!">
                 <div className="mb-6">
                   <ColorVariant
-                    variations={singleData?.variations}
+                    groupedByColor={singleData?.groupedByColor}
                     selectedVariation={selectedVariation}
                     onColorChange={handleColorChange}
                   />
                 </div>
                 <div className="mb-6">
                   <SizeVariant
-                    sizes={getAvailableSizes()}
                     selectedSize={selectedSize}
                     onSizeChange={handleSizeChange}
+                    selectedVariation={selectedVariation}
+                    colorSizeMap={singleData?.colorSizeMap || {}}
+                    groupedByColor={singleData?.groupedByColor || {}}
                   />
                 </div>
+                {renderAttributeOptions()}
 
                 <div className="flex flex-wrap gap-3 items-center my-7">
                   {qty === 0 ? (
                     <button
                       type="button"
-                      onClick={() => setQty(1)}
+                      onClick={() => {
+                        if (!isLoggedIn) {
+                          navigate("/login");
+                        } else {
+                          setQty(1);
+                        }
+                      }}
                       className="border border-c2 text-white cursor-pointer hover:bg-[#edb141] hover:text-white text-sm uppercase px-6 py-4 md:px-12 min-w-[202px]"
                     >
                       Add To Cart
@@ -341,6 +456,13 @@ const EachProductPage = () => {
 
                   <button
                     type="button"
+                    onClick={() => {
+                      if (!isLoggedIn) {
+                        navigate("/login");
+                      } else {
+                        // Handle Buy it Now logic
+                      }
+                    }}
                     className="bg-c2 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
                   >
                     Buy it Now
@@ -348,6 +470,7 @@ const EachProductPage = () => {
                 </div>
 
                 <div
+                  className="mt-10"
                   dangerouslySetInnerHTML={{ __html: singleData?.description }}
                 />
               </form>

@@ -342,8 +342,8 @@ export const getAllAddress = asyncHandler(async(req,res)=>{
     const userId = req.user.id
    
     const address = await Address.findOne({userId});
-
-    if(address.length === 0){
+console.log("address",address)
+    if(address?.length === 0){
       throw new ApiError("no address found" , 400)
     }
 

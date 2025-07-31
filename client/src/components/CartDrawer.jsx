@@ -15,7 +15,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const [customLoader, setCustomLoader] = useState(true);
   const navigate = useNavigate();
   const { user, isLoggedin } = useSelector((state) => state?.user);
-  const [variationId, setVariationId] = useState("");
   console.log(user);
 
   const handleGetCart = async () => {
@@ -25,11 +24,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
       // setCartData(response)
       setCartData(response?.payload?.data || []);
       console.log("getting cart data", response);
-      if (response?.payload?.data?.products.length === 0) {
-        navigate("/");
-        onClose();
-        // await dispatch(getNavbarCartCount());
-      }
+      
     } catch (error) {
       console.error("Error fetching cart:", error);
     } finally {
@@ -52,7 +47,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
     }
   };
 
-  const updateCart = async (newQuantity, productId) => {
+  const updateCart = async (newQuantity, productId , variationId) => {
     console.log(variationId);
     // if (newQuantity < 1) return;
     try {
@@ -126,7 +121,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                           <button
                             type="button"
                             onClick={() => {
-                              setVariationId(item.variationId);
+                              // setVariationId(item.variationId);
                               updateCart(
                                 item.quantity - 1,
                                 item.productId._id,
@@ -141,7 +136,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                           <button
                             type="button"
                             onClick={() => {
-                              setVariationId(item.variationId);
+                              // setVariationId(item.variationId);
                               updateCart(
                                 item.quantity + 1,
                                 item.productId._id,

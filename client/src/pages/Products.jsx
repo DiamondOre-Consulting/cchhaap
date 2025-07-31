@@ -1,134 +1,89 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
+import { FaSpinner } from "react-icons/fa";
 import "swiper/css/pagination";
 import { Navigation, Autoplay } from "swiper/modules";
 import PropTypes from "prop-types";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
-// import { FaCartPlus, FaHeart, FaStar } from "react-icons/fa";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
-import { Link } from "react-router-dom";
-
-const products = [
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/232_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/231_3d542d44-5da8-41de-9929-65415aa3a04c_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/235_216538f3-b1ae-465c-bc5f-70ac82806cc9_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/233_8526d0dd-9406-48b2-be35-43dc40824434_800x.jpg?v=1751977523",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/ee9d8ee419e248be97a78b9725b38d2a/ee9d8ee419e248be97a78b9725b38d2a.HD-1080p-7.2Mbps-50818514.mp4?v=0",
-    ],
-    title: "PP Electrophoretic Lacquer Plant",
-  },
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/236_58b58618-38be-4641-befd-392be0c234ff_800x.jpg?v=1751977535",
-      "https://shopmulmul.com/cdn/shop/files/298_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/301_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/299_1100x.jpg?v=1751978222",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/3eb9dfa5e5ff4c23b67c5508b5d15834/3eb9dfa5e5ff4c23b67c5508b5d15834.HD-1080p-7.2Mbps-50818526.mp4?v=0",
-    ],
-
-    title: "Chrome Planting Plant",
-  },
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/232_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/231_3d542d44-5da8-41de-9929-65415aa3a04c_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/235_216538f3-b1ae-465c-bc5f-70ac82806cc9_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/233_8526d0dd-9406-48b2-be35-43dc40824434_800x.jpg?v=1751977523",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/ee9d8ee419e248be97a78b9725b38d2a/ee9d8ee419e248be97a78b9725b38d2a.HD-1080p-7.2Mbps-50818514.mp4?v=0",
-    ],
-    title: "PP Electrophoretic Lacquer Plant",
-  },
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/236_58b58618-38be-4641-befd-392be0c234ff_800x.jpg?v=1751977535",
-      "https://shopmulmul.com/cdn/shop/files/298_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/301_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/299_1100x.jpg?v=1751978222",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/3eb9dfa5e5ff4c23b67c5508b5d15834/3eb9dfa5e5ff4c23b67c5508b5d15834.HD-1080p-7.2Mbps-50818526.mp4?v=0",
-    ],
-
-    title: "Chrome Planting Plant",
-  },
-
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/232_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/231_3d542d44-5da8-41de-9929-65415aa3a04c_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/235_216538f3-b1ae-465c-bc5f-70ac82806cc9_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/233_8526d0dd-9406-48b2-be35-43dc40824434_800x.jpg?v=1751977523",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/ee9d8ee419e248be97a78b9725b38d2a/ee9d8ee419e248be97a78b9725b38d2a.HD-1080p-7.2Mbps-50818514.mp4?v=0",
-    ],
-    title: "PP Electrophoretic Lacquer Plant",
-  },
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/236_58b58618-38be-4641-befd-392be0c234ff_800x.jpg?v=1751977535",
-      "https://shopmulmul.com/cdn/shop/files/298_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/301_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/299_1100x.jpg?v=1751978222",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/3eb9dfa5e5ff4c23b67c5508b5d15834/3eb9dfa5e5ff4c23b67c5508b5d15834.HD-1080p-7.2Mbps-50818526.mp4?v=0",
-    ],
-
-    title: "Chrome Planting Plant",
-  },
-
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/232_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/231_3d542d44-5da8-41de-9929-65415aa3a04c_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/235_216538f3-b1ae-465c-bc5f-70ac82806cc9_800x.jpg?v=1751977523",
-      "https://shopmulmul.com/cdn/shop/files/233_8526d0dd-9406-48b2-be35-43dc40824434_800x.jpg?v=1751977523",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/ee9d8ee419e248be97a78b9725b38d2a/ee9d8ee419e248be97a78b9725b38d2a.HD-1080p-7.2Mbps-50818514.mp4?v=0",
-    ],
-    title: "PP Electrophoretic Lacquer Plant",
-  },
-  {
-    img: [
-      "https://shopmulmul.com/cdn/shop/files/236_58b58618-38be-4641-befd-392be0c234ff_800x.jpg?v=1751977535",
-      "https://shopmulmul.com/cdn/shop/files/298_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/301_1100x.jpg?v=1751978222",
-      "https://shopmulmul.com/cdn/shop/files/299_1100x.jpg?v=1751978222",
-    ],
-    video: [
-      "https://shopmulmul.com/cdn/shop/videos/c/vp/3eb9dfa5e5ff4c23b67c5508b5d15834/3eb9dfa5e5ff4c23b67c5508b5d15834.HD-1080p-7.2Mbps-50818526.mp4?v=0",
-    ],
-
-    title: "Chrome Planting Plant",
-  },
-];
+import { Link, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useParams } from "react-router-dom";
+import {
+  addToWishlist,
+  getAllProducts,
+  getCategorizedProduct,
+  getGenderWiseProduct,
+  removeFromWishlist,
+} from "@/Redux/Slices/productsSlice";
 
 const ProductItem = ({ product }) => {
+  console.log(product);
+  const dispatch = useDispatch();
   const prevRef = useRef(null);
   const nextRef = useRef(null);
-  const [isWish, setIsWish] = useState(false);
+  const [isWish, setIsWish] = useState(product.isInWishlist || false);
+  const [isWishLoading, setIsWishLoading] = useState(false);
 
   const toggleWishList = () => {
-    setIsWish((prev) => !prev);
+    if (!isWish) {
+      handleAddToWishlist(product._id);
+    } else {
+      handleRemoveFromWishlist(product._id);
+    }
   };
 
+  const handleAddToWishlist = async (productId) => {
+    try {
+      setIsWishLoading(true);
+      const response = await dispatch(addToWishlist(productId));
+      if (response?.payload?.success) {
+        setIsWish(true);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsWishLoading(false);
+    }
+  };
+
+  const handleRemoveFromWishlist = async (productId) => {
+    try {
+      setIsWishLoading(true);
+      const response = await dispatch(removeFromWishlist(productId));
+      if (response?.payload?.success) {
+        setIsWish(false);
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setIsWishLoading(false);
+    }
+  };
+
+  const firstVariation = product.variations?.[0];
+  const mediaItems = [
+    ...(firstVariation?.images || []).map((img) => ({
+      type: img.secureUrl.includes("video") ? "video" : "image",
+      src: img.secureUrl,
+    })),
+    ...(firstVariation?.thumbnailImage
+      ? [
+          {
+            type: "image",
+            src: firstVariation.thumbnailImage.secureUrl,
+          },
+        ]
+      : []),
+  ];
+
   return (
-    <div className=" ">
-      <div className="relative h-full ">
-        <div className=" flex justify-center items-center px-4">
+    <div className="">
+      <div className="relative h-full">
+        <div className="flex justify-center items-center px-4">
           <Swiper
             loop={true}
             autoplay={{
@@ -146,16 +101,7 @@ const ProductItem = ({ product }) => {
             modules={[Navigation, Autoplay]}
             className="w-full h-full relative"
           >
-            {[
-              ...(product.video || []).map((media) => ({
-                type: "video",
-                src: media,
-              })),
-              ...(product.img || []).map((media) => ({
-                type: "image",
-                src: media,
-              })),
-            ].map((media, index) => (
+            {mediaItems.map((media, index) => (
               <SwiperSlide key={index}>
                 {media.type === "video" ? (
                   <video
@@ -164,32 +110,37 @@ const ProductItem = ({ product }) => {
                     autoPlay
                     muted
                     loop
-                    className="w-full mx-auto  h-[500px] object-cover"
+                    className="w-full mx-auto h-[500px] object-cover"
                   />
                 ) : (
                   <img
                     src={media.src}
-                    alt={`Slide ${index}`}
-                    className="w-full mx-auto  h-[500px] object-cover"
+                    alt={`${product.productName} - ${index}`}
+                    className="w-full mx-auto h-[500px] object-cover"
                   />
                 )}
               </SwiperSlide>
             ))}
 
-            <Link to={'/each-product/68886bfa6e557e27a8ef3e53'} className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white  px-6 py-2 z-40 shadow-md">
+            <Link
+              to={`/each-product/${product._id}`}
+              className="absolute text-c1 bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-6 py-2 z-40 shadow-md"
+            >
               Quick View
             </Link>
           </Swiper>
 
-          <div className="absolute top-2 left-6 bg-white/60  p-2 z-40 shadow-md rounded-full">
-            {isWish ? (
+          <div className="absolute top-2 left-6 bg-white/60 p-2 z-40 shadow-md rounded-full">
+            {isWishLoading ? (
+              <FaSpinner className="text-xl animate-spin" />
+            ) : isWish ? (
               <FaHeart
-                className="text-xl font-bold cursor-pointer text-red-600 "
+                className="text-xl font-bold cursor-pointer text-red-600"
                 onClick={toggleWishList}
               />
             ) : (
               <CiHeart
-                className="text-xl font-bold cursor-pointer"
+                className="text-xl font-bold cursor-pointer text-c1"
                 onClick={toggleWishList}
               />
             )}
@@ -211,12 +162,6 @@ const ProductItem = ({ product }) => {
           </div>
         </div>
       </div>
-
-      {/* <div className="relative p-4 lg:p-6 text-start">
-        <a href="#!">
-          <h5 className="text-[1.3rem] font-medium ">{product.title}</h5>
-        </a>
-      </div> */}
     </div>
   );
 };
@@ -226,20 +171,109 @@ ProductItem.propTypes = {
 };
 
 const Products = () => {
+  const dispatch = useDispatch();
+  const { id, gender, categoryName: urlCategoryName } = useParams();
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const location = useLocation();
+  const categoryName = urlCategoryName || location.state?.categoryName || "";
+  console.log("categoryyy name", categoryName);
+
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      let response;
+
+      if (gender) {
+        response = await dispatch(getGenderWiseProduct(gender));
+      } else if (id) {
+        response = await dispatch(getCategorizedProduct(id));
+      } else {
+        response = await dispatch(getAllProducts());
+      }
+
+      // Handle different response structures
+      const productsData =
+        response?.payload?.data?.products ||
+        response?.payload?.data ||
+        response?.payload ||
+        [];
+      setProducts(Array.isArray(productsData) ? productsData : []);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      setProducts([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, [id, gender]);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-64">
+        <FaSpinner className="animate-spin text-4xl" />
+      </div>
+    );
+  }
+
+  const getTitle = () => {
+    if (gender) {
+      return `${gender.charAt(0).toUpperCase() + gender.slice(1)}'s Collection`;
+    }
+    if (categoryName) {
+      return `${categoryName} Collection`;
+    }
+    return "Our Products";
+  };
+
   return (
     <div>
-      <section className="relative z-10 overflow-hidden ezy__epgrid5 light py-14 md:py-10 ">
-        <div className=" px-4 mx-auto">
-          <h2 className="text-4xl sm:text-6xl md:text-[3rem] font-medium leading-none  text-center">
-            Our Products
+      <section className="relative z-10 overflow-hidden ezy__epgrid5 light py-14 md:py-10">
+        <div className="px-4 mx-auto">
+          <h2 className="text-4xl sm:text-6xl md:text-[3rem] font-medium leading-none text-center">
+            {getTitle()}
           </h2>
-          <div className="grid grid-cols-4 gap-y-6 mt-20 text-center">
-            {products.map((product, i) => (
-              <div className="" key={i}>
-                <ProductItem product={product} />{" "}
-              </div>
-            ))}
-          </div>
+
+          {products.length === 0 ? (
+            <div className="text-center py-20">
+              <p className="text-lg mb-4">No products found</p>
+              <Link to="/all-products" className="bg-c2 text-c1 px-10 py-2">
+                Browse all products
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-20">
+              {products?.map((product) => (
+                <div key={product._id}>
+                  <ProductItem product={product} />
+                  <div className="mt-2 text-center">
+                    <h3 className="text-lg line-clamp-1 font-medium">
+                      {product.productName}
+                    </h3>
+                    {product.variations?.[0] && (
+                      <p className="font-bold">
+                        ₹{product.variations[0].price}
+                        {product.variations[0].discountPrice > 0 && (
+                          <span className="ml-2 text-sm text-red-500 line-through">
+                            ₹
+                            {Math.round(
+                              product.variations[0].price +
+                                (product.variations[0].price *
+                                  product.variations[0].discountPrice) /
+                                  100
+                            )}
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>

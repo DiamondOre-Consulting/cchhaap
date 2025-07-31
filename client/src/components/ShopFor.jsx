@@ -1,5 +1,6 @@
 import React from 'react'
 import { motion } from "framer-motion";
+import { Link } from 'react-router-dom';
 
 
 const ShopFor = () => {
@@ -31,7 +32,7 @@ const ShopFor = () => {
 
       <div className="grid grid-cols-3 gap-x-4 ">
         {items.map((item , index) => (
-          <div key={index} className="relative overflow-hidden  w-full max-w-lg mx-auto cursor-pointer group">
+          <Link to={`/products/gender/${item?.category}`} key={index} className="relative overflow-hidden  w-full max-w-lg mx-auto cursor-pointer group">
             <div className="relative h-[500px] w-full overflow-hidden">
               <motion.img
                 src={item.image}
@@ -44,7 +45,7 @@ const ShopFor = () => {
                 {item.category}
               </p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </div>

@@ -3,10 +3,37 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Orders from "@/components/Profile/Orders";
 import Address from "@/components/Profile/Address";
 import Wishlist from "@/components/Profile/Wishlist";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { userSignOut } from "@/Redux/Slices/authSlice";
+import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+
 
 const ProfilePage = () => {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams();
+  const defaultTab = searchParams.get("tab") || "tab-1";
+
+  const handleTabChange = (value) => {
+    setSearchParams({ tab: value });
+  };
+
+
+    const handleLogout = async () => {
+    const res = await dispatch(userSignOut());
+    console.log(res);
+    toast.success("Logged out successfully");
+    navigate("/login");
+  };
+
+
   return (
-    <Tabs defaultValue="tab-1" className="items-center py-6">
+    <Tabs 
+      defaultValue={defaultTab} 
+      className="items-center py-6"
+      onValueChange={handleTabChange}
+    >
       <TabsList className="h-auto rounded-none border-b bg-transparent w-96 p-0">
         <TabsTrigger
           value="tab-1"
@@ -16,18 +43,16 @@ const ProfilePage = () => {
         </TabsTrigger>
         <TabsTrigger
           value="tab-2"
-          className="data-[state=active]:after:bg-primary relative rounded-none cursor-pointer  py-2 w-full  after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+          className="data-[state=active]:after:bg-primary relative rounded-none cursor-pointer py-2 w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
           Address
         </TabsTrigger>
-
         <TabsTrigger
           value="tab-3"
           className="data-[state=active]:after:bg-primary relative rounded-none py-2 cursor-pointer w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
           WishList
         </TabsTrigger>
-
         <TabsTrigger
           value="tab-4"
           className="data-[state=active]:after:bg-primary relative rounded-none py-2 cursor-pointer w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
@@ -36,25 +61,20 @@ const ProfilePage = () => {
         </TabsTrigger>
       </TabsList>
 
-      {/* <div className='w-full h-[1px] bg-black/30 my-4'></div> */}
       <TabsContent value="tab-1">
-        <p className="text-gray-100 p-4 text-center text-xs">
-          <Orders />
-        </p>
+        <Orders />
       </TabsContent>
       <TabsContent value="tab-2">
-        <p className="text-gray-100 p-4 text-center text-xs">
-          <Address />
-        </p>
+        <Address />
       </TabsContent>
       <TabsContent value="tab-3">
-        <p className="text-gray-100 p-4 text-center text-xs">
-          <Wishlist />
-        </p>
+        <Wishlist />
       </TabsContent>
       <TabsContent value="tab-4">
-        <p className="text-gray-100 p-4 text-center text-xs">
-          Content for Tab 3
+        <p className="text-gray-100 p-4 text-center  mt-6">
+         <button onClick={handleLogout} className="bg-c2 px-10 py-2 text-c1 text-lg cursor-pointer">
+          Logout
+         </button>
         </p>
       </TabsContent>
     </Tabs>

@@ -5,7 +5,7 @@ import userAxiosInstance from "../../Helper/axiosInstance";
 
 export const userGetCheckoutValues = createAsyncThunk('/user/checkout-values' , async()=>{
     try{
-        const response = await userAxiosInstance.get('/user/get-checkout-values');
+        const response = await userAxiosInstance.get('/get-checkout-values');
         return response?.data
     }
     catch(error){
