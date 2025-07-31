@@ -98,6 +98,8 @@ export const getCart = asyncHandler(async (req, res) => {
     select: "productName variations thumbnailImage",
   });
 
+
+
   if (!cart) throw new ApiError("Cart not found", 400);
 
     cart.products.forEach((product) => {

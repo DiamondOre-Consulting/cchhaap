@@ -161,6 +161,13 @@ export const getAdminSingleProduct = asyncHandler(async(req,res)=>{
         throw new ApiError("Product not found",400)
     }
 
+
+
+    const sizes = product.variations.map((variation)=>{
+            console.log("geu")
+             console.log(variation.size)
+    })
+
   
    
     sendResponse(res,200,product,"Product fetched successfully")

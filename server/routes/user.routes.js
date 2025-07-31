@@ -10,6 +10,10 @@ import { createOrder } from "../controllers/order.controller.js"
 import { createOrderBodySchema, createOrderQuerySchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
 import { deleteProductParamsSchema, getAdminAllProductsParamsSchema } from "../validator/admin.product.validator.js"
+import { getProductsByGender, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
+import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, getProductsByGenderParamsSchema, getProductsByGenderQuerySchema, getSingleProductQuerySchema, getUserSingleProductParamsSchema } from "../validator/user.product.validator.js"
+import { addToWishlist, getAllWishlistProducts, removeFromWishlist } from "../controllers/wishlist.controller.js"
+import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFromWishlistParamsSchema } from "../validator/wishlist.validator.js"
 
 
 
@@ -95,8 +99,41 @@ userRouter.get('/get-all-product/:limit/:page',validate({
    params:getAdminAllProductsParamsSchema
 }),getAdminAllProducts)
 
-userRouter.get('/get-single-product/:productId',validate({params:deleteProductParamsSchema}),getAdminSingleProduct)
+userRouter.get('/get-single-product/:productId',validate({query:getSingleProductQuerySchema, params: getUserSingleProductParamsSchema}),getUserSingleProduct)
 
+
+
+
+
+
+
+
+userRouter.post('/add-to-wishlist/:productId',userMiddleware,validate({
+   params: addToWishlistParamsSchema
+}),addToWishlist)
+
+userRouter.post('/remove-from-wishlist/:productId',userMiddleware,validate({
+    params: removeFromWishlistParamsSchema
+ }),removeFromWishlist)
+
+userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate({
+    params: getAllWishlistProductsParamsSchema
+}),getAllWishlistProducts)
+
+
+
+ userRouter.get("/get-categorized-products/:categoryName",validate({
+    params:getCategorizedProductsParamsSchema, query : getCategorizedProductsQuerySchema
+ }),getUserCategorizedProducts)
+
+
+ userRouter.get("/get-gender-based-products/:gender",validate({
+    params:getProductsByGenderParamsSchema, query : getProductsByGenderQuerySchema
+ }),getProductsByGender)
+
+
+
+ 
 
 
 
