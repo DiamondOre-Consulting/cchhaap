@@ -52,7 +52,7 @@ const Categories = () => {
         ))}
 
         <Link
-          to={`/products`}         
+          to={`/all-products`}         
           className="relative overflow-hidden  w-full max-w-sm mx-auto cursor-pointer group"
         >
           <div className="relative h-[500px] w-full overflow-hidden">
