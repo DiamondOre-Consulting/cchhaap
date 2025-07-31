@@ -3,6 +3,8 @@ import Product from "../models/product.model.js";
 import sendResponse from "../utils/sendResponse.js";
 import ApiError from "../utils/apiError.js";
 import Cart from "../models/cart.model.js";
+import mongoose from "mongoose";
+
 
 export const getUserSingleProduct = asyncHandler(async (req, res) => {
   try {
