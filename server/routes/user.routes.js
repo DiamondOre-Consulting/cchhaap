@@ -15,6 +15,7 @@ import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, 
 import { addToWishlist, getAllWishlistProducts, removeFromWishlist } from "../controllers/wishlist.controller.js"
 import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFromWishlistParamsSchema } from "../validator/wishlist.validator.js"
 import { getCheckoutValues } from "../controllers/checkout.controller.js"
+import { getAllCategories } from "../controllers/category.controller.js"
 
 
 
