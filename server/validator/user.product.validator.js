@@ -17,8 +17,6 @@ export const getCategorizedProductsParamsSchema = z.object({
     categoryId: z
     .string()
     .regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid category ID format" }),
-   
-    
 })
 
 export const getCategorizedProductsQuerySchema = z.object({
@@ -39,8 +37,16 @@ export const getProductsByGenderParamsSchema = z.object({
 
 export const getProductsByGenderQuerySchema = z.object({
     page: z.coerce.number().int().positive().default(1), // Convert to number, must be positive integer
-    limit: z.coerce.number().int().positive().max(100).default(10) // Max 100 items per page
-  
+    limit: z.coerce.number().int().positive().max(100).default(10), // Max 100 items per page
+    userId: z.string().optional()
+})
+
+
+
+export const getFeaturedProductsQuerySchema = z.object({
+    page: z.coerce.number().int().positive().default(1), // Convert to number, must be positive integer
+    limit: z.coerce.number().int().positive().max(100).default(10), // Max 100 items per page
+    userId: z.string().optional()
 })
 
 

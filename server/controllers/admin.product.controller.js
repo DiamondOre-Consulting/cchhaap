@@ -19,12 +19,11 @@ export const createProduct = asyncHandler(async (req, res) => {
     category,
     subCategory,
     description,
+    featuredProduct,
     sku,
     variations,
   } = req.body;
 
-  console.log(variations[0])
-console.log(req.files)
 
   // Convert null prototype objects to plain objects
   const parsedVariations = variations.map(variation => ({
@@ -69,6 +68,7 @@ console.log(req.files)
     brandName,
     category,
     subCategory,
+    featuredProduct,
     description,
     sku,
     variations: variationWithImages,
@@ -224,38 +224,33 @@ export const editProduct = asyncHandler(async (req, res) => {
     // --- Handle thumbnail image ---
     const thumbnailField = `variations[${index}][thumbnailImage]`;
     let thumbnailImage = existingVariation?.thumbnailImage || null;
-    // console.log("variation.thumbnailImage",existingVariation)
-    console.log("variation.images",variation.thumbnailImage)
-    // console.log(existingVariation)
-    // console.log(thumbnailImage)
     
-    // Check if new thumbnail file is uploaded
+
+   
     if (groupedUploads[thumbnailField]?.[0]) {
-      // New thumbnail uploaded: delete old if exists, use new
-      console.log(7)
-      // console.log("thumb",thumbnailImage)
+      
       if (thumbnailImage?.publicId) {
         imagesToDelete.push(thumbnailImage.publicId);
-         console.log(8)
+        
       }
       thumbnailImage = groupedUploads[thumbnailField][0];
-       console.log(9)
+       
     } else {
       // No new file uploaded, check if thumbnail should be preserved or removed
       if (variation.thumbnailImage.uniqueId==="") {
         // Explicitly set to null - remove thumbnail
-        console.log(1)
+      
         if (thumbnailImage?.publicId) {
           imagesToDelete.push(thumbnailImage.publicId);
-            console.log(2)
+           
         }
-          console.log(3)
+         
         thumbnailImage = null;
       } else if (variation.thumbnailImage && variation.thumbnailImage.publicId) {
         // Keep existing thumbnail if it's still referenced
-          console.log(4)
+          
         thumbnailImage = variation.thumbnailImage;
-          console.log(5)
+          
       }
       // If variation.thumbnailImage is undefined, preserve existing thumbnail
     }
@@ -339,6 +334,7 @@ export const editProduct = asyncHandler(async (req, res) => {
   if (category !== undefined) updateData.category = category;
   if (subCategory !== undefined) updateData.subCategory = subCategory;
   if (description !== undefined) updateData.description = description;
+  if (featuredProduct!== undefined) updateData.featuredProduct = featuredProduct;
   if (sku !== undefined) updateData.sku = sku;
   if (isActive !== undefined) updateData.isActive = isActive;
   updateData.variations = updatedVariations;

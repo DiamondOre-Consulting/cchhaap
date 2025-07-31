@@ -28,6 +28,12 @@ const productSchema = new mongoose.Schema(
     isActive: { type: Boolean, default: true, required: true },
     sku: { type: String, required: true, unique: true },
 
+    featuredProduct: {
+      type: Boolean,
+      default: false,
+      required: true
+    },
+
     variations: [
       {
         size: {

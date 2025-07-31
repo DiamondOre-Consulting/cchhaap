@@ -10,10 +10,11 @@ import { createOrder } from "../controllers/order.controller.js"
 import { createOrderBodySchema, createOrderQuerySchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
 import { deleteProductParamsSchema, getAdminAllProductsParamsSchema } from "../validator/admin.product.validator.js"
-import { getProductsByGender, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
-import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, getProductsByGenderParamsSchema, getProductsByGenderQuerySchema, getSingleProductQuerySchema, getUserSingleProductParamsSchema } from "../validator/user.product.validator.js"
+import { getFeaturedProducts, getProductsByGender, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
+import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, getFeaturedProductsQuerySchema, getProductsByGenderParamsSchema, getProductsByGenderQuerySchema, getSingleProductQuerySchema, getUserSingleProductParamsSchema } from "../validator/user.product.validator.js"
 import { addToWishlist, getAllWishlistProducts, removeFromWishlist } from "../controllers/wishlist.controller.js"
 import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFromWishlistParamsSchema } from "../validator/wishlist.validator.js"
+import { getCheckoutValues } from "../controllers/checkout.controller.js"
 
 
 
@@ -122,7 +123,7 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
 
 
 
- userRouter.get("/get-categorized-products/:categoryName",validate({
+ userRouter.get("/get-categorized-products/:categoryId",validate({
     params:getCategorizedProductsParamsSchema, query : getCategorizedProductsQuerySchema
  }),getUserCategorizedProducts)
 
@@ -130,6 +131,23 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
  userRouter.get("/get-gender-based-products/:gender",validate({
     params:getProductsByGenderParamsSchema, query : getProductsByGenderQuerySchema
  }),getProductsByGender)
+
+
+
+ userRouter.get('/get-featured-products',validate({
+    query: getFeaturedProductsQuerySchema
+ }),getFeaturedProducts)
+
+
+
+ userRouter.get('/get-checkout-values',userMiddleware,getCheckoutValues)
+
+
+
+
+
+
+
 
 
 

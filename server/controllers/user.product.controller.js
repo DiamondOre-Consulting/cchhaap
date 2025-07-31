@@ -230,15 +230,14 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
 
 
 export const getUserCategorizedProducts = asyncHandler(async (req, res) => {
-    const { categoryId, subCategoryText,  } = req.validatedData.params;
-    const {userId} = req.validatedData.query
+    const { categoryId } = req.validatedData.params;
+    const { userId } = req.validatedData.query;
     const limit = parseInt(req.params.limit) || 10;
     const page = parseInt(req.params.page) || 1;
     const skip = (page - 1) * limit;
 
     const products = await Product.aggregate([
         { $match: { category: new mongoose.Types.ObjectId(categoryId) } },
-        subCategoryText ? { $match: { subCategory: subCategoryText } } : { $match: {} },
         {
             $lookup: {
                 from: "wishlists",
@@ -259,9 +258,6 @@ export const getUserCategorizedProducts = asyncHandler(async (req, res) => {
     ]);
 
     if (!products.length) throw new ApiError("No products found", 400);
-
-    
-
     sendResponse(res, 200, products, "Products fetched successfully");
 });
 
@@ -326,6 +322,41 @@ export const getProductsByGender = asyncHandler(async (req, res) => {
     if (!products.length) throw new ApiError("No products found for this gender", 400);
 
     sendResponse(res, 200, products, "Gender products fetched successfully");
+});
+
+
+
+export const getFeaturedProducts = asyncHandler(async (req, res) => {
+    const { userId, page = 1, limit = 10 } = req.validatedData.query;
+    
+    const skip = (page - 1) * limit;
+
+    const products = await Product.aggregate([
+        { $match: { featuredProduct: true, isActive: true } },
+        {
+            $lookup: {
+                from: "wishlists",
+                let: { productId: "$_id" },
+                pipeline: [
+                    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+                    { $unwind: "$products" },
+                    { $match: { $expr: { $eq: ["$products.productId", "$$productId"] } } },
+                ],
+                as: "wishlist"
+            }
+        },
+        { $addFields: { 
+            isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] }
+        }},
+        { $project: { wishlist: 0 } },
+        { $sort: { createdAt: -1 } }, // Sorting by newest first
+        { $skip: skip },
+        { $limit: limit }
+    ]);
+
+    if (!products.length) throw new ApiError("No featured products found", 400);
+
+    sendResponse(res, 200, products, "Featured products fetched successfully");
 });
 
 
