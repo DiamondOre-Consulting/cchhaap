@@ -125,7 +125,8 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     });
 
 
-  await Wishlist.updateOne({},{$pull:{products:{productId:productId}}});
+  await Wishlist.updateMany({}, { $pull: { products: { productId } } });
+
 
 
 
@@ -194,6 +195,7 @@ export const editProduct = asyncHandler(async (req, res) => {
     category,
     subCategory,
     description,
+    featuredProduct,
     sku,
     variations,
     isActive
@@ -236,23 +238,24 @@ export const editProduct = asyncHandler(async (req, res) => {
 
    
     if (groupedUploads[thumbnailField]?.[0]) {
-      
+      console.log(1)
       if (thumbnailImage?.publicId) {
         imagesToDelete.push(thumbnailImage.publicId);
         
       }
+      console.log(2)
       thumbnailImage = groupedUploads[thumbnailField][0];
        
     } else {
       // No new file uploaded, check if thumbnail should be preserved or removed
       if (variation.thumbnailImage.uniqueId==="") {
         // Explicitly set to null - remove thumbnail
-      
+      console.log(3)
         if (thumbnailImage?.publicId) {
           imagesToDelete.push(thumbnailImage.publicId);
            
         }
-         
+         console.log(4)
         thumbnailImage = null;
       } else if (variation.thumbnailImage && variation.thumbnailImage.publicId) {
         // Keep existing thumbnail if it's still referenced
@@ -260,6 +263,7 @@ export const editProduct = asyncHandler(async (req, res) => {
         thumbnailImage = variation.thumbnailImage;
           
       }
+      console.log(5)
       // If variation.thumbnailImage is undefined, preserve existing thumbnail
     }
 

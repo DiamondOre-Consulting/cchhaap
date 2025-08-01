@@ -67,6 +67,9 @@ export const getAllWishlistProducts = asyncHandler(async (req, res) => {
         .limit(limit)
         .skip(skip);
 
+
+        
+
     if (!wishList || wishList.length === 0) {
         throw new ApiError("No products in wishlist", 400);
     }
