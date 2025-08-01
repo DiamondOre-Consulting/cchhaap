@@ -203,8 +203,8 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
     if (userId) {
       const cart = await Cart.findOne({ userId });
       if (cart) {
-        const cartItem = cart.products.length
-        cartQuantity = cartItem>0?cartItem:0;
+        const cartItem = cart.products.find(p => p.productId.toString() === product._id.toString());    
+        cartQuantity = cartItem.quantity>0?cartItem:0;
       }
     }
 
