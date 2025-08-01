@@ -4,6 +4,8 @@ import Product from "../models/product.model.js"
 import sendResponse from "../utils/sendResponse.js"
 import ApiError from "../utils/apiError.js"
 import Wishlist from "../models/wishlist.model.js"
+import Cart from "../models/cart.model.js"
+
 
 
 
@@ -128,7 +130,10 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   await Wishlist.updateMany({}, { $pull: { products: { productId } } });
 
 
-
+  await Cart.updateMany(
+    {},
+    { $pull: { products: { productId } } }
+  );
 
 
   await Product.findByIdAndDelete(productId);

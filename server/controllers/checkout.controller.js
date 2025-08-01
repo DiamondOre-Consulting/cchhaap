@@ -22,11 +22,16 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
     };
 
     checkoutValues.totalMRP = cart.products.reduce((acc, cartItem) => {
+        console.log("cartItem",cartItem)
+        console.log(1)
         const variation = cartItem.productId.variations.find(v => 
             v._id.toString() === cartItem.variationId.toString()
         );
+         console.log(variation)
         return acc + (variation.price * cartItem.quantity);
     }, 0);
+
+    console.log(checkoutValues.totalMRP)
 
     checkoutValues.totalPriceAfterDiscount = cart.products.reduce((acc, cartItem) => {
         const variation = cartItem.productId.variations.find(v => 

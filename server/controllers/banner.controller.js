@@ -131,3 +131,6 @@ export const editBannerImages = asyncHandler(async (req, res) => {
 
     sendResponse(res, 200, null, "Banner images synced");
 });
+
+
+
