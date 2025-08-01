@@ -198,14 +198,13 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
     };
 
     // Get cart quantity if user is logged in
-    let cartQuantity = 0;
+
+    let cartQuantity = 0; 
     if (userId) {
       const cart = await Cart.findOne({ userId });
       if (cart) {
-        const cartItem = cart.products.find(
-          item => item.productId?.toString() === productId.toString()
-        );
-        cartQuantity = cartItem?.quantity || 0;
+        const cartItem = cart.products.length
+        cartQuantity = cartItem>0?cartItem:0;
       }
     }
 
@@ -263,7 +262,7 @@ export const getUserCategorizedProducts = asyncHandler(async (req, res) => {
     isInWishlist: wishlistProductIds.includes(product._id.toString()),
   }));
 
-  console.log(updatedProducts)
+  
 
   sendResponse(res, 200, updatedProducts, "Products fetched successfully");
 });
