@@ -3,6 +3,8 @@ import ApiError from "../utils/apiError.js"
 const errorMiddleware = (err, req, res, next) => {
     let error = err
 
+    console.log(error)
+
      if (err.code === "LIMIT_UNEXPECTED_FILE") {
     return res.status(400).json({
       message: "Only one image is allowed. Please upload a single file.",

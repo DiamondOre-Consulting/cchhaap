@@ -4,6 +4,8 @@ import sendResponse from "../utils/sendResponse.js";
 import ApiError from "../utils/apiError.js";
 import Cart from "../models/cart.model.js";
 import mongoose from "mongoose";
+import Wishlist from "../models/wishlist.model.js";
+
 
 
 export const getUserSingleProduct = asyncHandler(async (req, res) => {
@@ -230,37 +232,40 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
 
 
 
-
 export const getUserCategorizedProducts = asyncHandler(async (req, res) => {
-    const { categoryId } = req.validatedData.params;
-    const { userId } = req.validatedData.query;
-    const limit = parseInt(req.params.limit) || 10;
-    const page = parseInt(req.params.page) || 1;
-    const skip = (page - 1) * limit;
+  const { categoryId } = req.validatedData.params;
+  const { userId } = req.validatedData.query;
+  const limit = parseInt(req.params.limit) || 10;
+  const page = parseInt(req.params.page) || 1;
+  const skip = (page - 1) * limit;
 
-    const products = await Product.aggregate([
-        { $match: { category: new mongoose.Types.ObjectId(categoryId) } },
-        {
-            $lookup: {
-                from: "wishlists",
-                let: { productId: "$_id" },
-                pipeline: [
-                    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-                    { $unwind: "$products" },
-                    { $match: { $expr: { $eq: ["$products.productId", "$$productId"] } } },
-                ],
-                as: "wishlist"
-            }
-        },
-        { $addFields: { isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] } } },
-        { $project: { wishlist: 0 } },
-        { $sort: { createdAt: -1 } },
-        { $skip: skip },
-        { $limit: limit }
-    ]);
+  console.log(userId)
 
-    if (!products.length) throw new ApiError("No products found", 400);
-    sendResponse(res, 200, products, "Products fetched successfully");
+  // ✅ Get user's wishlist productIds
+  const wishlist = await Wishlist.findOne({ userId });
+  
+  const wishlistProductIds = wishlist
+    ? wishlist.products.map((p) => p.productId.toString())
+    : [];
+
+  // ✅ Get products by category (with pagination)
+  const products = await Product.find({ category: categoryId })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean(); // lean for plain JS objects
+
+  if (!products.length) throw new ApiError("No products found", 400);
+
+  // ✅ Add isInWishlist flag manually
+  const updatedProducts = products.map((product) => ({
+    ...product,
+    isInWishlist: wishlistProductIds.includes(product._id.toString()),
+  }));
+
+  console.log(updatedProducts)
+
+  sendResponse(res, 200, updatedProducts, "Products fetched successfully");
 });
 
 // export const getSingleCategoryProducts = asyncHandler(async (req, res) => {
