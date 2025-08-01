@@ -125,9 +125,9 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     });
 
 
-  await Wishlist.findOneAndDelete({ productId: productId }).exec()
+  await Wishlist.updateOne({userId},{$pull:{products:{productId:productId}}});
 
-  
+
 
 
   await Product.findByIdAndDelete(productId);
