@@ -9,9 +9,14 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
     const cart = await Cart.findOne({ userId }).populate("products.productId");
+     console.log("cart",cart)
 
-    if (!cart) {
+      if (!cart) {
         throw new ApiError("Cart for this user not found", 400);
+    }
+
+    if (!cart.products.length) {
+        throw new ApiError("Product not found in the cart", 400);
     }
 
     const checkoutValues = {

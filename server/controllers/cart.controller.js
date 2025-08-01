@@ -3,6 +3,7 @@ import Product from "../models/product.model.js";
 import ApiError from "../utils/apiError.js";
 import Cart from "../models/cart.model.js";
 import sendResponse from "../utils/sendResponse.js";
+import Wishlist from "../models/wishlist.model.js";
 
 
 
@@ -156,6 +157,26 @@ export const removeItemFromCart = asyncHandler(async(req,res)=>{
 
     sendResponse(res,200,null,"Item removed from the cart")
 })
+
+
+
+export const getNavbarCartAndWishlistCount = asyncHandler(async (req, res) => {
+    const userId = req.user.id;
+
+    const cart = await Cart.findOne({ userId });
+    const wishlist = await Wishlist.findOne({ userId });
+
+    const totalCartProductCount = cart?.products?.length || 0;
+    const totalWishlistProductCount = wishlist?.products?.length || 0;
+
+    sendResponse(res, 200, {
+        totalCartProductCount,
+        totalWishlistProductCount
+    }, "Navbar cart and wishlist counts fetched successfully");
+});
+
+
+
 
 
 

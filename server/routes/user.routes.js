@@ -5,7 +5,7 @@ import validate from "../middlewares/zod.validator.js"
 import { userMiddleware } from "../middlewares/user.middleware.js"
 import { addAddressBodySchema, deleteAddressParamsSchema, editAddressBodySchema, editAddressParamsSchema } from "../validator/address.validator.js"
 import { removeItemFromCartParamsSchema, updateCartParamsSchema } from "../validator/cart.validator.js"
-import { getCart, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
+import { getCart, getNavbarCartAndWishlistCount, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
 import { createOrder } from "../controllers/order.controller.js"
 import { createOrderBodySchema, createOrderQuerySchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
@@ -145,6 +145,9 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
 
 
  userRouter.get('/get-all-categories',getAllCategories)
+
+
+ userRouter.get('/get-navbar-cart-wishlist-count',userMiddleware,getNavbarCartAndWishlistCount)
  
 
 
