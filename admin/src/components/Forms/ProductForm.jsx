@@ -24,6 +24,7 @@ const ProductForm = ({
   const dispatch = useDispatch();
   const editor = useRef(null);
   const fileInputRefs = useRef({});
+const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -230,12 +231,15 @@ const ProductForm = ({
 
   const onSubmit = async (data) => {
     const formData = new FormData();
+  setIsSubmitting(true);
 
     formData.append("productName", data.productName);
     formData.append("brandName", data.brandName);
     formData.append("category", data.category);
     formData.append("description", data.description);
     formData.append("isActive", data.isActive);
+    formData.append("featuredProduct", data.featuredProduct);
+
     formData.append("sku", data.sku);
 
     data.subCategory.forEach((sub, i) => {
@@ -322,6 +326,9 @@ const ProductForm = ({
     } catch (error) {
       console.error("Error saving product:", error);
     }
+    finally{
+        setIsSubmitting(false);
+    }
   };
 
 
@@ -335,6 +342,8 @@ const ProductForm = ({
         subCategory: singleData.subCategory || [""],
         description: singleData.description || "",
         isActive: singleData.isActive ?? true,
+        featuredProduct: singleData.featuredProduct ?? true,
+
         sku: singleData.sku || "",
         variations: (singleData.variations || []).map((v) => ({
           _id: v._id,
@@ -690,14 +699,14 @@ const ProductForm = ({
                     </div>
                   )}
 
-                  <button
+                  {/* <button
                     type="button"
                     onClick={() => addNewAttribute(idx)}
                     className="mt-4 bg-blue-500 text-white px-3 py-1 rounded text-sm"
                     disabled={!selectedLabel}
                   >
                     Add Attribute
-                  </button>
+                  </button> */}
                 </div>
               </div>
 
@@ -713,10 +722,10 @@ const ProductForm = ({
                   className="hidden"
                   ref={(el) => (fileInputRefs.current[`thumbnail-${idx}`] = el)}
                 />
-                {variation.thumbnailImage?.secureUrl ? (
+                {variation?.thumbnailImage?.secureUrl ? (
                   <div className="relative inline-block w-24 h-32 mt-2">
                     <img
-                      src={variation.thumbnailImage.secureUrl}
+                      src={variation?.thumbnailImage?.secureUrl}
                       alt="Thumbnail Preview"
                       className="absolute inset-0 w-full h-full rounded object-cover cursor-pointer"
                       onClick={() =>
@@ -770,7 +779,7 @@ const ProductForm = ({
                   }
                   className="bg-c1 text-sm text-white px-4 py-1 rounded hover:bg-c1/90"
                 >
-                  + Add Images
+                  + Add Images and Videos
                 </button>
 
                 <div className="mt-4 flex flex-wrap gap-3">
@@ -862,6 +871,12 @@ const ProductForm = ({
         <label className="font-medium">Product is Active</label>
       </div>
 
+
+         <div className="flex items-center gap-2 mt-4">
+        <input type="checkbox" {...register("featuredProduct")} />
+        <label className="font-medium">Featured Product </label>
+      </div>
+
       <div className="flex justify-end gap-4 mt-6">
         <button
           type="button"
@@ -870,8 +885,8 @@ const ProductForm = ({
         >
           Cancel
         </button>
-        <button type="submit" className="bg-c1 text-white px-6 py-2 rounded">
-          {singleData ? "Update Product" : "Create Product"}
+        <button type="submit" className="bg-c1 text-white px-6 py-2 rounded"   disabled={isSubmitting}>
+           {isSubmitting ? 'Processing...' : singleData ? 'Update Product' : 'Create Product'}
         </button>
       </div>
     </form>

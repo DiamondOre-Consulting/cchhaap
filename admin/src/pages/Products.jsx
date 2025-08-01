@@ -220,16 +220,7 @@ const Products = () => {
                 <th scope="col" class="px-6 py-3">
                   SKU
                 </th>
-                {/* <th scope="col" class="px-6 py-3">
-                  price
-                </th> */}
-                {/* <th scope="col" class="px-6 py-3">
-                  Sale Price
-                </th> */}
-                {/* <th scope="col" class="px-6 py-3">
-                  Stock
-                </th> */}
-
+               
                 <th scope="col" class="px-6 py-3">
                   Status
                 </th>
@@ -250,7 +241,7 @@ const Products = () => {
                   >
                     <img
                       class="w-20 h-20 "
-                      src={product?.category?.categoryImage?.secureUrl}
+                      src={product?.variations?.[0]?.thumbnailImage?.secureUrl}
                       alt="Jese image"
                     />
                     <div class="ps-3  text-wrap">
@@ -267,8 +258,10 @@ const Products = () => {
 
                   <td class="px-6 py-4">
                     <div class="flex items-center">
-                      <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div>{" "}
-                      Active
+                     {
+                      product?.isActive ? <div class="h-2.5 w-2.5 rounded-full bg-green-500 me-2"></div> : <div class="h-2.5 w-2.5 rounded-full bg-red-800 me-2"></div>
+                     } 
+                    {product?.isActive ? "Active" : "Deactive"}
                     </div>
                   </td>
                   <td class="px-6 py-4">

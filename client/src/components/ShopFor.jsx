@@ -28,9 +28,9 @@ const ShopFor = () => {
   return (
     <div>
        <div className="py-6 px-4">
-      <h1 className="text-center  text-[3rem]  mb-8 uppercase">Shop For</h1>
+      <h1 className="text-center text-[2rem] md:text-[3rem]  mb-8 uppercase">Shop For</h1>
 
-      <div className="grid grid-cols-3 gap-x-4 ">
+      <div className="grid gap-y-4 md:gap-y-0 md:grid-cols-3 gap-x-4 ">
         {items.map((item , index) => (
           <Link to={`/products/gender/${item?.category}`} key={index} className="relative overflow-hidden  w-full max-w-lg mx-auto cursor-pointer group">
             <div className="relative h-[500px] w-full overflow-hidden">

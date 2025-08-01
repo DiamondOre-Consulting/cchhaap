@@ -13,6 +13,7 @@ export const productDefaultValues = {
   discountType: "percentage",
   isActive: true,
   sku: "",
+  featuredProduct:true,
   variations: [
     {
       size: "",

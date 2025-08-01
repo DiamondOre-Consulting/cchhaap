@@ -8,6 +8,7 @@ import { CiHeart } from "react-icons/ci";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { FaRegHeart } from "react-icons/fa";
 import logo from "../assets/logo.png";
+import { CircleUser } from "lucide-react";
 
 import {
   NavigationMenu,
@@ -32,6 +33,7 @@ import { useSelector } from "react-redux";
 const navigationLinks = [
   // { href: "#", label: "Home" },
   { href: "#", label: "Featured Products" },
+  //  { href: "#", label: "All Categories" },
   {
     label: "For Men",
     submenu: true,
@@ -212,7 +214,7 @@ const Navbar = () => {
           </div>
           <div className="flex items-center w-full justify-center  gap-6">
             {/* Navigation menu */}
-            <NavigationMenu viewport={false} className="max-md:hidden ">
+            <NavigationMenu viewport={false} className="max-md:hidden w-full ">
               <NavigationMenuList className="gap-2   text-gray-100 ">
                 {navigationLinks.map((link, index) => (
                   <NavigationMenuItem key={index}>
@@ -302,31 +304,53 @@ const Navbar = () => {
           <div className="flex cursor-pointer  justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-white  gap-2">
             <IoSearch onClick={handleOpenSearch} />
 
-            <FaRegUser
-              onClick={() => {
-                if (!isLoggedIn) {
+            {!isLoggedIn ? (
+              <FaRegUser
+                onClick={() => {
                   navigate("/login");
-                } else {
-                  navigate("/my-account");
-                }
-              }}
-            />
+                }}
+              />
+            ) : (
+              <CircleUser onClick={() => navigate("/my-account")} />
+            )}
 
-            <Link to={"/my-account?tab=tab-3"}>
-              {" "}
-              <FaRegHeart />
-            </Link>
-            <AiOutlineShoppingCart
-            onClick={handleOpenCart}
-              // onClick={() => {
-              //   // handleOpenCart();
-              //   if(isLoggedIn){
-              //       navigate('/login')
-              //   }else{
-              //      handleOpenCart()
-              //   }
-              // }}
-            />
+            <div className="relative">
+              <FaRegHeart
+                onClick={() => {
+                  if (isLoggedIn) {
+                    navigate("/my-account?tab=tab-3");
+                  } else {
+                    navigate("/login");
+                  }
+                }}
+              />
+              {isLoggedIn ? (
+                <div className="size-4 aspect-square bg-white flex justify-center items-center text-sm text-black absolute -top-1 -right-2 rounded-full">
+                  1
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
+
+            <div className="relative">
+              <AiOutlineShoppingCart
+                onClick={() => {
+                  if (!isLoggedIn) {
+                    navigate("/login");
+                  } else {
+                   {handleOpenCart()}
+                  }
+                }}
+              />
+              {isLoggedIn ? (
+                <div className="size-4 aspect-square bg-white flex justify-center items-center text-sm text-black absolute -top-1 -right-2 rounded-full">
+                  1
+                </div>
+              ) : (
+                ""
+              )}
+            </div>
           </div>
         </div>
       </header>

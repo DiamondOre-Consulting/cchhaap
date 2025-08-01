@@ -95,8 +95,15 @@ export const allWislist = createAsyncThunk('/user/get-wishlist' , async(productI
     }
 })
 
-
-
+export const getFeaturedProducts = createAsyncThunk('/user/get-featured-products' , async()=>{
+  try {
+    const response =await axiosInstance.get('/get-featured-products');
+    console.log(response)
+    return response?.data
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 const productSlice = createSlice({
   name: "product",

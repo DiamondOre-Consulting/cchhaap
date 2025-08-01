@@ -22,6 +22,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
       setCustomLoader(true);
       const response = await dispatch(userGetCart());
       // setCartData(response)
+      console.log(response)
       setCartData(response?.payload?.data || []);
       console.log("getting cart data", response);
       
@@ -90,12 +91,12 @@ const CartDrawer = ({ isOpen, onClose }) => {
             {cartData?.products?.map((item) => {
               // Find the exact variation that matches the variationId in the cart
               const variation =
-                item.productId.variations.find(
-                  (v) => v._id === item.variationId
-                ) || item.productId.variations[0];
+                item.productId?.variations?.find(
+                  (v) => v?._id === item?.variationId
+                ) || item?.productId?.variations[0];
               return (
                 <div
-                  key={item._id}
+                  key={item?._id}
                   className="flex border-black px-8 gap-x-4 items-center"
                 >
                   <img
@@ -104,12 +105,12 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       "https://via.placeholder.com/150"
                     }
                     className="max-h-32 object-cover"
-                    alt={item.productId.productName}
+                    alt={item?.productId?.productName}
                   />
                   <div className="flex w-full justify-between">
                     <div className="flex flex-col">
                       <p className="text-sm font-medium">
-                        {item.productId.productName}
+                        {item?.productId?.productName}
                       </p>
                       <p className="text-sm text-gray-600">
                         {variation?.color?.name || "Color not specified"} |{" "}
@@ -193,7 +194,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     ₹
                     {cartData.products
                       .reduce((total, item) => {
-                        const variation = item.productId.variations.find(
+                        const variation = item?.productId?.variations?.find(
                           (v) => v._id === item.variationId
                         );
                         return (
@@ -222,12 +223,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
             ) : (
               <div className="flex flex-col items-center justify-center h-full">
                 <p className="text-lg mb-4">Your cart is empty</p>
-                <button
-                  onClick={onClose}
+                <Link
+                 to={'/all-products'}
+                 onClick={onClose}
                   className="bg-c1 text-white px-6 py-2 hover:bg-gray-800 transition-colors"
                 >
                   Continue Shopping
-                </button>
+                </Link>
               </div>
             )}
           </div>

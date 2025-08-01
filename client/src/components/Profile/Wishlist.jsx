@@ -14,6 +14,7 @@ const Wishlist = () => {
     try {
       setLoading(true);
       const response = await dispatch(allWislist());
+      console.log(response)
       setWishlistData(response?.payload?.data?.wishList?.[0]?.products || []);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -25,7 +26,7 @@ const Wishlist = () => {
   const handleRemoveFromWishlist = async (productId) => {
     try {
       await dispatch(removeFromWishlist(productId));
-      handleGetAllWishlistProducts(); 
+      handleGetAllWishlistProducts();
     } catch (error) {
       console.error("Error removing from wishlist:", error);
     }
@@ -44,87 +45,93 @@ const Wishlist = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl text-center font-semibold mb-4">My Wishlist</h1>
-      
-      {wishlistData.length === 0 ? (
-        <div className="text-center py-4">
-          <p className="text-lg">Your wishlist is empty</p>
-          <Link 
-            to="/" 
-            className="bg-c2 px-10 py-2 text-c1 mt-3 inline-block"
-          >
-            Browse Products
-          </Link>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
-          {wishlistData.map((item) => {
-            const product = item.productId;
-            const firstVariation = product.variations?.[0];
-            const thumbnail = firstVariation?.thumbnailImage?.secureUrl || 
-                            firstVariation?.images?.[0]?.secureUrl;
+    <div className=" container py-8">
+  <h1 className="text-3xl text-center font-semibold mb-8 text-white">My Wishlist</h1>
 
-            return (
-              <div 
-                key={item._id} 
-                className="relative border border-white/40 w-full w-[28rem] rounded overflow-hidden hover:shadow-md transition-shadow"
-              >
-                {thumbnail && (
-                  <Link to={`/each-product/${product._id}`}>
-                    <img
-                      src={thumbnail}
-                      alt={product.productName}
-                      className="h-96 w-full object-cover"
-                      loading="lazy"
-                    />
-                  </Link>
-                )}
-                
-                <div className="p-4 border-t border-gray-200">
-                  <Link to={`/each-product/${product._id}`}>
-                    <h3 className="text-lg font-medium line-clamp-1 mb-1">
-                      {product.productName}
-                    </h3>
-                    <p className="text-gray-100 text-sm mb-3">{product.brandName}</p>
-                  </Link>
-                  
-                  {firstVariation && (
-                    <div className="flex flex-col justify-between items-start">
-                      <div>
-                        <p className="text-lg font-bold">
-                          ₹{firstVariation.price}
-                          {firstVariation.discountPrice > 0 && (
-                            <span className="ml-2 text-xs text-red-400 line-through">
-                              ₹{Math.round(firstVariation.price + (firstVariation.price * firstVariation.discountPrice / 100))}
-                            </span>
-                          )}
-                        </p>
-                   
-                      </div>
-                      <button className="w-full bg-c2 mt-2 text-c1 py-2">View  Products</button>
-                    </div>
-                  )}
-                  
-               
-                </div>
-                
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleRemoveFromWishlist(product._id);
-                  }}
-                  className="absolute cursor-pointer top-2 right-2 bg-red-500 text-white w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-700 transition"
-                  aria-label="Remove from wishlist"
-                >
-                  <X size={13} />
-                </button>
-              </div>
-            );
-          })}
-        </div>
-      )}
+  {wishlistData.length === 0 ? (
+    <div className="text-center py-10 bg-white/5 rounded-xl">
+      <p className="text-lg text-gray-200">Your wishlist is empty</p>
+      <Link
+        to="/"
+        className="mt-4 inline-block bg-c2 text-c1 px-8 py-2 rounded-md font-medium hover:bg-c2/90 transition"
+      >
+        Browse Products
+      </Link>
     </div>
+  ) : (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+      {wishlistData.map((item) => {
+        const product = item?.productId;
+        const firstVariation = product?.variations?.[0];
+        const thumbnail =
+          firstVariation?.thumbnailImage?.secureUrl ||
+          firstVariation?.images?.[0]?.secureUrl;
+
+        return (
+          <div
+            key={item?._id}
+            className="relative bg-white/5 border border-white/10 w-full  mx-auto rounded-xl overflow-hidden hover:shadow-lg hover:scale-[1.02] transition duration-300"
+          >
+            {thumbnail && (
+              <Link to={`/each-product/${product?._id}`}>
+                <img
+                  src={thumbnail}
+                  alt={product?.productName}
+                  className="h-80 w-full object-cover"
+                  loading="lazy"
+                />
+              </Link>
+            )}
+
+            <div className="p-4">
+              <Link to={`/each-product/${product?._id}`}>
+                <h3 className="text-lg font-semibold text-white mb-1 line-clamp-1">
+                  {product?.productName}
+                </h3>
+                <p className="text-sm text-gray-400 mb-2">
+                  {product?.brandName}
+                </p>
+              </Link>
+
+              {firstVariation && (
+                <div className="flex flex-col items-start">
+                  <p className="text-lg font-bold text-white">
+                    ₹{firstVariation?.price}
+                    {firstVariation?.discountPrice > 0 && (
+                      <span className="ml-2 text-sm text-red-400 line-through">
+                        ₹
+                        {Math.round(
+                          firstVariation.price +
+                            (firstVariation.price * firstVariation.discountPrice) / 100
+                        )}
+                      </span>
+                    )}
+                  </p>
+
+                  <button className="w-full bg-c2 text-c1 mt-3 py-2 rounded-md font-medium hover:bg-c2/90 transition">
+                    View Product
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                handleRemoveFromWishlist(product._id);
+              }}
+              className="absolute top-3 right-3 bg-red-500 text-white w-7 h-7 rounded-full flex items-center justify-center hover:bg-red-600 transition"
+              aria-label="Remove from wishlist"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  )}
+</div>
+
   );
 };
 
