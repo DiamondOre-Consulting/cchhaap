@@ -102,6 +102,9 @@ export const getCart = asyncHandler(async (req, res) => {
 
   if (!cart) throw new ApiError("Cart not found", 400);
 
+
+  cart.products = cart.products.filter((product) => product.productId !== null);
+
     cart.products.forEach((product) => {
     const variation = product.productId.variations.find(
       (v) => v._id.toString() === product.variationId.toString()

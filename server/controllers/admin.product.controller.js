@@ -3,6 +3,7 @@ import { fileDestroy, fileUpload,multipleFileUpload } from "../utils/fileUpload.
 import Product from "../models/product.model.js"
 import sendResponse from "../utils/sendResponse.js"
 import ApiError from "../utils/apiError.js"
+import Wishlist from "../models/wishlist.model.js"
 
 
 
@@ -41,7 +42,7 @@ export const createProduct = asyncHandler(async (req, res) => {
 
   const variationWithImages = parsedVariations.map((variation, index) => {
     // Correct field name patterns
-    const thumbnailField = `variations[${index}][thumbnailImage][file]`;
+    const thumbnailField = `variations[${index}][thumbnailImage]`;
     const imagesField = `variations[${index}][images]`;
     
     const thumbnailImage = groupedUploads[thumbnailField]?.[0] || null;
@@ -95,6 +96,8 @@ export const deleteProduct = asyncHandler(async (req, res) => {
   const imageDeletionPromises = [];
 
 
+
+
   product.variations.forEach(variation => {
   
     if (variation.thumbnailImage?.publicId) {
@@ -120,6 +123,11 @@ export const deleteProduct = asyncHandler(async (req, res) => {
       console.error("Error deleting images:", error);
 
     });
+
+
+  await Wishlist.findOneAndDelete({ productId: productId }).exec()
+
+  
 
 
   await Product.findByIdAndDelete(productId);
