@@ -125,7 +125,7 @@ export const deleteProduct = asyncHandler(async (req, res) => {
     });
 
 
-  await Wishlist.updateOne({userId},{$pull:{products:{productId:productId}}});
+  await Wishlist.updateOne({},{$pull:{products:{productId:productId}}});
 
 
 
