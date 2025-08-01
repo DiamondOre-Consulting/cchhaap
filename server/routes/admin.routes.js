@@ -12,7 +12,7 @@ import { createAttributeDefinition, deleteAttributeDefinition, editAttributeDefi
 import { createAttributeDefinitionSchema, editAttributeDefinitionBodySchema, getAttributeDefinitionParamsSchema } from '../validator/attributeDefinition.validator.js';
 import { createProductBodySchema, deleteProductParamsSchema, getAdminAllProductsParamsSchema } from '../validator/admin.product.validator.js';
 import { createProduct, deleteProduct, editProduct, getAdminAllProducts, getAdminSingleProduct } from '../controllers/admin.product.controller.js';
-import { addBannerImage, getAllBanners } from '../controllers/banner.controller.js';
+import { addBannerImage, editBannerImages, getAllBanners } from '../controllers/banner.controller.js';
 
 
 
@@ -97,6 +97,10 @@ adminRouter.post('/add-banner-images',multipleImageUpload.array('bannerImages'),
 
 
 adminRouter.get('/get-all-banners',adminMiddleware,getAllBanners)
+
+
+
+adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),adminMiddleware,editBannerImages)
 
 
 

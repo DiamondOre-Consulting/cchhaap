@@ -2,7 +2,10 @@ import { asyncHandler } from "../utils/asyncHandler.js"
 import sendResponse from "../utils/sendResponse.js"
 import Banner from "../models/banner.model.js"
 import ApiError from "../utils/apiError.js"
-import { fileUpload } from "../utils/fileUpload.js"
+import { fileDestroy, fileUpload, multipleFileUpload } from "../utils/fileUpload.js"
+
+
+
 
 
 
@@ -66,4 +69,65 @@ export const getAllBanners = asyncHandler(async (req, res) => {
         throw new ApiError("No banners found", 404);
     }
     sendResponse(res, 200, banner, "Banner images fetched");
+});
+
+
+export const editBannerImages = asyncHandler(async (req, res) => {
+    const inputImages = JSON.parse(req.body.bannerImages);
+ 
+    const uploadedImages = req.files?.length
+        ? await multipleFileUpload(req.files, "bannerImage")
+        : [];
+
+        console.log("uploadedImages",uploadedImages)
+
+    const existingBanner = await Banner.findOne();
+    if (!existingBanner) throw new ApiError("No banner found", 404);
+
+    const bannerList = existingBanner.bannerImage || [];
+
+
+
+    
+    inputImages.forEach((img) => {
+       
+        const existing = bannerList.find(b => b.uniqueId === img.uniqueId);
+        const uploaded = uploadedImages.bannerImages.find(f => f.uniqueId === img.uniqueId);
+
+     
+
+        if (!existing && uploaded) {
+          
+            bannerList.push({
+                uniqueId: img.uniqueId,
+                secureUrl: uploaded.secureUrl,
+                publicId: uploaded.publicId
+            });
+        } else if (existing && uploaded) {
+         
+            if (existing.publicId) {
+                fileDestroy(existing.publicId); 
+            }
+            existing.secureUrl = uploaded.secureUrl;
+            existing.publicId = uploaded.publicId;
+        }
+    
+    });
+
+  
+    const updatedBannerList = bannerList.filter((bannerImg) => {
+        const stillExists = inputImages.some(img => img.uniqueId === bannerImg.uniqueId);
+        if (!stillExists && bannerImg.publicId) {
+            fileDestroy(bannerImg.publicId);
+        }
+        return stillExists;
+    });
+
+  
+    existingBanner.bannerImage = updatedBannerList;
+    await existingBanner.save();
+
+    console.log("existingBanner",existingBanner)
+
+    sendResponse(res, 200, null, "Banner images synced");
 });
