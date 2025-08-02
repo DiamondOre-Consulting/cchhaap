@@ -1,4 +1,5 @@
 import { getUserData } from '@/Redux/Slices/authSlice';
+import { getNavbarCartWishlistCount } from '@/Redux/Slices/cart';
 import React, { useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
@@ -14,7 +15,8 @@ const ProtectedRoute = () => {
             try {
                 const res = await dispatch(getUserData());
                 if (res?.payload?.success) {
-                    setIsLoggedIn(true)
+                    setIsLoggedIn(true);
+                    getNavbarCartWishlistCount()
                 }
                 else {
                     setIsLoggedIn(false)

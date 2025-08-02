@@ -2,10 +2,10 @@ import Footer from '@/components/Footer';
 import Navbar from '@/components/Navbar';
 import React from 'react';
 
-const HomeLayout = ({ children }) => {
+const HomeLayout = ({ children ,cartCount, wishlistCount  }) => {
   return (
     <div className="flex flex-col min-h-screen bg-[#6d0c04] text-[#edb141] ">
-     <Navbar/>
+     <Navbar  cartCount={cartCount} wishlistCount={wishlistCount}/>
 
       <main className="flex-1">
         {children}

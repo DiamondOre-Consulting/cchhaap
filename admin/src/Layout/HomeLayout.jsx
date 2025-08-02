@@ -22,6 +22,7 @@ import { toast } from "sonner";
 
 const menuItems = [
   { icon: Home, label: "Dashboard", path: "/" },
+   { icon: Home, label: "Manage Banner Images", path: "/manage-banner"},
   { icon: Tag, label: "Manage Category", path: "/manage-category" },
   { icon: Tag, label: "Attribute Variations", path: "/manage-variations" },
   { icon: Tag, label: "Manage Coupons", path: "/manage-coupons" },

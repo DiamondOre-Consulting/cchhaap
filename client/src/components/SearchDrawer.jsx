@@ -1,9 +1,49 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
+import { useDispatch } from "react-redux";
+import { userProductSearch } from "@/Redux/Slices/productsSlice";
 
 const SearchDrawer = ({ isOpen, onClose }) => {
+  const dispatch = useDispatch();
+  const [searchItem, setSearchItem] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const navigate = useNavigate();
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+
+      return () => clearTimeout(timer);
+    }, [value, delay]);
+
+    return debouncedValue;
+  };
+
+  const debouncedInputValue = useDebounce(searchItem, 1000);
+
+  const fetchSearchResults = async (query) => {
+    try {
+      const res = await dispatch(userProductSearch(query));
+      console.log(res);
+      setSearchResults(res?.payload?.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (debouncedInputValue) {
+      fetchSearchResults(debouncedInputValue);
+    } else {
+      setSearchResults([]);
+    }
+  }, [debouncedInputValue]);
+  console.log(searchResults);
   return (
     <div>
       <>
@@ -23,6 +63,8 @@ const SearchDrawer = ({ isOpen, onClose }) => {
             <div className="flex items-center gap-x-2">
               <CiSearch />
               <input
+                value={searchItem}
+                onChange={(e) => setSearchItem(e.target.value)}
                 type="text"
                 placeholder="What are you looking for ? "
                 className="w-[20rem] focus:outline-none"
@@ -34,29 +76,27 @@ const SearchDrawer = ({ isOpen, onClose }) => {
           </div>
 
           <div className="flex flex-col  text-black gap-y-6 py-6">
-            <div className="flex border-black px-8 gap-x-4 items-center">
-              <img
-                src="https://shopmulmul.com/cdn/shop/files/2_dd55b873-fc4f-4601-ae43-f44a0b851462.jpg?v=1752212130&width=700"
-                className="max-h-32 object-cover "
-                alt=""
-              />
-              <div>
-                <p className="text-sm">Lorem, ipsum dolor sit amet consectetur adipisicing elit. A laboriosam expedita rerum minus suscipit!</p>
-                <p>$ 100,00</p>
-              </div>
-            </div>
-
-              <div className="flex border-black px-8 gap-x-4 items-center">
-              <img
-                src="https://shopmulmul.com/cdn/shop/files/2_dd55b873-fc4f-4601-ae43-f44a0b851462.jpg?v=1752212130&width=700"
-                className="max-h-32 object-cover "
-                alt=""
-              />
-              <div>
-                <p className="text-sm">Lorem, ipsum dolor sit amet consectetur adipisicing elit. A laboriosam expedita rerum minus suscipit!</p>
-                <p>$ 100,00</p>
-              </div>
-            </div>
+            {searchResults?.length > 0 &&
+              searchResults?.map((item) => (
+                <div
+                  onClick={() => {
+                    navigate(`/each-product/${item?._id}`);
+                    onClose();
+                  }}
+                  className="flex border-black px-8 gap-x-4 items-center"
+                >
+                  <div className="h-32 w-40 overflow-hidden">
+                    <img
+                      src={item?.thumbnailImage?.secureUrl}
+                      className="h-full w-full object-cover"
+                      alt={item?.name || "Product image"}
+                    />
+                  </div>
+                  <div>
+                    <p className="text-md">{item.productName}</p>
+                  </div>
+                </div>
+              ))}
           </div>
         </div>
       </>

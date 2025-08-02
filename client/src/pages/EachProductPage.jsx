@@ -218,7 +218,10 @@ const EachProductPage = () => {
   console.log("singleData", singleData);
   const handleGetSingleProduct = async () => {
     try {
-      const response = await dispatch(getSingleProduct(id));
+      const response = await dispatch(
+        // color, size, variationId, attributes
+        getSingleProduct({ id, userId: user?.data?._id   })
+      );
       setSingleData(response?.payload?.data);
       if (response?.payload?.data?.variations?.length > 0) {
         const firstVariation = response.payload.data.variations[0];
@@ -416,7 +419,8 @@ const EachProductPage = () => {
                 {renderAttributeOptions()}
 
                 <div className="flex flex-wrap gap-3 items-center my-7">
-                  {qty === 0 ? (
+                  {!selectedVariation?.cartQuantity ||
+                  selectedVariation?.cartQuantity === 0 ? (
                     <button
                       type="button"
                       onClick={() => {
@@ -434,17 +438,29 @@ const EachProductPage = () => {
                     <div className="flex items-center border border-[#edb141] px-4 py-2 min-w-[202px] justify-between text-[#edb141]">
                       <button
                         type="button"
-                        onClick={() => setQty(Math.max(qty - 1, 0))}
+                        onClick={() =>
+                          setQty(
+                            Math.max(
+                              (selectedVariation?.cartQuantity || 0) - 1,
+                              0
+                            )
+                          )
+                        }
                         className="text-2xl font-bold px-2 cursor-pointer"
                       >
                         -
                       </button>
-                      <span className="text-lg">{qty}</span>
+                      <span className="text-lg">
+                        {selectedVariation?.cartQuantity || 0}
+                      </span>
                       <button
                         type="button"
                         onClick={() =>
                           setQty(
-                            Math.min(qty + 1, selectedVariation?.quantity || 1)
+                            Math.min(
+                              (selectedVariation?.cartQuantity || 0) + 1,
+                              selectedVariation?.quantity || 1
+                            )
                           )
                         }
                         className="text-2xl font-bold px-2 cursor-pointer"
@@ -454,19 +470,42 @@ const EachProductPage = () => {
                     </div>
                   )}
 
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (!isLoggedIn) {
-                        navigate("/login");
-                      } else {
-                        // Handle Buy it Now logic
-                      }
-                    }}
-                    className="bg-c2 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
-                  >
-                    Buy it Now
-                  </button>
+                <button
+  type="button"
+  onClick={async () => {
+    if (!isLoggedIn) {
+      navigate("/login");
+    } else {
+      // Ensure we have a selected variation
+      if (!selectedVariation) {
+        alert("Please select a color and size first");
+        return;
+      }
+      
+      // If quantity is 0, set it to 1 (minimum purchase quantity)
+      const finalQuantity = qty === 0 ? 1 : qty;
+      
+      // Update cart with the quantity (if needed)
+      if (qty === 0) {
+        await dispatch(
+          userUpdateCart({
+            quantity: finalQuantity,
+            productId: id,
+            variationId: selectedVariation._id,
+          })
+        );
+      }
+      
+      // Navigate to checkout with all required parameters
+      navigate(
+        `/checkout?product=${id}&variation=${selectedVariation._id}&quantity=${finalQuantity}`
+      );
+    }
+  }}
+  className="bg-c2 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
+>
+  Buy it Now
+</button>
                 </div>
 
                 <div

@@ -68,7 +68,9 @@ const navigationLinks = [
     ],
   },
 ];
-const Navbar = () => {
+const Navbar = ({cartCount , wishlistCount}) => {
+
+  // console.log(Count)
   const [cartDrawer, setCartDrawer] = useState(false);
   const [searchDrawer, setSearchDrawer] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -326,7 +328,7 @@ const Navbar = () => {
               />
               {isLoggedIn ? (
                 <div className="size-4 aspect-square bg-white flex justify-center items-center text-sm text-black absolute -top-1 -right-2 rounded-full">
-                  1
+                  {wishlistCount}
                 </div>
               ) : (
                 ""
@@ -345,7 +347,7 @@ const Navbar = () => {
               />
               {isLoggedIn ? (
                 <div className="size-4 aspect-square bg-white flex justify-center items-center text-sm text-black absolute -top-1 -right-2 rounded-full">
-                  1
+                 {cartCount}
                 </div>
               ) : (
                 ""

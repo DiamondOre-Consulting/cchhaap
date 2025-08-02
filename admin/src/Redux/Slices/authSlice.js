@@ -86,6 +86,41 @@ export const adminData = createAsyncThunk(
   }
 );
 
+export const addBannerImage = createAsyncThunk('/admin/banner-image' , async(data)=>{
+  try {
+    const response = await adminAxiosInstance.post('/add-banner-images' , data)
+    console.log(response);
+    toast.success(response?.data?.message)
+    return response?.data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+export const getAllBanners = createAsyncThunk('/admin/banner-image' , async()=>{
+  try {
+    const response = await adminAxiosInstance.get('/get-all-banners' )
+    console.log(response);
+    return response?.data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+export const editBanner = createAsyncThunk('/admin/banner-image' , async(formData)=>{
+  try {
+    const response = await adminAxiosInstance.put('/edit-banner-images',formData )
+    console.log(response);
+    toast.success(response?.data?.message)
+    return response?.data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
 const authSlice = createSlice({
   name: "admin",
   initialState: null,

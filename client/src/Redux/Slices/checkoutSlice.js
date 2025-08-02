@@ -14,9 +14,9 @@ export const userGetCheckoutValues = createAsyncThunk('/user/checkout-values' , 
 })
 
 
-export const userBuyNowCheckOutValues = createAsyncThunk('/user/checkout-values' , async({productId })=>{
+export const userBuyNowCheckOutValues = createAsyncThunk('/user/checkout-values' , async({productId , variationId , quantity })=>{
     try{
-        const response = await userAxiosInstance.get(`/user/buy-now-checkout-values/${productId}`);
+        const response = await userAxiosInstance.get(`/buy-now-checkout-values/${productId}/${variationId}/${quantity}`);
         return response
     }
     catch(error){

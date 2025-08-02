@@ -1,11 +1,21 @@
 import axiosInstance from "@/Helper/axiosInstance";
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
+import { useDispatch } from "react-redux";
 import { toast } from "sonner";
+import { getNavbarCartWishlistCount } from "./cart";
 
 
-export const getSingleProduct = createAsyncThunk('/user/single-product' , async(id)=>{
+export const getSingleProduct = createAsyncThunk('/user/single-product' , async({id , userId, color, size, variationId, attributes})=>{
+
     try {
-        const res = await axiosInstance.get(`/get-single-product/${id}`)
+       const query = new URLSearchParams();
+      if(userId) query.append("userId" , userId)
+      if(color) query.append("color" , color)
+      if(size) query.append("size" , size)
+      if(variationId) query.append("variationId" , variationId)
+       if(attributes)  query.append("attributes" , attributes)
+
+        const res = await axiosInstance.get(`/get-single-product/${id}?${query.toString()}`)
         console.log(res)
         return res.data
     } catch (error) {
@@ -14,9 +24,12 @@ export const getSingleProduct = createAsyncThunk('/user/single-product' , async(
 })
 
 
-export const getAllProducts = createAsyncThunk('/user/all-product' , async()=>{
+export const getAllProducts = createAsyncThunk('/user/all-product' , async({userId})=>{
     try {
-        const res = await axiosInstance.get(`/get-all-product/${10}/${1}`)
+       const query = new URLSearchParams();
+      if(userId) query.append("userId" , userId)
+
+        const res = await axiosInstance.get(`/get-all-product/${10}/${1}?${query.toString()}`)
         console.log(res)
         return res.data
     } catch (error) {
@@ -41,10 +54,13 @@ export const categories = createAsyncThunk(
 
 export const getCategorizedProduct = createAsyncThunk(
   "/admin/get-all-product",
-  async (id) => {
+  async ({id , userId}) => {
     try {
+      console.log(" slice",userId)
+      const query = new URLSearchParams();
+      if(userId) query.append("userId" , userId)
       const response = await axiosInstance.get(
-        `/get-categorized-products/${id}`
+        `/get-categorized-products/${id}?${query.toString()}`
       );
       return response?.data;
     } catch (error) {
@@ -105,11 +121,38 @@ export const getFeaturedProducts = createAsyncThunk('/user/get-featured-products
   }
 })
 
+
+export const userProductSearch = createAsyncThunk("/user/search", async (data) => {
+  try {
+    console.log(data)
+    const response = await axiosInstance.get(`/search-product/${data}`);
+    console.log(response);
+    // toast.success(response?.data?.message);
+    return response.data;
+  } catch (error) {
+    toast.error(error?.response?.data?.message);
+  }
+});
+
+
 const productSlice = createSlice({
   name: "product",
-  initialState: null,
+  initialState:null
+  ,
   reducers: {},
-  extraReducers: (builder) => {},
+extraReducers: (builder) => {
+  builder
+    .addCase(addToWishlist.fulfilled, (state, action) => {
+      // const dispatch = useDispatch();
+      // dispatch(getNavbarCartWishlistCount())
+    })
+    .addCase(removeFromWishlist.fulfilled, (state, action) => {
+      // const dispatch = useDispatch();
+      // dispatch(getNavbarCartWishlistCount())
+    })
+   
+   
+}
 });
 
 export default productSlice.reducer;

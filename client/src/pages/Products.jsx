@@ -9,8 +9,8 @@ import PropTypes from "prop-types";
 import { BsArrowLeft, BsArrowRight } from "react-icons/bs";
 import { CiHeart } from "react-icons/ci";
 import { FaHeart } from "react-icons/fa";
-import { Link, useLocation } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import {
   addToWishlist,
@@ -19,16 +19,22 @@ import {
   getGenderWiseProduct,
   removeFromWishlist,
 } from "@/Redux/Slices/productsSlice";
+import { getNavbarCartWishlistCount } from "@/Redux/Slices/cart";
 
-const ProductItem = ({ product }) => {
-  console.log(product);
+const ProductItem = ({ product, isLoggedIn }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const prevRef = useRef(null);
   const nextRef = useRef(null);
   const [isWish, setIsWish] = useState(product.isInWishlist || false);
   const [isWishLoading, setIsWishLoading] = useState(false);
 
   const toggleWishList = () => {
+    if (!isLoggedIn) {
+      navigate('/login');
+      return;
+    }
+
     if (!isWish) {
       handleAddToWishlist(product._id);
     } else {
@@ -40,6 +46,7 @@ const ProductItem = ({ product }) => {
     try {
       setIsWishLoading(true);
       const response = await dispatch(addToWishlist(productId));
+      dispatch(getNavbarCartWishlistCount())
       if (response?.payload?.success) {
         setIsWish(true);
       }
@@ -54,6 +61,8 @@ const ProductItem = ({ product }) => {
     try {
       setIsWishLoading(true);
       const response = await dispatch(removeFromWishlist(productId));
+      dispatch(getNavbarCartWishlistCount())
+
       if (response?.payload?.success) {
         setIsWish(false);
       }
@@ -168,6 +177,7 @@ const ProductItem = ({ product }) => {
 
 ProductItem.propTypes = {
   product: PropTypes.object.isRequired,
+  isLoggedIn: PropTypes.bool.isRequired,
 };
 
 const Products = () => {
@@ -177,7 +187,7 @@ const Products = () => {
   const [loading, setLoading] = useState(false);
   const location = useLocation();
   const categoryName = urlCategoryName || location.state?.categoryName || "";
-  console.log("categoryyy name", categoryName);
+  const { user, isLoggedIn } = useSelector((state) => state.user);
 
   const fetchProducts = async () => {
     try {
@@ -187,12 +197,11 @@ const Products = () => {
       if (gender) {
         response = await dispatch(getGenderWiseProduct(gender));
       } else if (id) {
-        response = await dispatch(getCategorizedProduct(id));
+        response = await dispatch(getCategorizedProduct({ id, userId: user?.data?._id }));
       } else {
-        response = await dispatch(getAllProducts());
+        response = await dispatch(getAllProducts({ userId: user?.data?._id }));
       }
 
-      // Handle different response structures
       const productsData =
         response?.payload?.data?.products ||
         response?.payload?.data ||
@@ -209,7 +218,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [id, gender]);
+  }, [id, gender, user?._id]);
 
   if (loading) {
     return (
@@ -248,7 +257,7 @@ const Products = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-20">
               {products?.map((product) => (
                 <div key={product._id}>
-                  <ProductItem product={product} />
+                  <ProductItem product={product} isLoggedIn={isLoggedIn} />
                   <div className="mt-2 text-center">
                     <h3 className="text-lg line-clamp-1 font-medium">
                       {product.productName}
