@@ -72,6 +72,12 @@ export const getAllBanners = asyncHandler(async (req, res) => {
 });
 
 
+
+        
+        
+        
+        
+        
 export const editBannerImages = asyncHandler(async (req, res) => {
     
     const inputImages = JSON.parse(req.body.bannerImages);
@@ -107,7 +113,27 @@ export const editBannerImages = asyncHandler(async (req, res) => {
                 fileDestroy(existing.publicId); 
             }
             existing.secureUrl = uploaded.secureUrl;
-            existing.publicId =
+            existing.publicId = uploaded.publicId;
+        }
+       }
+    
+    });
 
+  
+    const updatedBannerList = bannerList.filter((bannerImg) => {
+        const stillExists = inputImages.some(img => img.uniqueId === bannerImg.uniqueId);
+        if (!stillExists && bannerImg.publicId) {
+            fileDestroy(bannerImg.publicId);
+        }
+        return stillExists;
+    });
 
+  
+    existingBanner.bannerImage = updatedBannerList;
+    await existingBanner.save();
+
+    console.log("existingBanner",existingBanner)
+
+    sendResponse(res, 200, null, "Banner images synced");
+});
 
