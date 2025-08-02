@@ -53,63 +53,43 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
 
 
 
-export const buyNowCheckoutValues = async (req,res)=>{
-         
-        const { productId } = req.validatedData.params;
-        const userId = req.user.id
- 
-  
-        const existingProduct= await Product.findOne({_id:productId}).select("-soldCount -sku -discount -discountType -totalRatingSum -totalRatingsCount");
+export const buyNowCheckoutValues = asyncHandler(async (req, res) => {
+  const { productId, variationId, quantity } = req.validatedData.params;
+  const userId = req.user.id;
 
-        if(!existingProduct){
-           throw new ApiError("Product not found",400)
-        }
-        
-       
-      
-        const cart = await Cart.findOne(
-            { userId, "products.productId": productId },
-        );
-    
-        if (!cart){
-            throw new ApiError("Product not found in the cart",400)
-        } 
-        
-        const quantityOfProductInCart = cart.products[0]?.quantity || 1;
 
-        
+  const existingProduct = await Product.findById(productId).select(
+    "-sku -discount -discountType -totalRatingSum -totalRatingsCount"
+  );
 
-        if(existingProduct.stock<quantityOfProductInCart||existingProduct.stock==0){
-            
-            throw new ApiError("Product out of stock",400)
-        }
+  if (!existingProduct) {
+    throw new ApiError("Product not found", 400);
+  }
 
-        const checkoutValues ={
-            totalMRP:0,
-            totalPriceAfterDiscount:0,
-            totalDiscountedPrice:0,
-            totalItems:1,
-        };
-    
-        checkoutValues.totalMRP= existingProduct.price*quantityOfProductInCart
-    
-        if(existingProduct.discountedPrice){
-            checkoutValues.totalPriceAfterDiscount=existingProduct.discountedPrice*quantityOfProductInCart
-        }
-        else{
-            checkoutValues.totalPriceAfterDiscount=existingProduct.price*quantityOfProductInCart;
-        }
-  
-        if(checkoutValues.totalPriceAfterDiscount==checkoutValues.totalMRP){
-            checkoutValues.totalDiscountedPrice=0;
-        }
-        else{       
-            checkoutValues.totalDiscountedPrice= checkoutValues.totalMRP-checkoutValues.totalPriceAfterDiscount
-        }
+  const variation = existingProduct.variations.id(variationId);
+  if (!variation) {
+    throw new ApiError("Selected variation not found", 400);
+  }
 
-        existingProduct.stock=undefined
+  if (variation.quantity < quantity || variation.quantity === 0) {
+    throw new ApiError("Product variation out of stock", 400);
+  }
 
-         
-        sendResponse(res,200,{checkoutValues,existingProduct,quantityOfProductInCart},"Buy now checkout values fetched successfully")
-        
-}
+  const checkoutValues = {
+    totalMRP: variation.price * quantity,
+    totalPriceAfterDiscount: variation.discountPrice
+      ? variation.discountPrice * quantity
+      : variation.price * quantity,
+    totalDiscountedPrice: variation.discountPrice
+      ? variation.price * quantity - variation.discountPrice * quantity
+      : 0,
+    totalItems: 1,
+  };
+
+  sendResponse(
+    res,
+    200,
+    { checkoutValues, variation, quantity },
+    "Buy now checkout values fetched successfully"
+  );
+});

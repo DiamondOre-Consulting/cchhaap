@@ -14,12 +14,13 @@ import { getFeaturedProducts, getProductsByGender, getUserCategorizedProducts, g
 import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, getFeaturedProductsQuerySchema, getProductsByGenderParamsSchema, getProductsByGenderQuerySchema, getSingleProductQuerySchema, getUserSingleProductParamsSchema, searchProductParamsSchema } from "../validator/user.product.validator.js"
 import { addToWishlist, getAllWishlistProducts, removeFromWishlist } from "../controllers/wishlist.controller.js"
 import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFromWishlistParamsSchema } from "../validator/wishlist.validator.js"
-import { getCheckoutValues } from "../controllers/checkout.controller.js"
+import { buyNowCheckoutValues, getCheckoutValues } from "../controllers/checkout.controller.js"
 import { getAllCategories } from "../controllers/category.controller.js"
 import { searchProduct } from "../controllers/user.miscellaneous.js"
 import { applyCouponParamsSchema, buyNowApplyCouponParamsSchema } from "../validator/coupon.validator.js"
 import { applyCoupon, buyNowApplyCoupon } from "../controllers/coupon.controller.js"
 import { getAllBanners } from "../controllers/banner.controller.js"
+import { buyNowCheckoutValuesParamsSchema } from "../validator/checkoutValues.validator.js"
 
 
 
@@ -148,6 +149,11 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
  userRouter.get('/get-checkout-values',userMiddleware,getCheckoutValues)
 
 
+ userRouter.get('/buy-now-checkout-values/:productId/:variationId/:quantity',userMiddleware,validate({
+    params: buyNowCheckoutValuesParamsSchema
+ }),buyNowCheckoutValues)
+
+
  userRouter.get('/get-all-categories',getAllCategories)
 
 
@@ -172,6 +178,8 @@ userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
 
 
  userRouter.get('/get-all-banner-images',getAllBanners)
+
+ 
 
 
 
