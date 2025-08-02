@@ -10,6 +10,7 @@ import Wishlist from "../models/wishlist.model.js";
 
 export const getUserSingleProduct = asyncHandler(async (req, res) => {
   try {
+    console.log(34)
     const { productId } = req.params;
     const { userId, color, size, variationId, attributes } = req.query || {};
 
@@ -200,11 +201,15 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
     // Get cart quantity if user is logged in
 
     let cartQuantity = 0; 
+    console.log(1)
+    console.log(userId)
     if (userId) {
+        console.log(2)
       const cart = await Cart.findOne({ userId });
       if (cart) {
-        const cartItem = cart.products.find(p => p.productId.toString() === product._id.toString());    
-        cartQuantity = cartItem.quantity>0?cartItem:0;
+        const cartItem = cart.products.find(p => p.productId.toString() === product._id.toString());
+        console.log("cartItem",cartItem)    
+        cartQuantity = cartItem?.quantity>0?cartItem?.quantity:0;
       }
     }
 

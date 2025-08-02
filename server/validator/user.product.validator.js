@@ -51,6 +51,12 @@ export const getFeaturedProductsQuerySchema = z.object({
 
 
 
+export const searchProductParamsSchema = z.object({
+    searchTerm: z.string().min(1, "Product name is required")
+})
+
+
+
 
 
 

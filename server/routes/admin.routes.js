@@ -13,6 +13,8 @@ import { createAttributeDefinitionSchema, editAttributeDefinitionBodySchema, get
 import { createProductBodySchema, deleteProductParamsSchema, getAdminAllProductsParamsSchema } from '../validator/admin.product.validator.js';
 import { createProduct, deleteProduct, editProduct, getAdminAllProducts, getAdminSingleProduct } from '../controllers/admin.product.controller.js';
 import { addBannerImage, editBannerImages, getAllBanners } from '../controllers/banner.controller.js';
+import { searchProduct } from '../controllers/user.miscellaneous.js';
+import { searchProductParamsSchema } from '../validator/user.product.validator.js';
 
 
 
@@ -105,12 +107,9 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
 
 
 
-
-
-
-
-
-
+ adminRouter.get('/search-product/:searchTerm',validate({
+    params:searchProductParamsSchema
+ }),searchProduct)
 
 
 

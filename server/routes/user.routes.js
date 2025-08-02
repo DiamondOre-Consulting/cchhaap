@@ -11,11 +11,12 @@ import { createOrderBodySchema, createOrderQuerySchema } from "../validator/orde
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
 import { deleteProductParamsSchema, getAdminAllProductsParamsSchema } from "../validator/admin.product.validator.js"
 import { getFeaturedProducts, getProductsByGender, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
-import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, getFeaturedProductsQuerySchema, getProductsByGenderParamsSchema, getProductsByGenderQuerySchema, getSingleProductQuerySchema, getUserSingleProductParamsSchema } from "../validator/user.product.validator.js"
+import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, getFeaturedProductsQuerySchema, getProductsByGenderParamsSchema, getProductsByGenderQuerySchema, getSingleProductQuerySchema, getUserSingleProductParamsSchema, searchProductParamsSchema } from "../validator/user.product.validator.js"
 import { addToWishlist, getAllWishlistProducts, removeFromWishlist } from "../controllers/wishlist.controller.js"
 import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFromWishlistParamsSchema } from "../validator/wishlist.validator.js"
 import { getCheckoutValues } from "../controllers/checkout.controller.js"
 import { getAllCategories } from "../controllers/category.controller.js"
+import { searchProduct } from "../controllers/user.miscellaneous.js"
 
 
 
@@ -148,6 +149,11 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
 
 
  userRouter.get('/get-navbar-cart-wishlist-count',userMiddleware,getNavbarCartAndWishlistCount)
+
+
+ userRouter.get('/search-product/:searchTerm',validate({
+    params:searchProductParamsSchema
+ }),searchProduct)
  
 
 
