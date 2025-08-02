@@ -19,6 +19,7 @@ import { getAllCategories } from "../controllers/category.controller.js"
 import { searchProduct } from "../controllers/user.miscellaneous.js"
 import { applyCouponParamsSchema, buyNowApplyCouponParamsSchema } from "../validator/coupon.validator.js"
 import { applyCoupon, buyNowApplyCoupon } from "../controllers/coupon.controller.js"
+import { getAllBanners } from "../controllers/banner.controller.js"
 
 
 
@@ -169,7 +170,11 @@ userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
  }),buyNowApplyCoupon)
 
 
- 
+
+ userRouter.get('/get-all-banner-images',getAllBanners)
+
+
+
 
 
 
