@@ -39,4 +39,9 @@ export const applyCouponParamsSchema = z.object({
 export const buyNowApplyCouponParamsSchema = z.object({
     couponCode: z.string().min(3).max(20).trim(),
     productId : z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid product ID format" }),
+    variationId : z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid product ID format" }),
 })
+
+
+
+

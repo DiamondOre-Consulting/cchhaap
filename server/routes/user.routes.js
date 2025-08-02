@@ -17,8 +17,8 @@ import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFr
 import { getCheckoutValues } from "../controllers/checkout.controller.js"
 import { getAllCategories } from "../controllers/category.controller.js"
 import { searchProduct } from "../controllers/user.miscellaneous.js"
-import { applyCouponParamsSchema } from "../validator/coupon.validator.js"
-import { applyCoupon } from "../controllers/coupon.controller.js"
+import { applyCouponParamsSchema, buyNowApplyCouponParamsSchema } from "../validator/coupon.validator.js"
+import { applyCoupon, buyNowApplyCoupon } from "../controllers/coupon.controller.js"
 
 
 
@@ -161,6 +161,20 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
 userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
     params:applyCouponParamsSchema
 }),applyCoupon)
+
+
+
+ userRouter.get('/buy-now-apply-coupon/:couponCode/:productId/:variationId',userMiddleware,validate({
+    params: buyNowApplyCouponParamsSchema
+ }),buyNowApplyCoupon)
+
+
+ 
+
+
+
+
+
 
  
 

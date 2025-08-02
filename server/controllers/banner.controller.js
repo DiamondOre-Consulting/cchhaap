@@ -73,13 +73,12 @@ export const getAllBanners = asyncHandler(async (req, res) => {
 
 
 export const editBannerImages = asyncHandler(async (req, res) => {
+    
     const inputImages = JSON.parse(req.body.bannerImages);
- 
     const uploadedImages = req.files?.length
         ? await multipleFileUpload(req.files, "bannerImage")
-        : [];
+        : null;
 
-        console.log("uploadedImages",uploadedImages)
 
     const existingBanner = await Banner.findOne();
     if (!existingBanner) throw new ApiError("No banner found", 404);
@@ -90,10 +89,9 @@ export const editBannerImages = asyncHandler(async (req, res) => {
 
     
     inputImages.forEach((img) => {
-       
         const existing = bannerList.find(b => b.uniqueId === img.uniqueId);
-        const uploaded = uploadedImages.bannerImages.find(f => f.uniqueId === img.uniqueId);
-
+       if(uploadedImages){
+         const uploaded = uploadedImages.bannerImages.find(f => f.uniqueId === img.uniqueId);
      
 
         if (!existing && uploaded) {
@@ -109,28 +107,7 @@ export const editBannerImages = asyncHandler(async (req, res) => {
                 fileDestroy(existing.publicId); 
             }
             existing.secureUrl = uploaded.secureUrl;
-            existing.publicId = uploaded.publicId;
-        }
-    
-    });
-
-  
-    const updatedBannerList = bannerList.filter((bannerImg) => {
-        const stillExists = inputImages.some(img => img.uniqueId === bannerImg.uniqueId);
-        if (!stillExists && bannerImg.publicId) {
-            fileDestroy(bannerImg.publicId);
-        }
-        return stillExists;
-    });
-
-  
-    existingBanner.bannerImage = updatedBannerList;
-    await existingBanner.save();
-
-    console.log("existingBanner",existingBanner)
-
-    sendResponse(res, 200, null, "Banner images synced");
-});
+            existing.publicId =
 
 
 
