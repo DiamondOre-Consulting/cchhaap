@@ -9,8 +9,8 @@ import { getCart, getNavbarCartAndWishlistCount, removeItemFromCart, updateCart 
 import { createOrder } from "../controllers/order.controller.js"
 import { createOrderBodySchema, createOrderQuerySchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
-import { deleteProductParamsSchema, getAdminAllProductsParamsSchema } from "../validator/admin.product.validator.js"
-import { getFeaturedProducts, getProductsByGender, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
+import { deleteProductParamsSchema, getAdminAllProductsParamsSchema, getAdminAllProductsQuerySchema } from "../validator/admin.product.validator.js"
+import { getFeaturedProducts, getProductsByGender, getUserAllProducts, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
 import { getCategorizedProductsParamsSchema, getCategorizedProductsQuerySchema, getFeaturedProductsQuerySchema, getProductsByGenderParamsSchema, getProductsByGenderQuerySchema, getSingleProductQuerySchema, getUserSingleProductParamsSchema, searchProductParamsSchema } from "../validator/user.product.validator.js"
 import { addToWishlist, getAllWishlistProducts, removeFromWishlist } from "../controllers/wishlist.controller.js"
 import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFromWishlistParamsSchema } from "../validator/wishlist.validator.js"
@@ -103,8 +103,8 @@ userRouter.put('/update-cart/:quantity/:productId/:variationId',userMiddleware,v
 
 
 userRouter.get('/get-all-product/:limit/:page',validate({
-   params:getAdminAllProductsParamsSchema
-}),getAdminAllProducts)
+   query:getAdminAllProductsQuerySchema,params:getAdminAllProductsParamsSchema
+}),getUserAllProducts)
 
 userRouter.get('/get-single-product/:productId',validate({query:getSingleProductQuerySchema, params: getUserSingleProductParamsSchema}),getUserSingleProduct)
 

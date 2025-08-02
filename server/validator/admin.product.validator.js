@@ -207,3 +207,7 @@ export const getAdminAllProductsParamsSchema = z.object({
     page: z.coerce.number().optional()
 })
 
+export const getAdminAllProductsQuerySchema = z.object({
+    userId: z.string().optional()
+})
+

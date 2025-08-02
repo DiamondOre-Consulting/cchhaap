@@ -150,7 +150,6 @@ export const getAdminAllProducts = asyncHandler(async (req, res) => {
 
     const products = await Product.find({}).populate("category").limit(limit).skip((page-1)*limit).sort({createdAt:-1})
 
-console.log(products[0].variations[0])
     if (products.length === 0) {
         throw new ApiError("No products found", 404);
     }

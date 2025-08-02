@@ -371,4 +371,41 @@ export const getFeaturedProducts = asyncHandler(async (req, res) => {
 });
 
 
+export const getUserAllProducts = asyncHandler(async (req, res) => {
+  const { userId } = req.validatedData.query;
+  const limit = parseInt(req.params.limit) || 10;
+  const page = parseInt(req.params.page) || 1;
+  const skip = (page - 1) * limit;
+
+  const wishlist = await Wishlist.findOne({ userId });
+  const wishlistProductIds = wishlist
+    ? wishlist.products.map(p => p.productId.toString())
+    : [];
+
+  const products = await Product.find({ isActive: true })
+    .select("productName brandName category featuredProduct variations")
+    .populate("category", "name")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  if (!products.length) throw new ApiError("No products found", 404);
+
+  const updatedProducts = products.map(product => ({
+    ...product,
+    isInWishlist: wishlistProductIds.includes(product._id.toString())
+  }));
+
+  const totalCount = await Product.countDocuments({ isActive: true });
+
+  sendResponse(res, 200, {
+    products: updatedProducts,
+    currentPage: page,
+    totalPages: Math.ceil(totalCount / limit)
+  }, "User products fetched successfully");
+});
+
+
+
 
