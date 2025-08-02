@@ -36,7 +36,7 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
         return acc + (variation.price * cartItem.quantity);
     }, 0);
 
-    console.log(checkoutValues.totalMRP)
+    
 
     checkoutValues.totalPriceAfterDiscount = cart.products.reduce((acc, cartItem) => {
         const variation = cartItem.productId.variations.find(v => 

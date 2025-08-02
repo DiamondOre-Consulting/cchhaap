@@ -2,6 +2,9 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import Coupon from "../models/coupon.model.js";
 import sendResponse from "../utils/sendResponse.js";
 import ApiError from "../utils/apiError.js";
+import Cart from "../models/cart.model.js";
+
+
 
 
 
@@ -68,6 +71,8 @@ export const editCoupon = asyncHandler(async(req,res)=>{
         throw new ApiError("Coupon not found",400)    
     }
 
+    
+
     Object.assign(existingCoupon, req.validatedData.body);
   
     
@@ -77,4 +82,111 @@ export const editCoupon = asyncHandler(async(req,res)=>{
 
 
 })
+
+
+
+export const applyCoupon = asyncHandler(async(req,res)=>{
+
+    const userId = req.user.id
+    const {couponCode}= req.validatedData.params
+
+    const coupon = await Coupon.findOne({couponCode})
+
+    if(!coupon){
+        throw new ApiError("Coupon not found",400)
+    }
+
+    if(!coupon.isActive|| new Date() > new Date(coupon.endDate)){
+        throw new ApiError("Coupon is expired",400)
+    }
+
+
+
+
+    const cart = await Cart.findOne({userId}).populate('products.productId')
+
+          let totalPriceAfterDiscount = cart.products.reduce((acc, cartItem) => {
+        const variation = cartItem.productId.variations.find(v => 
+            v._id.toString() === cartItem.variationId.toString()
+        );
+        const price = variation.discountPrice || variation.price;
+        return acc + (price * cartItem.quantity);
+          }, 0);
+
+        if(totalPriceAfterDiscount<coupon.minAmount){
+            throw new ApiError("Price of product is smaller than required value to apply coupon",400)
+        }
+
+
+
+         let amountAfterApplyingCoupon = 0
+
+         let couponValue = 0
+
+        if(coupon.discountType === 'percentage'){
+            couponValue = totalPriceAfterDiscount * (coupon.discountValue/100)
+            amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
+        }
+        else{
+            couponValue = coupon.discountValue
+            amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
+        }
+        
+
+       sendResponse(res,200,{discountAfterApplyingCoupon:Math.floor(couponValue),amountAfterApplyingCoupon:Math.floor(amountAfterApplyingCoupon)},"Coupon applied successfully")
+
+})
+
+
+// export const buyNowApplyCoupon = asyncHandler(async(req,res)=>{
+
+//         const {couponCode,productId} = req.params
+
+//         const coupon = await Coupon.findOne({couponCode})
+         
+//         if(!coupon){
+//             throw new ApiError("Coupon not found",400)
+//         }
+     
+//         if(!coupon.isActive|| new Date() > new Date(coupon.endDate)){
+//             throw new ApiError("Coupon is expired",400)
+//         }
+    
+//         const product = await Product.findOne({_id:productId})
+
+//         if(!product){
+//             throw new ApiError("Product not found",400)
+//         }
+
+
+
+//         if(product.stock<=0){
+//             throw new ApiError("Product is out of stock",400)
+//         }
+
+        
+//         let totalPriceAfterDiscount=product.discountedPrice?product.discountedPrice: product.price
+
+//         if(totalPriceAfterDiscount<coupon.minAmount){
+//             throw new ApiError("Price of product is smaller than required value to apply coupon",400)
+//         }
+
+
+//        let amountAfterApplyingCoupon = 0
+
+//        let couponValue = 0
+
+//        if(coupon.discountType === 'percentage'){
+//            couponValue = totalPriceAfterDiscount * (coupon.discountValue/100)
+//            amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
+//        }
+//        else{
+//            couponValue = coupon.discountValue
+//            amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
+//        }
+       
+       
+//        sendResponse(res,200,{discountAfterApplyingCoupon:Math.floor(couponValue),amountAfterApplyingCoupon:Math.floor(amountAfterApplyingCoupon)},"Coupon applied successfully")
+
+// })
 

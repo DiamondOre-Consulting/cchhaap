@@ -17,6 +17,8 @@ import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFr
 import { getCheckoutValues } from "../controllers/checkout.controller.js"
 import { getAllCategories } from "../controllers/category.controller.js"
 import { searchProduct } from "../controllers/user.miscellaneous.js"
+import { applyCouponParamsSchema } from "../validator/coupon.validator.js"
+import { applyCoupon } from "../controllers/coupon.controller.js"
 
 
 
@@ -154,6 +156,12 @@ userRouter.get("/get-all-wishlist-products/:page/:limit",userMiddleware,validate
  userRouter.get('/search-product/:searchTerm',validate({
     params:searchProductParamsSchema
  }),searchProduct)
+
+
+userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
+    params:applyCouponParamsSchema
+}),applyCoupon)
+
  
 
 
