@@ -24,3 +24,9 @@ export const createOrderQuerySchema = z.object({
     variationId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" }).optional(),
     quantity: z.string().nonempty("Product quantity is missing").optional(),
 })
+
+
+export const myOrdersParamsSchema = z.object({
+    limit:z.string().min(1,"Limit is missing"),
+    page:z.string().min(1,"page number is missing")
+})

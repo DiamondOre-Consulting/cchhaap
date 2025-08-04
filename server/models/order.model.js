@@ -12,15 +12,18 @@ const ordersSchema = new mongoose.Schema({
     },
     products : {
         type: [{
-            productId : { 
+            productId :{ 
                 type: mongoose.Schema.Types.ObjectId, 
                 ref: 'Product' 
+            },
+            variationId:{
+                type: mongoose.Schema.Types.ObjectId,
             },
             quantity :{ 
                 type: Number ,
                  required: true 
                 },
-            price: {
+            price :{
                 type: Number, 
                 required: true
             }

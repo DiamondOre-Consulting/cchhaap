@@ -6,8 +6,8 @@ import { userMiddleware } from "../middlewares/user.middleware.js"
 import { addAddressBodySchema, deleteAddressParamsSchema, editAddressBodySchema, editAddressParamsSchema } from "../validator/address.validator.js"
 import { removeItemFromCartParamsSchema, updateCartParamsSchema } from "../validator/cart.validator.js"
 import { getCart, getNavbarCartAndWishlistCount, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
-import { createOrder } from "../controllers/order.user.controller.js"
-import { createOrderBodySchema, createOrderQuerySchema } from "../validator/order.validator.js"
+import { createOrder, myOrders } from "../controllers/order.user.controller.js"
+import { createOrderBodySchema, createOrderQuerySchema, myOrdersParamsSchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
 import { deleteProductParamsSchema, getAdminAllProductsParamsSchema, getAdminAllProductsQuerySchema } from "../validator/admin.product.validator.js"
 import { getFeaturedProducts, getProductsByGender, getUserAllProducts, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
@@ -196,6 +196,11 @@ userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
 
 
  userRouter.get('/get-all-banner-images',getAllBanners)
+
+
+ userRouter.get('/get-my-orders',userMiddleware,validate({
+    params:myOrdersParamsSchema
+ }),myOrders)
 
  
 

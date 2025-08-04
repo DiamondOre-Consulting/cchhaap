@@ -171,8 +171,56 @@ export const createOrder = asyncHandler(async (req, res) => {
 });
 
 
+export const myOrders = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { page, limit } = req.validatedData.params;
+  const skip = (page - 1) * limit;
 
+  const orders = await Order.find({ userId })
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit)
+    .populate({
+      path: "products.productId",
+      select: "productName variations.thumbnailImage",
+    });
 
+  if (!orders.length) {
+    throw new ApiError("User has zero orders", 400);
+  }
+
+  const formattedOrders = orders.map((order) => {
+    const formattedProducts = order.products.map((item) => {
+      const product = item.productId;
+      const variation =
+        product?.variations?.find(
+          (v) => v._id.toString() === item.variationId.toString()
+        ) || {};
+      return {
+        productName: product?.productName || "",
+        thumbnail: variation?.thumbnailImage?.secureUrl || "",
+        quantity: item.quantity,
+        price: item.price,
+      };
+    });
+    return {
+      _id: order._id,
+      products: formattedProducts,
+      totalAmount: order.totalAmount,
+      createdAt: order.createdAt,
+    };
+  });
+
+  const totalOrders = await Order.countDocuments({ userId });
+  const totalPages = Math.ceil(totalOrders / limit);
+
+  sendResponse(
+    res,
+    200,
+    { orders: formattedOrders, totalPages, activePage: page },
+    "Orders fetched successfully"
+  );
+});
 
 
 
