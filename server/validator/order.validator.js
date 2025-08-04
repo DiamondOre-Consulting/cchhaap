@@ -21,4 +21,6 @@ export const createOrderBodySchema  = z.object({
 export const createOrderQuerySchema = z.object({
     couponCode : z.string().optional(),
     productId : z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid product ID format" }).optional(),
+    variationId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" }).optional(),
+    quantity: z.string().nonempty("Product quantity is missing").optional(),
 })
