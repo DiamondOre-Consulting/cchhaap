@@ -224,4 +224,39 @@ export const myOrders = asyncHandler(async (req, res) => {
 
 
 
+export const getSingleOrder = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { orderId } = req.validatedData.params;
+
+  const order = await Order.findOne({ _id: orderId, userId })
+    .populate("products.productId", "productName variations");
+
+  if (!order) throw new ApiError("Order not found", 404);
+
+  const formattedProducts = order.products.map((item) => {
+    const product = item.productId;
+    const variation = product?.variations?.find(
+      (v) => v._id.toString() === item.variationId.toString()
+    );
+    return {
+      productName: product?.productName || "",
+      thumbnail: variation?.thumbnailImage?.secureUrl || "",
+      quantity: item.quantity,
+      price: item.price,
+    };
+  });
+
+  sendResponse(res, 200, {
+    _id: order._id,
+    products: formattedProducts,
+    totalAmount: order.totalAmount,
+    orderStatus: order.order_status,
+    createdAt: order.createdAt,
+    paymentMethod: order.payment_method,
+  }, "Order fetched successfully");
+});
+
+
+
+
 
