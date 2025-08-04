@@ -7,7 +7,7 @@ import { addAddressBodySchema, deleteAddressParamsSchema, editAddressBodySchema,
 import { removeItemFromCartParamsSchema, updateCartParamsSchema } from "../validator/cart.validator.js"
 import { getCart, getNavbarCartAndWishlistCount, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
 import { createOrder, getSingleOrder, myOrders } from "../controllers/order.user.controller.js"
-import { createOrderBodySchema, createOrderQuerySchema, myOrdersParamsSchema } from "../validator/order.validator.js"
+import { createOrderBodySchema, createOrderQuerySchema, getSingleOrderParamsSchema, myOrdersParamsSchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
 import { deleteProductParamsSchema, getAdminAllProductsParamsSchema, getAdminAllProductsQuerySchema } from "../validator/admin.product.validator.js"
 import { getFeaturedProducts, getProductsByGender, getUserAllProducts, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
@@ -208,7 +208,7 @@ userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
     params:getSingleOrderParamsSchema
  }),getSingleOrder)
 
- 
+
 
  
 
