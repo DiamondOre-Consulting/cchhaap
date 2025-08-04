@@ -10,7 +10,7 @@ import Wishlist from "../models/wishlist.model.js";
 
 export const getUserSingleProduct = asyncHandler(async (req, res) => {
   try {
-    console.log(34)
+
     const { productId } = req.params;
     const { userId, color, size, variationId, attributes } = req.query || {};
 
@@ -304,36 +304,52 @@ export const getUserCategorizedProducts = asyncHandler(async (req, res) => {
 
 
 export const getProductsByGender = asyncHandler(async (req, res) => {
-    const { gender } = req.validatedData.params;
-    const { userId, page = 1, limit = 10 } = req.validatedData.query;
-    
-    const skip = (page - 1) * limit;
+  const { gender } = req.validatedData.params;
+  const { userId, page = 1, limit = 10 } = req.validatedData.query;
 
-    const products = await Product.aggregate([
-        { $match: { "variations.gender": gender } },
-        {
-            $lookup: {
-                from: "wishlists",
-                let: { productId: "$_id" },
-                pipeline: [
-                    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-                    { $unwind: "$products" },
-                    { $match: { $expr: { $eq: ["$products.productId", "$$productId"] } } },
-                ],
-                as: "wishlist"
-            }
+  const skip = (page - 1) * limit;
+
+  const matchStage = { "variations.gender": gender };
+  const pipeline = [
+    { $match: matchStage },
+    ...(userId ? [
+      {
+        $lookup: {
+          from: "wishlists",
+          let: { productId: "$_id" },
+          pipeline: [
+            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+            { $unwind: "$products" },
+            {
+              $match: {
+                $expr: { $eq: ["$products.productId", "$$productId"] },
+              },
+            },
+          ],
+          as: "wishlist",
         },
-        { $addFields: { isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] } } },
-        { $project: { wishlist: 0 } },
-        { $sort: { createdAt: -1 } },
-        { $skip: skip },
-        { $limit: limit }
-    ]);
+      },
+      {
+        $addFields: {
+          isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] },
+        },
+      },
+      { $project: { wishlist: 0 } },
+    ] : [
+      { $addFields: { isInWishlist: false } }
+    ]),
+    { $sort: { createdAt: -1 } },
+    { $skip: skip },
+    { $limit: limit },
+  ];
 
-    if (!products.length) throw new ApiError("No products found for this gender", 400);
+  const products = await Product.aggregate(pipeline);
 
-    sendResponse(res, 200, products, "Gender products fetched successfully");
+  if (!products.length) throw new ApiError("No products found for this gender", 400);
+
+  sendResponse(res, 200, products, "Gender products fetched successfully");
 });
+
 
 
 
