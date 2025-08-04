@@ -13,10 +13,12 @@ import { createAttributeDefinitionSchema, editAttributeDefinitionBodySchema, get
 import { createProductBodySchema, deleteProductParamsSchema, getAdminAllProductsParamsSchema } from '../validator/admin.product.validator.js';
 import { createProduct, deleteProduct, editProduct, getAdminAllProducts, getAdminSingleProduct } from '../controllers/admin.product.controller.js';
 import { addBannerImage, editBannerImages, getAllBanners } from '../controllers/banner.controller.js';
-import { searchProduct } from '../controllers/user.miscellaneous.js';
+import { searchProduct } from '../controllers/user.miscellaneous.controller.js';
 import { searchProductParamsSchema } from '../validator/user.product.validator.js';
 import { fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
 import { fetchAllOrdersForAdminSchema } from '../validator/order.validator.js';
+import { getSalesData, getUser } from '../controllers/admin.miscellaneous.controller.js';
+import { getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
 
 
 
@@ -117,6 +119,20 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
  adminRouter.get('/get-all-orders-for-admin/:page/:limit',adminMiddleware,validate({
     params:fetchAllOrdersForAdminSchema
  }),fetchAllOrdersForAdmin)
+
+
+
+ adminRouter.get('/get-single-user/:userId',adminMiddleware,validate({
+    params:getSingleUserForAdminParamsSchema
+ }),getUser)
+
+
+ adminRouter.get('/get-sales-data/:page/:limit',adminMiddleware,validate({
+    params:getSalesDataParamsData, query: getSalesDataQuerySchema
+ }),getSalesData)
+
+
+
 
 
 

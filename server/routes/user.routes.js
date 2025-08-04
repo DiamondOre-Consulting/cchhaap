@@ -16,13 +16,14 @@ import { addToWishlist, getAllWishlistProducts, removeFromWishlist } from "../co
 import { addToWishlistParamsSchema, getAllWishlistProductsParamsSchema, removeFromWishlistParamsSchema } from "../validator/wishlist.validator.js"
 import { buyNowCheckoutValues, getCheckoutValues } from "../controllers/checkout.controller.js"
 import { getAllCategories } from "../controllers/category.controller.js"
-import { searchProduct } from "../controllers/user.miscellaneous.js"
+
 import { applyCouponParamsSchema, buyNowApplyCouponParamsSchema } from "../validator/coupon.validator.js"
 import { applyCoupon, buyNowApplyCoupon } from "../controllers/coupon.controller.js"
 import { getAllBanners } from "../controllers/banner.controller.js"
 import { buyNowCheckoutValuesParamsSchema } from "../validator/checkoutValues.validator.js"
 import { checkoutPayment, razorpayKey, verifyPayment } from "../controllers/payment.controller.js"
 import { checkoutPaymentQuerySchema, verifyPaymentBodySchema } from "../validator/payment.validator.js"
+import { searchProduct } from "../controllers/user.miscellaneous.controller.js"
 
 
 
