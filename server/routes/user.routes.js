@@ -21,6 +21,8 @@ import { applyCouponParamsSchema, buyNowApplyCouponParamsSchema } from "../valid
 import { applyCoupon, buyNowApplyCoupon } from "../controllers/coupon.controller.js"
 import { getAllBanners } from "../controllers/banner.controller.js"
 import { buyNowCheckoutValuesParamsSchema } from "../validator/checkoutValues.validator.js"
+import { checkoutPayment, razorpayKey, verifyPayment } from "../controllers/payment.controller.js"
+import { checkoutPaymentQuerySchema, verifyPaymentBodySchema } from "../validator/payment.validator.js"
 
 
 
@@ -107,6 +109,22 @@ userRouter.get('/get-all-product/:limit/:page',validate({
 }),getUserAllProducts)
 
 userRouter.get('/get-single-product/:productId',validate({query:getSingleProductQuerySchema, params: getUserSingleProductParamsSchema}),getUserSingleProduct)
+
+
+
+userRouter.get('/key',userMiddleware,razorpayKey)
+
+
+userRouter.post('/checkout-payment',userMiddleware,validate({
+     query: checkoutPaymentQuerySchema
+}),checkoutPayment)
+
+
+
+userRouter.post('/verify-payment',userMiddleware, validate({body:verifyPaymentBodySchema}),verifyPayment)
+
+
+
 
 
 

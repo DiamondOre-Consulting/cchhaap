@@ -184,16 +184,6 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
 export const getUserCategorizedProducts = asyncHandler(async (req, res) => {
   const { categoryId } = req.validatedData.params;
   const { userId } = req.validatedData.query;
