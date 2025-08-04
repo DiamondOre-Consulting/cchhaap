@@ -69,7 +69,6 @@ export const createOrder = asyncHandler(async (req, res) => {
       }
     }
 
-    // Coupon logic
     let couponDiscount = 0;
     let totalAmount = totalPriceAfterDiscount;
     if (couponCode) {
@@ -90,23 +89,20 @@ export const createOrder = asyncHandler(async (req, res) => {
       totalAmount = Math.max(0, totalPriceAfterDiscount - couponDiscount);
     }
 
-    const newOrder = await Order.create(
-      [
-        {
-          userId,
-          products: productsToOrder,
-          totalAmount,
-          couponDiscount,
-          totalPriceAfterDiscount,
-          totalMRPPrice,
-          order_status: "pending",
-          payment_status: paymentStatus,
-          payment_method: paymentMethod,
-          shipping_address: address,
-        },
-      ],
-      { session }
-    );
+    const newOrder = await Order.create([
+      {
+        userId,
+        products: productsToOrder,
+        totalAmount,
+        couponDiscount,
+        totalPriceAfterDiscount,
+        totalMRPPrice,
+        order_status: "pending",
+        payment_status: paymentStatus,
+        payment_method: paymentMethod,
+        shipping_address: address,
+      },
+    ], { session });
     if (!newOrder || !newOrder[0]) throw new ApiError("Error in creating order", 500);
 
     if (!productId) {
@@ -119,7 +115,6 @@ export const createOrder = asyncHandler(async (req, res) => {
       );
     }
 
-    // Update stock and soldCount
     for (const item of productsToOrder) {
       const product = await Product.findById(item.productId).session(session);
       if (!product) continue;
@@ -133,6 +128,40 @@ export const createOrder = asyncHandler(async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
+    const orderIdShort = newOrder[0]._id.toString().slice(0, 6);
+    const productRows = productsToOrder.map((p) => `
+      <tr>
+        <td>${p.productId}</td>
+        <td>${p.quantity}</td>
+        <td>₹${p.price}</td>
+      </tr>
+    `).join("");
+
+    const emailHTML = `
+      <h2>Order #${orderIdShort} placed successfully!</h2>
+      <p>Thank you for shopping with <strong>Chhaap</strong> – your favorite fashion wear brand.</p>
+      <table border="1" cellpadding="8" cellspacing="0">
+        <thead>
+          <tr><th>Product</th><th>Qty</th><th>Price</th></tr>
+        </thead>
+        <tbody>${productRows}</tbody>
+      </table>
+      <p><strong>Total: ₹${totalAmount}</strong></p>
+      <p>Payment Method: ${paymentMethod}</p>
+    `;
+
+    await sendMail(
+      user.email,
+      `Chhaap - Order #${orderIdShort} Confirmation`,
+      emailHTML
+    );
+
+    await sendMail(
+      "yashjadon@diamondore.in",
+      `New Order #${orderIdShort} Received – Chhaap`,
+      `<h3>New order received from ${user.fullName || address.fullName}</h3>${emailHTML}`
+    );
+
     sendResponse(res, 200, newOrder[0], "Order created successfully");
   } catch (err) {
     await session.abortTransaction();
@@ -140,6 +169,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     throw err;
   }
 });
+
 
 
 
