@@ -121,7 +121,7 @@ export const createOrder = asyncHandler(async (req, res) => {
       const variation = product.variations.id(item.variationId);
       if (!variation) continue;
       variation.soldCount = (variation.soldCount || 0) + item.quantity;
-      variation.stock = (variation.stock || 0) - item.quantity;
+      variation.quantity = (variation.quantity || 0) - item.quantity;
       await product.save({ session });
     }
 

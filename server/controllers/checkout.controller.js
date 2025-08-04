@@ -9,7 +9,7 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
     const userId = req.user.id;
 
     const cart = await Cart.findOne({ userId }).populate("products.productId");
-     console.log("cart",cart)
+    
 
       if (!cart) {
         throw new ApiError("Cart for this user not found", 400);
@@ -27,12 +27,12 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
     };
 
     checkoutValues.totalMRP = cart.products.reduce((acc, cartItem) => {
-        console.log("cartItem",cartItem)
-        console.log(1)
+        
+     
         const variation = cartItem.productId.variations.find(v => 
             v._id.toString() === cartItem.variationId.toString()
         );
-         console.log(variation)
+        
         return acc + (variation.price * cartItem.quantity);
     }, 0);
 

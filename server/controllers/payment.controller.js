@@ -31,7 +31,12 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
             (v) => v._id.toString() === variationId.toString()
         );
 
+
         if (!selectedVariation) throw new ApiError("Selected variation not found", 400);
+
+         if(selectedVariation.quantity<quantity||selectedVariation.quantity==0||selectedVariation.quantity-quantity<=0){
+                throw new ApiError("Not enough stock for selected variation", 400);
+         }   
 
         const price = selectedVariation.discountPrice ?? selectedVariation.price;
         totalPriceAfterDiscount = price * quantity;
@@ -54,6 +59,10 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
             );
 
             if (!matchedVariation) return;
+
+             if(matchedVariation.quantity<quantity||matchedVariation.quantity==0||matchedVariation.quantity-quantity<=0){
+                    throw new ApiError("Not enough stock for selected variation", 400);
+                }   
 
             const price = matchedVariation.discountPrice ?? matchedVariation.price;
             totalPriceAfterDiscount += price * product.quantity;

@@ -58,6 +58,10 @@ export const updateCart = asyncHandler(async(req,res)=>{
         throw new ApiError("Selected variation not found", 400);
         }
 
+        if(selectedVariation.quantity<quantity||selectedVariation.quantity==0||selectedVariation.quantity-quantity<=0){
+        throw new ApiError("Not enough stock for selected variation", 400);
+        }   
+
         if (!selectedVariation.inStock){
         throw new ApiError("Not enough stock for selected variation", 400);
         }
@@ -104,24 +108,28 @@ export const getCart = asyncHandler(async (req, res) => {
   if (!cart) throw new ApiError("Cart not found", 400);
 
 
-  cart.products = cart.products.filter((product) => product.productId !== null);
+cart.products.forEach((product) => {
+  const variation = product.productId.variations.find(
+    (v) => v._id.toString() === product.variationId.toString()
+  );
 
-    cart.products.forEach((product) => {
-    const variation = product.productId.variations.find(
-      (v) => v._id.toString() === product.variationId.toString()
-    );
+  if (!variation) {
+    product.price = 0;
+    product.inStock = false;
+    return;
+  }
 
+  if (!variation.inStock || variation.quantity <= 0) {
+    product.inStock = false;
+  } else {
+    product.inStock = true;
+  }
 
+  const unitPrice = variation.discountPrice ?? variation.price;
+  product.price = unitPrice * product.quantity;
+  product.variationId = variation;
+});
 
-    if (!variation) {
-      product.price = 0;
-      return;
-    }
-
-    const unitPrice = variation.discountPrice ?? variation.price;
-    product.price = unitPrice * product.quantity;
-    product.variationId = variation; 
-  }); 
 
   cart.totalPrice = cart.products.reduce((sum, p) => sum + p.price, 0);
 
