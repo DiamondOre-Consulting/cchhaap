@@ -31,7 +31,8 @@ export const CardCarousel = ({
     .card-carousel .swiper-slide {
       background-position: center;
       background-size: cover;
-      width: 300px;
+      width: 320px;
+      height: 500px
     }
 
     .card-carousel .swiper-slide img {
@@ -89,14 +90,11 @@ export const CardCarousel = ({
                 }
                 modules={[EffectCoverflow, Autoplay, Pagination, Navigation]}
               >
-                {/* First Loop */}
                 {images.map((image, index) => (
-                  <SwiperSlide key={`slide-1-${index}`}>
-                    <div className="size-full relative">
+                  <SwiperSlide key={`slide-1-${index}`} >
+                    <div onClick={image.onClick} className="size-full relative">
                       <img
                         src={image.src}
-                        width={600}
-                        height={600}
                         className="size-full "
                         alt={image.alt}
                       />
@@ -107,10 +105,9 @@ export const CardCarousel = ({
                   </SwiperSlide>
                 ))}
 
-                {/* Second Loop (Preserved as Requested) */}
                 {images.map((image, index) => (
                   <SwiperSlide key={`slide-2-${index}`}>
-                    <div className="size-full relative">
+                    <div onClick={image.onClick} className="size-full relative">
                       <img
                         src={image.src}
                         width={200}

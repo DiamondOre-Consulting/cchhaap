@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { allWislist, removeFromWishlist } from "@/Redux/Slices/productsSlice";
 import { Link } from "react-router-dom";
+import { getNavbarCartWishlistCount } from "@/Redux/Slices/cart";
 
 const Wishlist = () => {
   const [qty, setQty] = useState(1);
@@ -14,6 +15,8 @@ const Wishlist = () => {
     try {
       setLoading(true);
       const response = await dispatch(allWislist());
+            
+      
       console.log(response)
       setWishlistData(response?.payload?.data?.wishList?.[0]?.products || []);
     } catch (error) {
@@ -26,6 +29,8 @@ const Wishlist = () => {
   const handleRemoveFromWishlist = async (productId) => {
     try {
       await dispatch(removeFromWishlist(productId));
+            dispatch(getNavbarCartWishlistCount())
+
       handleGetAllWishlistProducts();
     } catch (error) {
       console.error("Error removing from wishlist:", error);
@@ -49,7 +54,7 @@ const Wishlist = () => {
   <h1 className="text-3xl text-center font-semibold mb-8 text-white">My Wishlist</h1>
 
   {wishlistData.length === 0 ? (
-    <div className="text-center py-10 bg-white/5 rounded-xl">
+    <div className="text-center py-10  rounded-xl">
       <p className="text-lg text-gray-200">Your wishlist is empty</p>
       <Link
         to="/"

@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useDispatch, useSelector } from "react-redux";
 import {
+  getNavbarCartWishlistCount,
   userGetCart,
   userRomoveProductFromCart,
   userUpdateCart,
@@ -40,9 +41,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
 
   const handleDeleteProductFromCart = async (productId) => {
     try {
-      await dispatch(userRomoveProductFromCart(productId));
-
+     const response =  await dispatch(userRomoveProductFromCart(productId));
       handleGetCart();
+      dispatch(getNavbarCartWishlistCount())
+      console.log("my",response)
+      if(response?.payload?.data === null){
+        onClose()
+      }
     } catch (err) {
       console.error("Error removing product:", err);
     }
@@ -99,14 +104,18 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   key={item?._id}
                   className="flex border-black px-8 gap-x-4 items-center"
                 >
-                  <img
-                    src={
+
+                     <div className="h-32 w-40 overflow-hidden">
+                    <img
+                     src={
                       variation?.thumbnailImage?.secureUrl ||
                       "https://via.placeholder.com/150"
                     }
-                    className="max-h-32 object-cover"
-                    alt={item?.productId?.productName}
-                  />
+                      className="h-full w-full object-cover"
+                      alt={item?.productId?.productName}
+                    />
+                  </div>
+                 
                   <div className="flex w-full justify-between">
                     <div className="flex flex-col">
                       <p className="text-sm font-medium">
