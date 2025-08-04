@@ -15,6 +15,7 @@ import { createProduct, deleteProduct, editProduct, getAdminAllProducts, getAdmi
 import { addBannerImage, editBannerImages, getAllBanners } from '../controllers/banner.controller.js';
 import { searchProduct } from '../controllers/user.miscellaneous.js';
 import { searchProductParamsSchema } from '../validator/user.product.validator.js';
+import { fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
 
 
 
@@ -111,6 +112,8 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
     params:searchProductParamsSchema
  }),searchProduct)
 
+
+ adminRouter.get('/get-all-orders-for-admin',adminMiddleware,fetchAllOrdersForAdmin)
 
 
 
