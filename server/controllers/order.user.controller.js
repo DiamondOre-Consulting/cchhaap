@@ -33,7 +33,7 @@ export const createOrder = asyncHandler(async (req, res) => {
         (v) => v._id.toString() === variationId.toString()
       );
       if (!variation) throw new ApiError("Variation not found", 404);
-      if (variation.stock < quantity) throw new ApiError("Insufficient stock", 400);
+      if (variation.quantity < quantity) throw new ApiError("Insufficient stock", 400);
 
       const price = variation.discountPrice || variation.price;
       productsToOrder.push({
