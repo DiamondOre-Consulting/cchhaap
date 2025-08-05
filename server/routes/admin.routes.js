@@ -137,7 +137,8 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
  }),changeOrderStatus)
 
 
- adminRouter.get('/fetch-all-users/:page/:limit',adminMiddleware,fetchAllUsers)
+ adminRouter.get('/fetch-all-users/:page/:limit',adminMiddleware,
+    validate({params:getSalesDataParamsData}),fetchAllUsers)
 
 
  
