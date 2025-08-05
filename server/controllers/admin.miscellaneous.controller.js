@@ -37,40 +37,43 @@ export const getUser = asyncHandler(async (req, res) => {
     sendResponse(res, 200, {existingUser,orderData}, "User fetched successfully");
 });
 
+export const getSalesData = asyncHandler(async (req, res) => {
+  const { orderStatus } = req.validatedData.query;
+  const { page, limit } = req.validatedData.params;
+  const skip = (page - 1) * limit;
 
-
-export const getSalesData = asyncHandler(async(req,res)=>{
-
-    
-  const {orderStatus} = req.validatedData.query;
-
-  const {page,limit} = req.validatedData.params
-  const skip = (page-1)*limit;
-
-
-  const queryFilter = {}
-
+  const queryFilter = {};
   if (orderStatus) queryFilter.order_status = orderStatus;
 
-  const orders = await Order.find(queryFilter).populate("userId").sort({createdAt:-1}).skip(skip).limit(limit);
+  const orders = await Order.find(queryFilter)
+    .populate("userId")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
 
+  const ordersData = {};
 
-  const ordersData = {}
+  // Handle safely if aggregation returns empty array
+  const [totalOrdersAgg] = await Order.aggregate([
+    { $match: { order_status: "delivered" } },
+    {
+      $group: {
+        _id: null,
+        totalOrders: { $sum: 1 },
+        totalAmount: { $sum: "$totalAmount" },
+      },
+    },
+  ]);
 
+  const cancelledOrders = await Order.countDocuments({ order_status: "cancelled" });
+  const totalUser = await User.countDocuments();
 
-  
-
-  const [totalOrders] = await Order.aggregate([
-        {$match: {order_status : "delivered"}},
-        {$group: {_id:null, totalOrders: {$sum: 1}, totalAmount: {$sum: "$totalAmount"}}}
-  ])
-
-  const cancelledOrders = await Order.find({order_status:"cancelled"}).countDocuments();
-  const totalUser =await  User.find().countDocuments();
- 
-
-  const [todayOrders] = await Order.aggregate([
-    { $match: { createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) } } },
+  const [todayOrdersAgg] = await Order.aggregate([
+    {
+      $match: {
+        createdAt: { $gte: new Date(new Date().setHours(0, 0, 0, 0)) },
+      },
+    },
     {
       $group: {
         _id: null,
@@ -80,19 +83,14 @@ export const getSalesData = asyncHandler(async(req,res)=>{
     },
   ]);
 
-  ordersData.todayTotalOrders = todayOrders?.todayTotalOrders||0;
-  ordersData.todayTotalAmount = todayOrders?.todayTotalAmount||0;
+  ordersData.todayTotalOrders = todayOrdersAgg?.todayTotalOrders || 0;
+  ordersData.todayTotalAmount = todayOrdersAgg?.todayTotalAmount || 0;
 
-  ordersData.totalOrders = totalOrders.totalOrders||0;
-  ordersData.totalSales = totalOrders.totalAmount||0;
+  ordersData.totalOrders = totalOrdersAgg?.totalOrders || 0;
+  ordersData.totalSales = totalOrdersAgg?.totalAmount || 0;
 
-  ordersData.cancelledOrders = cancelledOrders||0;
-  ordersData.totalUser = totalUser||0;
+  ordersData.cancelledOrders = cancelledOrders;
+  ordersData.totalUser = totalUser;
 
-
-  sendResponse(res,200,{orders,ordersData},"Sales data fetched successfully")
-
-
-})
-
-
+  sendResponse(res, 200, { orders, ordersData }, "Sales data fetched successfully");
+});
