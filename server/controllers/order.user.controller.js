@@ -16,12 +16,10 @@ export const createOrder = asyncHandler(async (req, res) => {
   try {
     const userId = req.user.id;
     const { couponCode, productId, variationId, quantity } = req.validatedData.query;
-    const { address, paymentMethod } = req.validatedData.body;
+    const { address, paymentStatus, paymentMethod } = req.validatedData.body;
 
     const user = await User.findById(userId).lean();
     if (!user) throw new ApiError("User not found", 404);
-
-    const finalPaymentStatus = paymentMethod === "cod" ? "unpaid" : "paid";
 
     let productsToOrder = [];
     let totalMRPPrice = 0;
@@ -100,7 +98,7 @@ export const createOrder = asyncHandler(async (req, res) => {
         totalPriceAfterDiscount,
         totalMRPPrice,
         order_status: "pending",
-        payment_status: finalPaymentStatus,
+        payment_status: paymentStatus,
         payment_method: paymentMethod,
         shipping_address: address,
       },

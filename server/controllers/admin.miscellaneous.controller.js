@@ -92,7 +92,7 @@ export const getSalesData = asyncHandler(async (req, res) => {
   ordersData.cancelledOrders = cancelledOrders;
   ordersData.totalUser = totalUser;
 
-  sendResponse(res, 200, { orders, ordersData }, "Sales data fetched successfully");
+  sendResponse(res, 200, { ordersData }, "Sales data fetched successfully");
 });
 
 
