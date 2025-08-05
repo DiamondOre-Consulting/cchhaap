@@ -87,6 +87,9 @@ export const changeOrderStatus = asyncHandler(async (req, res) => {
     throw new ApiError("Order not found", 400);
   }
   order.order_status = orderStatus;
+  if(orderStatus=="delivered"){
+    order.payment_status="paid"
+  }
   await order.save();
   sendResponse(res, 200, {
     message: "Order status updated successfully",
