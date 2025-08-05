@@ -111,7 +111,7 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
   }
 
   // Get order data for all users (delivered only)
-  const orders = await Order.find({ order_status: "delivered" }).lean();
+  const orders = await Order.find({}).lean();
 
   const orderMap = {};
   orders.forEach((order) => {
