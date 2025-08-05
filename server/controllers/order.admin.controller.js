@@ -61,6 +61,7 @@ export const fetchAllOrdersForAdmin = asyncHandler(async (req, res) => {
       orderStatus: order.order_status,
       paymentStatus: order.payment_status,
       paymentMethod: order.payment_method,
+      shippingAddress: order.shipping_address,
       createdAt: order.createdAt,
     };
   });
