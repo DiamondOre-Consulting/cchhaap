@@ -120,9 +120,9 @@ export const editBanner = createAsyncThunk('/admin/banner-image' , async(formDat
   }
 })
 
-export const fetchAllUsers = createAsyncThunk('/admin/get-all-users', async()=>{
+export const fetchAllUsers = createAsyncThunk('/admin/fetch-all-users', async({page , limit})=>{
   try {
-    const response = await adminAxiosInstance.get(`/fetch-all-users/${1}/${10}`);
+    const response = await adminAxiosInstance.get(`/fetch-all-users/${page}/${limit}`);
     console.log(response);
     return response?.data
   } catch (error) {
@@ -130,7 +130,15 @@ export const fetchAllUsers = createAsyncThunk('/admin/get-all-users', async()=>{
   }
 })
 
-
+export const getSalesData = createAsyncThunk('/admin/sales-data' , async()=>{
+  try {
+    const response = await adminAxiosInstance.get('/get-sales-data');
+    console.log(response);
+    return response?.data;
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 const authSlice = createSlice({
   name: "admin",

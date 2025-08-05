@@ -22,20 +22,7 @@ export const adminFetchAllOrders = createAsyncThunk(
   }
 );
 
-export const adminGetSingleOrder = createAsyncThunk(
-  "/user/get-single-order",
-  async (orderId) => {
-    try {
-      const response = await userAxiosInstance.get(
-        `/get-single-order/${orderId}`
-      );
-      console.log(response);
-      return response?.data;
-    } catch (error) {
-      console.log(error);
-    }
-  }
-);
+
 
 export const adminChangeStatus = createAsyncThunk('/admin/change-status' , async({orderId, orderStatus})=>{
   try {

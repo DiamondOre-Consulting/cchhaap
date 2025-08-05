@@ -16,6 +16,8 @@ import {
   Pie,
 } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useDispatch } from "react-redux";
+import { getSalesData } from "@/Redux/Slices/authSlice";
 
 const Home = () => {
   const pieData = [
@@ -40,6 +42,21 @@ const Home = () => {
     { name: "Nov", sales: 3500, uv: "2800" },
     { name: "Dec", sales: 4000, uv: "500" },
   ];
+
+  const dispatch = useDispatch();
+  const [salesData, setSalesData] = useState([]);
+
+  const handleGetAllSalesData = async () => {
+    const response = await dispatch(getSalesData());
+    setSalesData(response?.payload?.data?.ordersData);
+    console.log(response);
+  };
+
+  useEffect(() => {
+    handleGetAllSalesData();
+  }, []);
+
+  console.log(salesData);
   return (
     <HomeLayout>
       <h1 className="text-2xl">Welcome Admin</h1>
@@ -51,13 +68,20 @@ const Home = () => {
               <ShoppingCart className="" />
             </p>
             <p>Today's Orders</p>
-            <p>120</p>
+            <p>{salesData?.todayTotalOrders}</p>
           </div>
 
           <div className=" rounded shadow-xl flex flex-col items-center  justify-center   bg-white">
             <HandCoins className="text-xl" />
             Today's Sales
-            <p>$120</p>
+            <p>
+              {" "}
+              {salesData.todayTotalAmount?.toLocaleString("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0,
+              })}
+            </p>
           </div>
 
           <div className=" gap-y-1 rounded  shadow-xl flex flex-col items-center  justify-center   bg-white">
@@ -66,13 +90,48 @@ const Home = () => {
               <ShoppingCart className="" />
             </p>
             <p> All Orders</p>
-            <p>120</p>
+            <p>{salesData?.totalOrders}</p>
           </div>
 
           <div className=" shadow-xl rounded flex flex-col items-center  justify-center   bg-white">
             <HandCoins className="text-xl" />
             Total Sales
-            <p>$120</p>
+            <p>
+              {" "}
+              {salesData.totalSales?.toLocaleString("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0,
+              })}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 mt-6 gap-x-6 w-full h-40">
+          <div className=" rounded shadow-xl flex flex-col items-center  justify-center   bg-white">
+            <HandCoins className="text-xl" />
+            Total Users
+            <p>
+              {" "}
+              {salesData.totalUser?.toLocaleString("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0,
+              })}
+            </p>
+          </div>
+
+          <div className=" shadow-xl rounded flex flex-col items-center  justify-center   bg-white">
+            <HandCoins className="text-xl" />
+            Cancelled Orders
+            <p>
+              {" "}
+              {salesData.cancelledOrders?.toLocaleString("en-IN", {
+                style: "currency",
+                currency: "INR",
+                maximumFractionDigits: 0,
+              })}
+            </p>
           </div>
         </div>
 
