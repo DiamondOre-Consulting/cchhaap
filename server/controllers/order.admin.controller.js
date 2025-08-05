@@ -81,7 +81,7 @@ export const fetchAllOrdersForAdmin = asyncHandler(async (req, res) => {
 
 
 export const changeOrderStatus = asyncHandler(async (req, res) => {
-  const { orderId, status } = req.validatedData.body;
+  const { orderId, orderStatus } = req.validatedData.body;
   const order = await Order.findById(orderId);
   if (!order) {
     throw new ApiError("Order not found", 400);
