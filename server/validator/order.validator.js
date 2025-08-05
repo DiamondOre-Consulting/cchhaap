@@ -44,3 +44,8 @@ export const fetchAllOrdersForAdminSchema = z.object({
     limit:z.string().min(1,"Limit is missing"),
     page:z.string().min(1,"page number is missing")
 })
+
+export const changeOrderStatusBodySchema = z.object({
+    orderStatus:z.string().nonempty("Order status is required"),
+    orderId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid order ID format" })
+})
