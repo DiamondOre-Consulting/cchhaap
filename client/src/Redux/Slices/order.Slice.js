@@ -40,7 +40,7 @@ export const userGetAllOrders = createAsyncThunk('/user/all-orders' , async(data
 
 export const userGetSingleOrder = createAsyncThunk('/user/get-single-order' , async(orderId)=>{
     try{
-                const response = await userAxiosInstance.get(`/user/fetch-single-order/${orderId}`);
+                const response = await userAxiosInstance.get(`/get-single-order/${orderId}`);
                 console.log(response);
                 return response?.data
     }
@@ -48,6 +48,8 @@ export const userGetSingleOrder = createAsyncThunk('/user/get-single-order' , as
         console.log(error)
     }
 })
+
+
 const orderSlice = createSlice({
     name : "order",
     initialState :null,
