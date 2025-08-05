@@ -127,7 +127,7 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
  }),getUser)
 
 
- adminRouter.get('/get-sales-data/:page/:limit',adminMiddleware,validate({
+ adminRouter.get('/get-sales-data',adminMiddleware,validate({
     params:getSalesDataParamsData, query: getSalesDataQuerySchema
  }),getSalesData)
 
