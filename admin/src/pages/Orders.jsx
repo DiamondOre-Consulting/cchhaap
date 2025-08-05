@@ -92,7 +92,7 @@ const Orders = () => {
                 className="inline-flex items-center text-gray-500 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-3 py-1.5"
               >
                 <option value="">All Orders</option>
-                {["pending", "processing", "completed", "cancelled"].map(
+                {["pending", "shipped", "delivered", "cancelled"].map(
                   (status) => (
                     <option key={status} value={status}>
                       {status.charAt(0).toUpperCase() + status.slice(1)}
@@ -158,7 +158,7 @@ const Orders = () => {
               {allOrders?.map((order) => (
                 <tr
                   key={order._id}
-                  className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
+                  className={` border-b ${order?.orderStatus == "delivered" ? "bg-green-100" :"bg-white" }   dark:border-gray-700 border-gray-200  dark:hover:bg-gray-600`}
                 >
                   <td className="px-6 py-4">{formatDate(order.createdAt)}</td>
                   <td className="px-6 py-4">{order.user.email}</td>
@@ -183,7 +183,7 @@ const Orders = () => {
                         handleChangeStatus(order._id, e.target.value)
                       }
                     >
-                      {["pending", "processing", "completed", "cancelled"].map(
+                      {["pending", "shipped", "delivered", "cancelled"].map(
                         (status) => (
                           <option key={status} value={status}>
                             {status.charAt(0).toUpperCase() + status.slice(1)}
