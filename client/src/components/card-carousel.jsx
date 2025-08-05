@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge";
 
 export const CardCarousel = ({
   images,
-  autoplayDelay = 1500,
+  autoplayDelay = 1000,
   showPagination = true,
   showNavigation = true,
 }) => {
@@ -95,7 +95,7 @@ export const CardCarousel = ({
                     <div onClick={image.onClick} className="size-full relative">
                       <img
                         src={image.src}
-                        className="size-full "
+                        className="size-full"
                         alt={image.alt}
                       />
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit text-black text-md text-center flex justify-center items-center bg-white px-4 py-2">

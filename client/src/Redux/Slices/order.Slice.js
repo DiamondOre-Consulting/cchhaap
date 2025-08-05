@@ -8,9 +8,12 @@ export const userCreateOrder = createAsyncThunk('/user/order-slice' ,async(data)
         console.log("order data is slice ",data)
         const queryParams = new URLSearchParams();
         if(data?.couponName) queryParams.append("couponCode" , data?.couponName);
+        if(data?.quantity) queryParams.append("quantity" , data?.quantity);
+
         if (data?.productId) queryParams.append("productId", data?.productId);
+           if (data?.variationId) queryParams.append("variationId", data?.variationId);
   
-        const response = await userAxiosInstance.post(`/user/create-order?${queryParams?.toString()}`, data);
+        const response = await userAxiosInstance.post(`/create-order?${queryParams?.toString()}`, data);
         console.log(response);
         toast.success(response?.data?.message);
         return response?.data
@@ -24,7 +27,7 @@ export const userCreateOrder = createAsyncThunk('/user/order-slice' ,async(data)
 export const userGetAllOrders = createAsyncThunk('/user/all-orders' , async(data)=>{
     try{
        console.log("this is dkjfhakjsdfhj",data )
-        const response = await userAxiosInstance.get(`/user/my-orders/${data?.page}/${data?.limit}`);
+        const response = await userAxiosInstance.get(`/get-my-orders/${1}/${10}`);
         console.log("slice response ",response);
         return response?.data;
     }

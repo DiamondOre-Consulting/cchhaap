@@ -31,7 +31,7 @@ const Login = () => {
       console.log("my response", response);
       if (response?.payload?.success) {
         setLoader(false);
-        navigate("/");
+        navigate("/admin-dashboard");
       }
     } catch (err) {
       console.log(err);

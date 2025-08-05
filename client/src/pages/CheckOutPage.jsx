@@ -325,6 +325,7 @@ const CheckOutPage = () => {
   const handleGetRazorpayKey = async () => {
     try {
       const response = await dispatch(userGetRazorpayKey());
+      console.log("key",response)
       setRazorpayKey(response?.payload?.data?.key);
       console.log("rezorpay key its is", response, razorpayKey);
     } catch (error) {
@@ -348,7 +349,10 @@ const CheckOutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState(null);
   console.log(paymentMethod);
   const [paymentStatus, setPaymentStatus] = useState("unpaid");
+
+
   const handlecheckOutPayment = async (totalItems) => {
+    console.log("i need razorpay key",razorpayKey)
     try {
       if (paymentMethod == null) {
         toast.error("please Select Payment Method");
@@ -358,7 +362,7 @@ const CheckOutPage = () => {
       console.log(totalItems);
       console.log("name of the coupon ", couponName);
       const response = await dispatch(
-        userCheckoutPayment({ couponName, totalItems, productId })
+        userCheckoutPayment({ couponName, totalItems, productId , variationId })
       );
       console.log("this is checkoutvalue", response);
       setCheckOutPaymentValues(response?.payload?.data);
@@ -387,11 +391,14 @@ const CheckOutPage = () => {
         return;
       }
 
+
+      console.log(razorpayKey ,"mykey" )
+
       const options = {
         key: razorpayKey,
         amount: response?.payload?.data?.amount,
         currency: response?.payload?.data?.currency,
-        name: "Panjab Jewellers",
+        name: "CCHHAAP",
         description: "",
         image: "",
         order_id: response?.payload?.data?.id,
@@ -399,14 +406,17 @@ const CheckOutPage = () => {
           paymentDetails.razorpay_payment_id = res.razorpay_payment_id;
           paymentDetails.razorpay_order_id = res.razorpay_order_id;
           paymentDetails.razorpay_signature = res.razorpay_signature;
-
+console.log("befored userVarifypayment" )
           const response = await dispatch(userVarifyPayment(paymentDetails));
+          console.log("after")
           console.log("verify payment route ", response);
           if (response?.payload?.success === true) {
             const res = await dispatch(
               userCreateOrder({
                 couponName,
                 productId,
+                quantity,
+                variationId,
                 address: {
                   fullName: selectedAddress?.fullName,
                   phoneNumber: selectedAddress?.phoneNumber,
@@ -430,7 +440,7 @@ const CheckOutPage = () => {
               paymentStatus
             );
 
-            navigate("/my-account/orders", { replace: true });
+         navigate("/my-account?tab=tab-1", { replace: true });
             // await dispatch(userUpdateCart([]))
             await dispatch(getNavbarCartWishlistCount());
             console.log(res);
@@ -514,6 +524,12 @@ const CheckOutPage = () => {
     }
   };
 
+
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
+  
   return (
     <div className="py-6">
       <div className="flex flex-col  md:flex-row px-4 md:px-10 justify-between md:space-y-0 space-y-4 md:space-x-8">
@@ -1095,59 +1111,60 @@ const CheckOutPage = () => {
         </>
       )}
 
-      {successPopUp && (
-        <div class="fixed z-10 inset-0 overflow-y-auto">
-          <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity">
-              <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-            <span class="hidden sm:inline-block sm:align-middle sm:h-screen"></span>
-            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-              <div class="sm:flex sm:items-start">
-                <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
-                  <svg
-                    class="h-6 w-6 text-green-600"
-                    stroke="currentColor"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M5 13l4 4L19 7"
-                    ></path>
-                  </svg>
-                </div>
-                <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                  <h3 class="text-lg leading-6 font-medium text-gray-900">
-                    Order Placed Successfully
-                  </h3>
-                  <div class="mt-2">
-                    <p class="text-sm leading-5 text-gray-500">
-                      Order Placed Successfully we will reach out to soon
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <div class="mt-5 sm:mt-4 sm:flex sm:flex-row-reverse">
-                <span class="flex w-full rounded-md shadow-sm sm:ml-3 sm:w-auto">
-                  <button
-                    onClick={() => {
-                      setSuccessPopUp(false);
-                      navigate("/my-account/orders", { replace: true });
-                    }}
-                    type="button"
-                    class="inline-flex justify-center w-full rounded-md border border-transparent px-4 py-2 bg-green-600 text-base leading-6 font-medium text-white shadow-sm hover:bg-green-500 focus:outline-none focus:shadow-outline-green transition ease-in-out duration-150 sm:text-sm sm:leading-5"
-                  >
-                    Done
-                  </button>
-                </span>
-              </div>
-            </div>
+    {successPopUp && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 bg-opacity-50 backdrop-blur-sm animate-fadeIn">
+    <div className="w-full max-w-md transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all animate-scaleIn">
+      <div className="flex items-start">
+        <div className="flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
+          <svg
+            className="h-6 w-6 text-green-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+        <div className="ml-4">
+          <h3 className="text-xl font-semibold text-gray-900">
+            Order Confirmed!
+          </h3>
+          <div className="mt-2">
+            <p className="text-sm text-gray-600">
+              Your order has been placed successfully. We've sent a confirmation to your email.
+            </p>
           </div>
         </div>
-      )}
+      </div>
+      <div className="mt-6 flex justify-end space-x-3">
+        <button
+          onClick={() => {
+            setSuccessPopUp(false);
+            navigate("/my-account?tab=tab-1", { replace: true });
+          }}
+          className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+        >
+          View Orders
+        </button>
+        <button
+          onClick={() => {
+            setSuccessPopUp(false);
+            navigate("/", { replace: true });
+          }}
+          className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+        >
+          Continue Shopping
+        </button>
+      </div>
+    </div>
+  </div>
+)}
     </div>
   );
 };

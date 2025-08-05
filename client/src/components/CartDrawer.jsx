@@ -78,7 +78,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
         ></div>
 
         <div
-          className={`fixed  overflow-x-hidden  top-0 right-0 h-screen w-[16rem] md:w-[30rem] z-40 overflow-y-auto  bg-white shadow-lg  transition-transform duration-300 ${
+          className={`fixed  overflow-x-hidden  top-0 right-0 h-screen w-full md:w-[30rem] z-40 overflow-y-auto  bg-white shadow-lg  transition-transform duration-300 ${
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >

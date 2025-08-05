@@ -16,6 +16,11 @@ const Products = () => {
   const dispatch = useDispatch();
   const [loader, setLoader] = useState(false);
   const [allAttributes, setAllAttributes] = useState([]);
+   const [productData, setProductData] = useState({
+    products: [],
+    currentPage: 1,
+    totalPages: 1,
+  }); const [itemsPerPage, setItemsPerPage] = useState(10);
   const [allProducts, setAllProducts] = useState();
   const [singleDataPopUP, setSingleDataPopUp] = useState(false);
   const [singleData, setSingleData] = useState();
@@ -34,9 +39,27 @@ const Products = () => {
 
   const handleGetAllProducts = async () => {
     const res = await dispatch(getAllProduct());
-    console.log(res?.payload?.data?.products);
-    setAllProducts(res?.payload?.data?.products);
+    console.log(res?.payload?.data);
+      setProductData({
+        products: res?.payload?.data?.products || [],
+        currentPage: res?.payload?.data?.currentPage || 1,
+        totalPages: res?.payload?.data?.totalPages || 1,
+      });
   };
+
+
+   const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= productData.totalPages) {
+      handleGetAllProducts(newPage, itemsPerPage);
+    }
+  };
+
+  const handleItemsPerPageChange = (e) => {
+    const newLimit = parseInt(e.target.value);
+    setItemsPerPage(newLimit);
+    handleGetAllProducts(1, newLimit); 
+  };
+
 
   useEffect(() => {
     handleGetAllProducts();
@@ -136,6 +159,7 @@ const Products = () => {
 
   const handleDeleteProduct = async() =>{
     try {
+      setLoader(true)
       const response = await dispatch(deleteProduct(id))
       console.log(response)
     } catch (error) {
@@ -144,6 +168,7 @@ const Products = () => {
     finally{
       setDeletePopUp(false)
       await handleGetAllProducts()
+      setLoader(false)
     }
   }
 
@@ -162,9 +187,15 @@ const Products = () => {
             <div className="flex gap-x-4">
               <div className="flex  items-center gap-x-2 ">
                 <p>Showing</p>
-                <select className="border rounded-md  px-2 py-1">
-                  <option>10</option>
-                  <option>20</option>
+              <select 
+                  className="border rounded-md px-2 py-1"
+                  value={itemsPerPage}
+                  onChange={handleItemsPerPageChange}
+                >
+                  <option value="5">5</option>
+                  <option value="10">10</option>
+                  <option value="20">20</option>
+                  <option value="50">50</option>
                 </select>
               </div>
 
@@ -201,6 +232,7 @@ const Products = () => {
             <button
               onClick={() => {
                 setProductPopUp(true);
+                setSingleData(null)
               }}
               className="bg-c1 text-white cursor-pointer px-6 py-2 flex items-center gap-x-2"
             >
@@ -230,7 +262,7 @@ const Products = () => {
               </tr>
             </thead>
             <tbody>
-              {allProducts?.map((product, index) => (
+              {productData?.products?.map((product, index) => (
                 <tr
                   key={index}
                   class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 border-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600"
@@ -286,6 +318,46 @@ const Products = () => {
             </tbody>
           </table>
         </div>
+
+           <div className="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 dark:bg-gray-800 dark:border-gray-700">
+            <div>
+              <p className="text-sm text-gray-700 dark:text-gray-400">
+                Showing <span className="font-medium">{(productData.currentPage - 1) * itemsPerPage + 1}</span> to{' '}
+                <span className="font-medium">
+                  {Math.min(productData.currentPage * itemsPerPage, productData.products.length + (productData.currentPage - 1) * itemsPerPage)}
+                </span>{' '}
+                of <span className="font-medium">{productData.totalPages * itemsPerPage}</span> results
+              </p>
+            </div>
+            <div className="flex space-x-2">
+              <button
+                onClick={() => handlePageChange(productData.currentPage - 1)}
+                disabled={productData.currentPage === 1}
+                className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              {Array.from({ length: productData.totalPages }, (_, i) => i + 1).map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
+                  className={`px-3 py-1 border rounded-md text-sm font-medium ${
+                    productData.currentPage === page ? 'bg-c1 text-white' : ''
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
+              <button
+                onClick={() => handlePageChange(productData.currentPage + 1)}
+                disabled={productData.currentPage === productData.totalPages}
+                className="px-3 py-1 border rounded-md text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+      
 
         {productPopUp && (
           <div className="fixed inset-0 z-40 min-h-full    transition flex items-center justify-center">

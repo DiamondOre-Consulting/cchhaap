@@ -64,7 +64,7 @@ const Wishlist = () => {
       </Link>
     </div>
   ) : (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-10 gap-8">
       {wishlistData.map((item) => {
         const product = item?.productId;
         const firstVariation = product?.variations?.[0];

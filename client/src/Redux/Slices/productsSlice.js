@@ -5,15 +5,17 @@ import { toast } from "sonner";
 import { getNavbarCartWishlistCount } from "./cart";
 
 
-export const getSingleProduct = createAsyncThunk('/user/single-product' , async({id , userId, color, size, variationId, attributes})=>{
-
+export const getSingleProduct = createAsyncThunk('/user/single-product' , async({id , userId, color, size, variationId, selectedAttributes ={}})=>{
+console.log("selected Attributess 1 ",selectedAttributes)
     try {
        const query = new URLSearchParams();
       if(userId) query.append("userId" , userId)
       if(color) query.append("color" , color)
       if(size) query.append("size" , size)
       if(variationId) query.append("variationId" , variationId)
-       if(attributes)  query.append("attributes" , attributes)
+      if (Object.keys(selectedAttributes).length > 0) {
+        query.append("attributes", JSON.stringify(selectedAttributes));
+      }
 
         const res = await axiosInstance.get(`/get-single-product/${id}?${query.toString()}`)
         console.log(res)
@@ -70,9 +72,11 @@ export const getCategorizedProduct = createAsyncThunk(
 );
 
 
-export const getGenderWiseProduct = createAsyncThunk('/user/gender-wise-product', async(gender)=>{
+export const getGenderWiseProduct = createAsyncThunk('/user/gender-wise-product', async({gender , userId})=>{
     try {
-        const response = await axiosInstance.get(`/get-gender-based-products/${gender}`);
+         const query = new URLSearchParams();
+      if(userId) query.append("userId" , userId)
+        const response = await axiosInstance.get(`/get-gender-based-products/${gender}?${query.toString()}`);
         console.log(response);
         return response?.data
     } catch (error) {

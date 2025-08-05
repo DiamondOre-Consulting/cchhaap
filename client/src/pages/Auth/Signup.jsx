@@ -1,5 +1,6 @@
 import { sendOtp, userSignUp } from "@/Redux/Slices/authSlice";
-import React, { useState } from "react";
+import { getNavbarCartWishlistCount } from "@/Redux/Slices/cart";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {Link, useNavigate} from 'react-router-dom'
 
@@ -66,7 +67,8 @@ const Signup = () => {
       console.log(formData)
       const response = await dispatch(userSignUp(formData));
       if (response?.payload?.statusCode === 200) {
-            navigate('/login')
+            navigate('/')
+            dispatch(getNavbarCartWishlistCount())
       }
     } catch (error) {
       console.log(error);
@@ -74,6 +76,13 @@ const Signup = () => {
       setLoader(false);
     }
   };
+
+
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
+  
 
   return (
     <div className="max-h-screen flex flex-col pb-20 mt-20 items-center">

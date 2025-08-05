@@ -21,7 +21,7 @@ import { toast } from "sonner";
 // import { logout } from "@/Redux/AuthSlice";
 
 const menuItems = [
-  { icon: Home, label: "Dashboard", path: "/" },
+  { icon: Home, label: "Dashboard", path: "/admin-dashboard" },
    { icon: Home, label: "Manage Banner Images", path: "/manage-banner"},
   { icon: Tag, label: "Manage Category", path: "/manage-category" },
   { icon: Tag, label: "Attribute Variations", path: "/manage-variations" },

@@ -1,5 +1,6 @@
 import { userForgotPassword, userSignin } from "@/Redux/Slices/authSlice";
-import React, { useState } from "react";
+import { getNavbarCartWishlistCount } from "@/Redux/Slices/cart";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -39,7 +40,7 @@ const Login = () => {
       console.log(response);
       if (response?.payload?.statusCode === 200) {
         toast.success("user logged in successfully")
-        // dispatch(getNavbarCartCount())
+        dispatch(getNavbarCartWishlistCount())
         navigate("/");
       }
    
@@ -69,6 +70,12 @@ const Login = () => {
       setForgotPasswordPopUp(false)
     }
   };
+
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
+  
 
   return (
     <div>
@@ -149,9 +156,9 @@ const Login = () => {
                   Forgot Password?
                 </p>
                 <p className="text-center">
-                  Dont have an account
-                  <Link className="underline" to={"/signup"}>
-                    signup
+                  Don't have an account
+                  <Link className="underline ml-1"  to={"/signup"}>
+                     signup
                   </Link>
                   ?
                 </p>

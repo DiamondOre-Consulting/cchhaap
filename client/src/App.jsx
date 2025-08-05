@@ -1,5 +1,11 @@
 import React, { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  useLocation,
+} from "react-router-dom";
 import HomeLayout from "./Layout/HomeLayout";
 import Home from "./pages/Home";
 import Products from "./pages/Products";
@@ -15,14 +21,13 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "./Redux/Slices/authSlice";
 import { getNavbarCartWishlistCount } from "./Redux/Slices/cart";
 
-
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
 const App = () => {
-
-   const dispatch = useDispatch();
+  const location = useLocation();
+  const dispatch = useDispatch();
   const { cartCount, wishlistCount } = useSelector((state) => state.cart);
-console.log("hello",cartCount , wishlistCount)
+  console.log("hello", cartCount, wishlistCount);
   const fetchData = async () => {
     await dispatch(getUserData());
     await dispatch(getNavbarCartWishlistCount());
@@ -31,7 +36,10 @@ console.log("hello",cartCount , wishlistCount)
   useEffect(() => {
     fetchData();
   }, [location.pathname]);
-  
+
+  const { user } = useSelector((state) => state.user);
+  console.log("data", user);
+
   return (
     <HomeLayout cartCount={cartCount} wishlistCount={wishlistCount}>
       <Routes>

@@ -31,7 +31,7 @@ const ProductItem = ({ product, isLoggedIn }) => {
 
   const toggleWishList = () => {
     if (!isLoggedIn) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
@@ -46,7 +46,7 @@ const ProductItem = ({ product, isLoggedIn }) => {
     try {
       setIsWishLoading(true);
       const response = await dispatch(addToWishlist(productId));
-      dispatch(getNavbarCartWishlistCount())
+      dispatch(getNavbarCartWishlistCount());
       if (response?.payload?.success) {
         setIsWish(true);
       }
@@ -61,7 +61,7 @@ const ProductItem = ({ product, isLoggedIn }) => {
     try {
       setIsWishLoading(true);
       const response = await dispatch(removeFromWishlist(productId));
-      dispatch(getNavbarCartWishlistCount())
+      dispatch(getNavbarCartWishlistCount());
 
       if (response?.payload?.success) {
         setIsWish(false);
@@ -88,6 +88,10 @@ const ProductItem = ({ product, isLoggedIn }) => {
         ]
       : []),
   ];
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div className="">
@@ -195,9 +199,11 @@ const Products = () => {
       let response;
 
       if (gender) {
-        response = await dispatch(getGenderWiseProduct(gender));
+        response = await dispatch(getGenderWiseProduct({gender , userId: user?.data?._id }));
       } else if (id) {
-        response = await dispatch(getCategorizedProduct({ id, userId: user?.data?._id }));
+        response = await dispatch(
+          getCategorizedProduct({ id, userId: user?.data?._id })
+        );
       } else {
         response = await dispatch(getAllProducts({ userId: user?.data?._id }));
       }
@@ -218,7 +224,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [id, gender, user?._id]);
+  }, [id, gender, user?._id , user , isLoggedIn]);
 
   if (loading) {
     return (

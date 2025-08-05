@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Orders from "@/components/Profile/Orders";
 import Address from "@/components/Profile/Address";
@@ -7,11 +7,11 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { userSignOut } from "@/Redux/Slices/authSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
-
+import { getNavbarCartWishlistCount } from "@/Redux/Slices/cart";
 
 const ProfilePage = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const defaultTab = searchParams.get("tab") || "tab-1";
 
@@ -19,18 +19,21 @@ const ProfilePage = () => {
     setSearchParams({ tab: value });
   };
 
-
-    const handleLogout = async () => {
+  const handleLogout = async () => {
     const res = await dispatch(userSignOut());
+    dispatch(getNavbarCartWishlistCount());
     console.log(res);
     toast.success("Logged out successfully");
     navigate("/login");
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <Tabs 
-      defaultValue={defaultTab} 
+    <Tabs
+      defaultValue={defaultTab}
       className="items-center py-6"
       onValueChange={handleTabChange}
     >
@@ -72,9 +75,12 @@ const ProfilePage = () => {
       </TabsContent>
       <TabsContent value="tab-4">
         <p className="text-gray-100 p-4 text-center  mt-6">
-         <button onClick={handleLogout} className="bg-c2 px-10 py-2 text-c1 text-lg cursor-pointer">
-          Logout
-         </button>
+          <button
+            onClick={handleLogout}
+            className="bg-c2 px-10 py-2 text-c1 text-lg cursor-pointer"
+          >
+            Logout
+          </button>
         </p>
       </TabsContent>
     </Tabs>

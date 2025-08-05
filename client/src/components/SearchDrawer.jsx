@@ -4,12 +4,15 @@ import { AiOutlineShoppingCart } from "react-icons/ai";
 import { CiSearch } from "react-icons/ci";
 import { useDispatch } from "react-redux";
 import { userProductSearch } from "@/Redux/Slices/productsSlice";
+import { FaSpinner } from "react-icons/fa";
 
 const SearchDrawer = ({ isOpen, onClose }) => {
   const dispatch = useDispatch();
   const [searchItem, setSearchItem] = useState("");
   const [searchResults, setSearchResults] = useState([]);
+  const [loader, setLoader] = useState(false); // Initialize as false
   const navigate = useNavigate();
+
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
 
@@ -28,11 +31,18 @@ const SearchDrawer = ({ isOpen, onClose }) => {
 
   const fetchSearchResults = async (query) => {
     try {
+      setLoader(true);
       const res = await dispatch(userProductSearch(query));
-      console.log(res);
-      setSearchResults(res?.payload?.data);
+      console.log(res?.payload?.success)
+      if(res?.payload?.success){
+        setSearchResults(res?.payload?.data || []);    
+      }
+     
     } catch (error) {
       console.log(error);
+      setSearchResults([]);
+    } finally {
+      setLoader(false);
     }
   };
 
@@ -43,7 +53,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
       setSearchResults([]);
     }
   }, [debouncedInputValue]);
-  console.log(searchResults);
+
   return (
     <div>
       <>
@@ -55,7 +65,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
         ></div>
 
         <div
-          className={`fixed  overflow-x-hidden  top-0 right-0 h-screen w-[16rem] md:w-[30rem] z-40 overflow-y-auto  bg-white shadow-lg  transition-transform duration-300 ${
+          className={`fixed overflow-x-hidden top-0 right-0 h-screen w-full md:w-[30rem] z-40 overflow-y-auto bg-white shadow-lg transition-transform duration-300 ${
             isOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -66,7 +76,7 @@ const SearchDrawer = ({ isOpen, onClose }) => {
                 value={searchItem}
                 onChange={(e) => setSearchItem(e.target.value)}
                 type="text"
-                placeholder="What are you looking for ? "
+                placeholder="What are you looking for?"
                 className="w-[20rem] focus:outline-none"
               />
             </div>
@@ -75,28 +85,40 @@ const SearchDrawer = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          <div className="flex flex-col  text-black gap-y-6 py-6">
-            {searchResults?.length > 0 &&
-              searchResults?.map((item) => (
+          <div className="flex flex-col text-black gap-y-6 py-6">
+            {loader ? (
+              <div className="flex justify-center items-center h-64">
+                <FaSpinner className="animate-spin text-4xl" />
+              </div>
+            ) : searchResults?.length > 0 ? (
+              searchResults.map((item) => (
                 <div
+                  key={item._id}
                   onClick={() => {
-                    navigate(`/each-product/${item?._id}`);
+                    navigate(`/each-product/${item._id}`);
                     onClose();
                   }}
-                  className="flex border-black px-8 gap-x-4 items-center"
+                  className="flex border-black px-8 gap-x-4 items-center cursor-pointer hover:bg-gray-100"
                 >
                   <div className="h-32 w-40 overflow-hidden">
                     <img
                       src={item?.thumbnailImage?.secureUrl}
                       className="h-full w-full object-cover"
-                      alt={item?.name || "Product image"}
+                      alt={item?.productName || "Product image"}
                     />
                   </div>
                   <div>
                     <p className="text-md">{item.productName}</p>
                   </div>
                 </div>
-              ))}
+              ))
+            ) : (
+              !loader && (
+                <div className="flex justify-center items-center h-64">
+                  <p>No results found</p>
+                </div>
+              )
+            )}
           </div>
         </div>
       </>

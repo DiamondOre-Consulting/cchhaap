@@ -10,7 +10,7 @@ const Address = () => {
   const [addressDrawer, setAddressDrawer] = useState(false);
   const [allAddress, setAllAddress] = useState([]);
   const [selectedAddress, setSelectedAddress] = useState("");
-  const [ editAdd , setEditAdd] = useState()
+  const [editAdd, setEditAdd] = useState();
 
   const dispatch = useDispatch();
   const handleDrawer = () => {
@@ -32,16 +32,14 @@ const Address = () => {
     }
   };
 
-
-   const handleDeleteAddress = async (addressId) => {
-      try {
-        const response = await dispatch(userDeleteAddress(addressId));
-        await handleGetAllAddress();
-      } catch (error) {
-        console.log(error);
-      }
-    };
-  
+  const handleDeleteAddress = async (addressId) => {
+    try {
+      const response = await dispatch(userDeleteAddress(addressId));
+      await handleGetAllAddress();
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     handleGetAllAddress();
@@ -122,19 +120,18 @@ const Address = () => {
       },
     },
 
-    
     {
       label: "Address Type",
       name: "addressType",
       required: true,
       inputType: "select",
-      options:["home" , "work" , "office"],
+      options: ["home", "work", "office"],
       error: {
         required: "Address Type is required",
         minLength: { value: 2, message: "Minimum 2 characters required" },
       },
     },
-    
+
     {
       label: "Set as Default",
       name: "isDefault",
@@ -147,13 +144,13 @@ const Address = () => {
     <div className="">
       <div className="flex flex-col items-center justify-center  mb-4">
         <h1 className="text-3xl  font-semibold mt-4">Address</h1>
-        <div className="flex flex-wrap max-w-5xl   mt-6    flex-wrap">
-            {allAddress?.addresses?.map((address, index) => (
-          <div  key={index} className=" p-4 flex border border-white/40 justify-between items-center w-80">
-              <div
-               
-                className={`mt-4 flex  flex-col gap-y-4 items-center  `}
-              >
+        <div className="flex  flex-wrap  w-full mx-auto md:max-w-5xl mt-6 flex-wrap">
+          {allAddress?.addresses?.map((address, index) => (
+            <div
+              key={index}
+              className=" p-4 flex border mx-auto  border-white/40 justify-between items-center w-80"
+            >
+              <div className={`mt-4 flex  flex-col gap-y-4 items-center  `}>
                 <div className="flex flex-col gap-y-2">
                   <div className="flex space-x-2">
                     <input
@@ -176,7 +173,9 @@ const Address = () => {
                 <div className="flex space-x-4 text-white ">
                   <button
                     className="bg-c2 text-c1 px-6 py-1 cursor-pointer"
-                    onClick={() =>{ setEditAdd(address) ,setAddressDrawer(true)}}
+                    onClick={() => {
+                      setEditAdd(address), setAddressDrawer(true);
+                    }}
                   >
                     Edit
                   </button>
@@ -188,11 +187,11 @@ const Address = () => {
                   </button>
                 </div>
               </div>
-          </div>
-            ))}
+            </div>
+          ))}
           <div
             onClick={() => setAddressDrawer(true)}
-            className="bg-[#edb141]/10 p-4 cursor-pointer flex flex-col space-y-4 text-white  justify-center border items-center w-80 h-48 "
+            className="bg-[#edb141]/10 p-4 cursor-pointer mx-auto flex flex-col space-y-4 text-white  justify-center border items-center w-80 h-48 "
           >
             <p>
               <MapPinPlus className="text-white " />

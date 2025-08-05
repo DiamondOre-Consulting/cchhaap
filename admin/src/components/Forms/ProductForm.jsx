@@ -24,7 +24,7 @@ const ProductForm = ({
   const dispatch = useDispatch();
   const editor = useRef(null);
   const fileInputRefs = useRef({});
-const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
@@ -176,15 +176,24 @@ const [isSubmitting, setIsSubmitting] = useState(false);
     setSelectedLabel(selectedLabel);
   };
 
-  const handleOptionChange = (e, idx) => {
-    const selectedOption = e.target.value;
-    const labelName = selectedLabel?.name;
+ const handleOptionChange = (e, idx) => {
+  const selectedOption = e.target.value;
+  const labelName = selectedLabel?.name;
 
-    if (!labelName) return;
+  if (!labelName || !selectedOption) return;
 
-    setValue(`variations.${idx}.attributes.${labelName}`, selectedOption);
-  };
+  // Get current attributes
+  const currentAttributes = getValues(`variations.${idx}.attributes`) || {};
+  
+  // Update with new attribute
+  setValue(`variations.${idx}.attributes`, {
+    ...currentAttributes,
+    [labelName]: selectedOption
+  });
 
+  // Clear selection UI (keep definition)
+  setSelectedLabel(null);
+};
   const removeAttribute = (idx, key) => {
     const currentAttrs = getValues(`variations.${idx}.attributes`);
     const newAttrs = { ...currentAttrs };
@@ -210,7 +219,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
       size: "",
       color: { name: "", hex: "" },
       price: 0,
-      gender:"",
+      gender: "",
       discountPrice: 0,
       quantity: 0,
       sku: "",
@@ -231,7 +240,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = async (data) => {
     const formData = new FormData();
-  setIsSubmitting(true);
+    setIsSubmitting(true);
 
     formData.append("productName", data.productName);
     formData.append("brandName", data.brandName);
@@ -246,10 +255,9 @@ const [isSubmitting, setIsSubmitting] = useState(false);
       formData.append(`subCategory[${i}]`, sub);
     });
 
-      
     data.variations.forEach((variation, index) => {
       if (variation._id) {
-        console.log("enter",variation._id)
+        console.log("enter", variation._id);
         formData.append(`variations[${index}][_id]`, variation._id);
       }
       if (variation.size)
@@ -315,23 +323,23 @@ const [isSubmitting, setIsSubmitting] = useState(false);
       });
     });
 
+    let res;
     try {
       if (singleData?._id) {
-        await dispatch(editProduct({ id: singleData._id, formData }));
+    res=  await dispatch(editProduct({ id: singleData._id, formData }));
       } else {
-        await dispatch(createProduct(formData));
+     res=   await dispatch(createProduct(formData));
       }
-      await handleGetAllProducts();
+      await handleGetAllProducts()
+     if (res?.payload?.success) {
       setProductPopUp(false);
+    }
     } catch (error) {
       console.error("Error saving product:", error);
-    }
-    finally{
-        setIsSubmitting(false);
+    } finally {
+      setIsSubmitting(false);
     }
   };
-
-
 
   useEffect(() => {
     if (singleData && categories.length > 0) {
@@ -352,7 +360,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
             name: v.color?.name || "",
             hex: v.color?.hex || "#000000",
           },
-          gender:v.gender||"",
+          gender: v.gender || "",
           price: v.price || 0,
           discountPrice: v.discountPrice || 0,
           quantity: v.quantity || 0,
@@ -380,8 +388,8 @@ const [isSubmitting, setIsSubmitting] = useState(false);
       reset(formattedData);
     }
   }, [singleData, categories, reset]);
-  
-  console.log("formData".formData)
+
+  console.log("formData".formData);
 
   return (
     <form
@@ -626,90 +634,78 @@ const [isSubmitting, setIsSubmitting] = useState(false);
                 </div>
               </div>
 
-              <div className="col-span-full space-y-2">
-                <h4 className="font-medium">Attributes</h4>
+            <div className="col-span-full space-y-2">
+  <h4 className="font-medium">Attributes</h4>
 
-                {variation.attributes &&
-                  Object.entries(variation.attributes).map(([key, value]) => (
-                    <div key={key} className="flex gap-2 items-center">
-                      <span className="font-medium">{key}:</span>
-                      <span>{value}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeAttribute(idx, key)}
-                        className="text-red-500 text-sm"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
+  {variation.attributes &&
+    Object.entries(variation.attributes).map(([key, value]) => (
+      <div key={key} className="flex gap-2 items-center">
+        <span className="font-medium">{key}:</span>
+        <span>{value}</span>
+        <button
+          type="button"
+          onClick={() => removeAttribute(idx, key)}
+          className="text-red-500 text-sm"
+        >
+          Remove
+        </button>
+      </div>
+    ))}
 
-                <div className="border p-4 rounded bg-gray-50">
-                  <label className="block mb-1 text-sm">
-                    Attribute Definition
-                  </label>
-                  <select
-                    onChange={(e) => handleAttributeDefChange(e, idx)}
-                    className="w-full border px-3 py-2 rounded text-sm mb-4"
-                  >
-                    <option value="">Select Definition</option>
-                    {allAttributes.map((attr) => (
-                      <option key={attr._id} value={attr._id}>
-                        {attr.category?.categoryName}
-                      </option>
-                    ))}
-                  </select>
+  <div className="border p-4 rounded bg-gray-50">
+    <label className="block mb-1 text-sm">Attribute Definition</label>
+    <select
+      onChange={(e) => handleAttributeDefChange(e, idx)}
+      value={watch(`variations.${idx}.attributeDefinition`) || ""}
+      className="w-full border px-3 py-2 rounded text-sm mb-4"
+    >
+      <option value="">Select Definition</option>
+      {allAttributes.map((attr) => (
+        <option key={attr._id} value={attr._id}>
+          {attr.category?.categoryName}
+        </option>
+      ))}
+    </select>
 
-                  {selectedAttributeDefinition && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                      <div>
-                        <label className="block mb-1 text-sm">Label</label>
-                        <select
-                          onChange={handleLabelChange}
-                          value={selectedLabel?._id || ""}
-                          className="w-full border px-3 py-2 rounded text-sm"
-                        >
-                          <option value="">Select Label</option>
-                          {selectedAttributeDefinition?.attributes?.map(
-                            (label) => (
-                              <option key={label._id} value={label._id}>
-                                {label.name}
-                              </option>
-                            )
-                          )}
-                        </select>
-                      </div>
+    {selectedAttributeDefinition && (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+        <div>
+          <label className="block mb-1 text-sm">Label</label>
+          <select
+            onChange={handleLabelChange}
+            value={selectedLabel?._id || ""}
+            className="w-full border px-3 py-2 rounded text-sm"
+          >
+            <option value="">Select Label</option>
+            {selectedAttributeDefinition?.attributes?.map((label) => (
+              <option key={label._id} value={label._id}>
+                {label.name}
+              </option>
+            ))}
+          </select>
+        </div>
 
-                      {selectedLabel && (
-                        <div>
-                          <label className="block mb-1 text-sm">Value</label>
-                          <select
-                            onChange={(e) => handleOptionChange(e, idx)}
-                            className="w-full border px-3 py-2 rounded text-sm"
-                          >
-                            <option value="">Select Value</option>
-                            {selectedLabel?.options?.map((opt) => (
-                              <option key={opt} value={opt}>
-                                {opt}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* <button
-                    type="button"
-                    onClick={() => addNewAttribute(idx)}
-                    className="mt-4 bg-blue-500 text-white px-3 py-1 rounded text-sm"
-                    disabled={!selectedLabel}
-                  >
-                    Add Attribute
-                  </button> */}
-                </div>
-              </div>
-
+        {selectedLabel && (
+          <div>
+            <label className="block mb-1 text-sm">Value</label>
+            <select
+              onChange={(e) => handleOptionChange(e, idx)}
+              value="" // Force empty selection after choosing
+              className="w-full border px-3 py-2 rounded text-sm"
+            >
+              <option value="">Select Value</option>
+              {selectedLabel?.options?.map((opt) => (
+                <option key={opt} value={opt}>
+                  {opt}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+      </div>
+    )}
+  </div>
+</div>
               <div className="mb-4">
                 <label className="block mb-1 font-medium">
                   Thumbnail Image
@@ -738,7 +734,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
                         setValue(`variations.${idx}.thumbnailImage`, {
                           secureUrl: "",
                           publicId: "",
-                          uniqueId:"",
+                          uniqueId: "",
                           file: null,
                           isNew: false,
                         });
@@ -871,8 +867,7 @@ const [isSubmitting, setIsSubmitting] = useState(false);
         <label className="font-medium">Product is Active</label>
       </div>
 
-
-         <div className="flex items-center gap-2 mt-4">
+      <div className="flex items-center gap-2 mt-4">
         <input type="checkbox" {...register("featuredProduct")} />
         <label className="font-medium">Featured Product </label>
       </div>
@@ -885,8 +880,16 @@ const [isSubmitting, setIsSubmitting] = useState(false);
         >
           Cancel
         </button>
-        <button type="submit" className="bg-c1 text-white px-6 py-2 rounded"   disabled={isSubmitting}>
-           {isSubmitting ? 'Processing...' : singleData ? 'Update Product' : 'Create Product'}
+        <button
+          type="submit"
+          className="bg-c1 text-white px-6 py-2 rounded"
+          disabled={isSubmitting}
+        >
+          {isSubmitting
+            ? "Processing..."
+            : singleData
+            ? "Update Product"
+            : "Create Product"}
         </button>
       </div>
     </form>

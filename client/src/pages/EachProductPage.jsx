@@ -5,7 +5,10 @@ import { FaHeart } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { getSingleProduct } from "@/Redux/Slices/productsSlice";
 import { useNavigate, useParams } from "react-router-dom";
-import { userUpdateCart } from "@/Redux/Slices/cart";
+import {
+  getNavbarCartWishlistCount,
+  userUpdateCart,
+} from "@/Redux/Slices/cart";
 
 const ProductPreviews = ({ previews }) => {
   const [index, setIndex] = useState(0);
@@ -206,6 +209,8 @@ const SizeVariant = ({
 
 const EachProductPage = () => {
   const { id } = useParams();
+  const { cartCount } = useSelector((state) => state.cart);
+  console.log("cartCount", cartCount);
   const dispatch = useDispatch();
   const [singleData, setSingleData] = useState();
   const [selectedVariation, setSelectedVariation] = useState(null);
@@ -213,68 +218,150 @@ const EachProductPage = () => {
   const { user, isLoggedIn } = useSelector((state) => state?.user);
   const [isWish, setIsWish] = useState(false);
   const navigate = useNavigate();
-  const [qty, setQty] = useState(0);
-  console.log(user, isLoggedIn);
-  console.log("singleData", singleData);
+  const [isUpdatingCart, setIsUpdatingCart] = useState(false);
+
+  const [selectedAttributes, setSelectedAttributes] = useState({});
+
+  // const [selectedAttributes , setSelectedAttribute] = useState(null)
+
+  useEffect(() => {
+    if (cartCount !== undefined) {
+      handleGetSingleProduct();
+    }
+  }, [cartCount]);
+
+  console.log("injsx",selectedAttributes)
   const handleGetSingleProduct = async () => {
     try {
-      const response = await dispatch(
-        // color, size, variationId, attributes
-        getSingleProduct({ id, userId: user?.data?._id   })
-      );
-      setSingleData(response?.payload?.data);
-      if (response?.payload?.data?.variations?.length > 0) {
-        const firstVariation = response.payload.data.variations[0];
-        setSelectedVariation(firstVariation);
-        setSelectedSize(firstVariation.size);
+      
+      const payload = {
+        id,
+        userId: user?.data?._id,
+        size: selectedSize,
+        color: selectedVariation?.color?.name,
+        variationId: selectedVariation?._id,
+         selectedAttributes
+      };
+
+      const response = await dispatch(getSingleProduct(payload));
+      const productData = response?.payload?.data;
+      setSingleData(productData);
+      
+      if (productData?.variations?.length > 0) {
+        // Find the variation that matches our current selection
+        let matchingVariation;
+        
+        // First try to find by variationId if we have one
+        if (selectedVariation?._id) {
+          matchingVariation = productData.variations.find(
+            v => v._id === selectedVariation._id
+          );
+        }
+        
+        // If not found by ID, try to match by attributes
+        if (!matchingVariation) {
+          matchingVariation = productData.variations.find(v => {
+            return (
+              v.size === selectedSize &&
+              v.color?.name === selectedVariation?.color?.name &&
+              Object.entries(selectedAttributes).every(
+                ([key, value]) => v.attributes[key] === value
+              )
+            );
+          });
+        }
+        
+        // Fallback to first variation if no match found
+        matchingVariation = matchingVariation || productData.variations[0];
+        
+        setSelectedVariation(matchingVariation);
+        setSelectedSize(matchingVariation.size);
+        
+        // Update selected attributes to match the found variation
+        const newSelectedAttributes = { ...selectedAttributes };
+        Object.entries(matchingVariation.attributes).forEach(([key, value]) => {
+          newSelectedAttributes[key] = value;
+        });
+        setSelectedAttributes(newSelectedAttributes);
       }
     } catch (error) {
       console.log(error);
     }
   };
 
+  
+
   const handleColorChange = (variation) => {
     setSelectedVariation(variation);
     setSelectedSize(variation.size);
-    setQty(0);
+    const newAttributes = { ...variation.attributes };
+    setSelectedAttributes(newAttributes);
   };
 
   const handleSizeChange = (size, variation) => {
     setSelectedSize(size);
     setSelectedVariation(variation);
-    setQty(0);
+    const newAttributes = { ...variation.attributes };
+    setSelectedAttributes(newAttributes);
   };
 
-  const toggleWishList = () => {
-    setIsWish((prev) => !prev);
-  };
-
+ 
   useEffect(() => {
     handleGetSingleProduct();
-  }, []);
-
-  useEffect(() => {
-    if (qty > 0 && selectedVariation) {
-      updateCart(qty);
-    }
-  }, [qty]);
+  }, [id, user, isLoggedIn]);
 
   const updateCart = async (newQuantity) => {
+    if (!isLoggedIn) {
+      navigate("/login");
+      return;
+    }
+
+    if (!selectedVariation) return;
+
+    setIsUpdatingCart(true);
     try {
-      const response = await dispatch(
+      await dispatch(
         userUpdateCart({
           quantity: newQuantity,
           productId: id,
           variationId: selectedVariation._id,
         })
       );
-      console.log(response);
+     
+      await handleGetSingleProduct();
+      await dispatch(getNavbarCartWishlistCount());
     } catch (error) {
       console.error("Error updating cart:", error);
+    } finally {
+      setIsUpdatingCart(false);
     }
   };
 
-  const [selectedAttributes, setSelectedAttributes] = useState({});
+  const handleAddToCart = () => {
+    updateCart(1);
+  };
+
+  const handleIncreaseQuantity = () => {
+    if (singleData?.cartQuantity < selectedVariation?.quantity) {
+      updateCart(singleData.cartQuantity + 1);
+    }
+  };
+
+  const handleDecreaseQuantity = async () => {
+    if (singleData?.cartQuantity > 0) {
+      const newQuantity = singleData.cartQuantity - 1;
+      await updateCart(newQuantity);
+      await dispatch(getNavbarCartWishlistCount());
+
+      if (newQuantity === 0) {
+        setSingleData((prev) => ({
+          ...prev,
+          cartQuantity: 0,
+        }));
+      }
+    }
+  };
+
 
   useEffect(() => {
     if (singleData?.attributes) {
@@ -290,12 +377,31 @@ const EachProductPage = () => {
     }
   }, [singleData]);
 
-  const handleAttributeClick = (attributeName, option) => {
-    setSelectedAttributes((prev) => ({
-      ...prev,
-      [attributeName]: option,
-    }));
+  const handleAttributeClick = async (attributeName, option) => {
+    const newAttributes = {
+      ...selectedAttributes,
+      [attributeName]: option
+    };
+    setSelectedAttributes(newAttributes);
+
+    // Find variation that matches all current selections
+    if (singleData?.variations) {
+      const matchingVariation = singleData.variations.find(v => {
+        return (
+          v.size === selectedSize &&
+          v.color?.name === selectedVariation?.color?.name &&
+          Object.entries(newAttributes).every(
+            ([key, value]) => v.attributes[key] === value
+          )
+        );
+      });
+
+      if (matchingVariation) {
+        setSelectedVariation(matchingVariation);
+      }
+    }
   };
+
 
   const renderAttributeOptions = () => {
     if (!singleData?.attributes) return null;
@@ -335,12 +441,26 @@ const EachProductPage = () => {
     );
   };
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
+   useEffect(() => {
+    if (selectedVariation) {
+      handleGetSingleProduct();
+    }
+  }, [selectedSize, selectedVariation?.color?.name]);
+
   //   const handleAttributeClick = (attributeName, option) => {
   //   setSelectedAttributes(prev => ({
   //     ...prev,
   //     [attributeName]: option
   //   }));
   // };
+
+
+  console.log("selectedAttributeis" , selectedAttributes)
+
   return (
     <div>
       <section className="py-14 md:py-10 relative overflow-hidden z-10">
@@ -366,7 +486,7 @@ const EachProductPage = () => {
                         currency: "INR",
                       })}
                       {selectedVariation?.discountPrice > 0 && (
-                        <span className="ml-2 text-sm line-through text-gray-500">
+                        <span className="ml-2 text-sm line-through text-gray-200">
                           {(
                             selectedVariation.price +
                             selectedVariation.discountPrice
@@ -377,17 +497,6 @@ const EachProductPage = () => {
                         </span>
                       )}
                     </h3>
-                    {isWish ? (
-                      <FaHeart
-                        className="text-xl font-bold cursor-pointer text-red-600"
-                        onClick={toggleWishList}
-                      />
-                    ) : (
-                      <CiHeart
-                        className="text-xl font-bold cursor-pointer"
-                        onClick={toggleWishList}
-                      />
-                    )}
                   </div>
 
                   <p className="text-sm mt-1">Inclusive Of All Taxes.</p>
@@ -418,18 +527,13 @@ const EachProductPage = () => {
                 </div>
                 {renderAttributeOptions()}
 
-                <div className="flex flex-wrap gap-3 items-center my-7">
-                  {!selectedVariation?.cartQuantity ||
-                  selectedVariation?.cartQuantity === 0 ? (
+                <div className="flex  gap-3 items-center my-7">
+                  {!singleData?.cartQuantity ||
+                  singleData?.cartQuantity === 0 ? (
                     <button
                       type="button"
-                      onClick={() => {
-                        if (!isLoggedIn) {
-                          navigate("/login");
-                        } else {
-                          setQty(1);
-                        }
-                      }}
+                      onClick={handleAddToCart}
+                      disabled={isUpdatingCart}
                       className="border border-c2 text-white cursor-pointer hover:bg-[#edb141] hover:text-white text-sm uppercase px-6 py-4 md:px-12 min-w-[202px]"
                     >
                       Add To Cart
@@ -438,30 +542,22 @@ const EachProductPage = () => {
                     <div className="flex items-center border border-[#edb141] px-4 py-2 min-w-[202px] justify-between text-[#edb141]">
                       <button
                         type="button"
-                        onClick={() =>
-                          setQty(
-                            Math.max(
-                              (selectedVariation?.cartQuantity || 0) - 1,
-                              0
-                            )
-                          )
-                        }
+                        onClick={handleDecreaseQuantity}
+                        disabled={isUpdatingCart}
                         className="text-2xl font-bold px-2 cursor-pointer"
                       >
                         -
                       </button>
                       <span className="text-lg">
-                        {selectedVariation?.cartQuantity || 0}
+                        {singleData?.cartQuantity || 0}
                       </span>
                       <button
                         type="button"
-                        onClick={() =>
-                          setQty(
-                            Math.min(
-                              (selectedVariation?.cartQuantity || 0) + 1,
-                              selectedVariation?.quantity || 1
-                            )
-                          )
+                        onClick={handleIncreaseQuantity}
+                        disabled={
+                          isUpdatingCart ||
+                          singleData?.cartQuantity >=
+                            selectedVariation?.quantity
                         }
                         className="text-2xl font-bold px-2 cursor-pointer"
                       >
@@ -469,43 +565,45 @@ const EachProductPage = () => {
                       </button>
                     </div>
                   )}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      if (!isLoggedIn) {
+                        navigate("/login");
+                        return;
+                      }
 
-                <button
-  type="button"
-  onClick={async () => {
-    if (!isLoggedIn) {
-      navigate("/login");
-    } else {
-      // Ensure we have a selected variation
-      if (!selectedVariation) {
-        alert("Please select a color and size first");
-        return;
-      }
-      
-      // If quantity is 0, set it to 1 (minimum purchase quantity)
-      const finalQuantity = qty === 0 ? 1 : qty;
-      
-      // Update cart with the quantity (if needed)
-      if (qty === 0) {
-        await dispatch(
-          userUpdateCart({
-            quantity: finalQuantity,
-            productId: id,
-            variationId: selectedVariation._id,
-          })
-        );
-      }
-      
-      // Navigate to checkout with all required parameters
-      navigate(
-        `/checkout?product=${id}&variation=${selectedVariation._id}&quantity=${finalQuantity}`
-      );
-    }
-  }}
-  className="bg-c2 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
->
-  Buy it Now
-</button>
+                      if (!selectedVariation) {
+                        alert("Please select a color and size first");
+                        return;
+                      }
+
+                      try {
+                        // Determine the quantity (use 1 if nothing in cart)
+                        const quantityToBuy = singleData?.cartQuantity || 1;
+
+                        // If nothing in cart, add to cart first
+                        if (!singleData?.cartQuantity) {
+                          await dispatch(
+                            userUpdateCart({
+                              quantity: 1,
+                              productId: id,
+                              variationId: selectedVariation._id,
+                            })
+                          );
+                        }
+
+                        navigate(
+                          `/checkout?product=${id}&variation=${selectedVariation._id}&quantity=${quantityToBuy}`
+                        );
+                      } catch (error) {
+                        console.error("Error during buy now:", error);
+                      }
+                    }}
+                    className="bg-c2 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
+                  >
+                    Buy it Now
+                  </button>
                 </div>
 
                 <div

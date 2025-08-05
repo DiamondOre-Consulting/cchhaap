@@ -12,6 +12,7 @@ export const createProduct = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log(error);
+      toast(error?.response?.data?.message)
       throw error;
     }
   }
