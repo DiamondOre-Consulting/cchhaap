@@ -11,43 +11,66 @@ import sendResponse from "../utils/sendResponse.js"
 
 
 
+export const fetchAllOrdersForAdmin = asyncHandler(async (req, res) => {
+  const { page, limit } = req.validatedData.params;
+  const skip = (page - 1) * limit;
 
-
-export const fetchAllOrdersForAdmin = asyncHandler(async(req,res)=>{
-
-    const userId = req.user.id
-
-    const {page,limit} = req.validatedData.params
-
-    
-    const skip = (page-1)*limit
-
-    const orders = await Order.find({})
+  const orders = await Order.find({})
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
     .populate({
       path: "userId",
-      select: "-password -resetPasswordToken -resetPasswordTokenExpires"
+      select: "-password -resetPasswordToken -resetPasswordTokenExpires",
     })
-    .populate("products.productId")
-
-    if(!orders.length){
-      throw new ApiError("No orders found",400)
-    }
-
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const todayOrders = await Order.countDocuments({ createdAt: { $gte: today } });
-
-    const totalPages = Math.ceil((await Order.countDocuments()) / limit);
-
-    sendResponse(res, 200, {
-        orders,
-        totalPages,
-        activePage: page,
-        message: todayOrders === 0 ? "No orders placed today" : "Orders fetched successfully"
+    .populate({
+      path: "products.productId",
+      select: "productName variations",
     });
 
-})
+  if (!orders.length) {
+    throw new ApiError("No orders found", 400);
+  }
+
+  const formattedOrders = orders.map((order) => {
+    const formattedProducts = order.products.map((item) => {
+      const product = item.productId;
+      const variation = product?.variations?.find(
+        (v) => v._id.toString() === item.variationId.toString()
+      );
+
+      return {
+        productName: product?.productName || "",
+        variationId: item.variationId,
+        size: variation?.size || "",
+        color: variation?.color || {},
+        thumbnail: variation?.thumbnailImage?.secureUrl || "",
+        quantity: item.quantity,
+        price: item.price,
+      };
+    });
+
+    return {
+      _id: order._id,
+      user: order.userId,
+      products: formattedProducts,
+      totalAmount: order.totalAmount,
+      orderStatus: order.order_status,
+      paymentStatus: order.payment_status,
+      paymentMethod: order.payment_method,
+      createdAt: order.createdAt,
+    };
+  });
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayOrders = await Order.countDocuments({ createdAt: { $gte: today } });
+  const totalPages = Math.ceil((await Order.countDocuments()) / limit);
+
+  sendResponse(res, 200, {
+    orders: formattedOrders,
+    totalPages,
+    activePage: page,
+    message: todayOrders === 0 ? "No orders placed today" : "Orders fetched successfully",
+  });
+});
