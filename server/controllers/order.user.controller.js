@@ -261,6 +261,7 @@ export const getSingleOrder = asyncHandler(async (req, res) => {
     totalAmount: order.totalAmount,
     orderStatus: order.order_status,
     createdAt: order.createdAt,
+    shippingAddress: order.shipping_address,
     paymentMethod: order.payment_method,
   }, "Order fetched successfully");
 });
