@@ -33,7 +33,7 @@ export const myOrdersParamsSchema = z.object({
 
 
 export const getSingleOrderParamsSchema = z.object({
-    OrderId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid order ID format" })
+    orderId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid order ID format" })
 })
 
 export const fetchAllOrdersForAdminSchema = z.object({

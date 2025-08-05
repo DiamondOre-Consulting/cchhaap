@@ -94,3 +94,51 @@ export const getSalesData = asyncHandler(async (req, res) => {
 
   sendResponse(res, 200, { orders, ordersData }, "Sales data fetched successfully");
 });
+
+
+export const fetchAllUsers = asyncHandler(async (req, res) => {
+  const { page, limit } = req.validatedData.params;
+  const skip = (page - 1) * limit;
+
+  const users = await User.find()
+    .select("_id fullName email phoneNumber createdAt updatedAt")
+    .skip(skip)
+    .limit(limit)
+    .lean();
+
+  if (!users.length) {
+    throw new ApiError("No users found", 404);
+  }
+
+  // Get order data for all users (delivered only)
+  const orders = await Order.find({ order_status: "delivered" }).lean();
+
+  const orderMap = {};
+  orders.forEach((order) => {
+    const userId = order.userId.toString();
+    if (!orderMap[userId]) {
+      orderMap[userId] = { totalOrders: 0, totalAmount: 0 };
+    }
+    orderMap[userId].totalOrders += 1;
+    orderMap[userId].totalAmount += order.totalAmount;
+  });
+
+  const formattedUsers = users.map((user) => ({
+    ...user,
+    orderData: {
+      totalOrders: orderMap[user._id.toString()]?.totalOrders || 0,
+      totalAmount: orderMap[user._id.toString()]?.totalAmount || 0,
+    },
+  }));
+
+  const totalUsers = await User.countDocuments();
+  const totalPages = Math.ceil(totalUsers / limit);
+
+  sendResponse(
+    res,
+    200,
+    { users: formattedUsers, totalPages, activePage: page },
+    "Users fetched successfully"
+  );
+});
+
