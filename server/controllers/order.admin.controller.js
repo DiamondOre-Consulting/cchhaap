@@ -14,8 +14,11 @@ import sendResponse from "../utils/sendResponse.js"
 export const fetchAllOrdersForAdmin = asyncHandler(async (req, res) => {
   const { page, limit } = req.validatedData.params;
   const skip = (page - 1) * limit;
+  const {orderType} = req.validatedData.query
+  const query ={}
+     if (orderType) query.order_status = orderType;
 
-  const orders = await Order.find({})
+  const orders = await Order.find(query)
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
@@ -74,3 +77,6 @@ export const fetchAllOrdersForAdmin = asyncHandler(async (req, res) => {
     message: todayOrders === 0 ? "No orders placed today" : "Orders fetched successfully",
   });
 });
+
+
+

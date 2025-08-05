@@ -206,7 +206,7 @@ userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
 
 
  userRouter.get('/get-single-order/:orderId',userMiddleware,validate({
-    params:getSingleOrderParamsSchema, query:getSingleOrderQuerySchema
+    params:getSingleOrderParamsSchema,
  }),getSingleOrder)
 
 

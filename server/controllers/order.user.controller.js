@@ -174,13 +174,13 @@ export const createOrder = asyncHandler(async (req, res) => {
 export const myOrders = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { page, limit } = req.validatedData.params;
-  const {orderType} = req.validatedData.query
+  // const {orderType} = req.validatedData.query
   const skip = (page - 1) * limit;
 
-   const query = { userId };
-  if (orderType) query.order_status = orderType;
+  //  const query = { userId };
+  // if (orderType) query.order_status = orderType;
 
-  const orders = await Order.find({ query })
+  const orders = await Order.find({ userId })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)

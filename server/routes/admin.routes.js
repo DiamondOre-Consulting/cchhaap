@@ -16,7 +16,7 @@ import { addBannerImage, editBannerImages, getAllBanners } from '../controllers/
 import { searchProduct } from '../controllers/user.miscellaneous.controller.js';
 import { searchProductParamsSchema } from '../validator/user.product.validator.js';
 import { fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
-import { fetchAllOrdersForAdminSchema } from '../validator/order.validator.js';
+import { fetchAllOrdersForAdminSchema, getSingleOrderQuerySchema } from '../validator/order.validator.js';
 import { getSalesData, getUser } from '../controllers/admin.miscellaneous.controller.js';
 import { getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
 
@@ -117,7 +117,7 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
 
 
  adminRouter.get('/get-all-orders-for-admin/:page/:limit',adminMiddleware,validate({
-    params:fetchAllOrdersForAdminSchema
+    params:fetchAllOrdersForAdminSchema, query:getSingleOrderQuerySchema
  }),fetchAllOrdersForAdmin)
 
 
@@ -130,6 +130,9 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
  adminRouter.get('/get-sales-data/:page/:limit',adminMiddleware,validate({
     params:getSalesDataParamsData, query: getSalesDataQuerySchema
  }),getSalesData)
+
+
+ 
 
 
 
