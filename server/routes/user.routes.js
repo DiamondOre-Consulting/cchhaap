@@ -199,7 +199,7 @@ userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
  userRouter.get('/get-all-banner-images',getAllBanners)
 
 
- userRouter.get('/get-my-orders',userMiddleware,validate({
+ userRouter.get('/get-my-orders/:page/:limit',userMiddleware,validate({
     params:myOrdersParamsSchema
  }),myOrders)
 

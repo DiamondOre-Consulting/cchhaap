@@ -182,9 +182,11 @@ export const myOrders = asyncHandler(async (req, res) => {
     .limit(limit)
     .populate({
       path: "products.productId",
-      select: "productName variations.thumbnailImage",
+      select: "productName variations",
     });
 
+   
+ // console.log("orders",orders[0].products[0].productId.variations)
   if (!orders.length) {
     throw new ApiError("User has zero orders", 400);
   }
@@ -192,27 +194,33 @@ export const myOrders = asyncHandler(async (req, res) => {
   const formattedOrders = orders.map((order) => {
     const formattedProducts = order.products.map((item) => {
       const product = item.productId;
-      const variation =
-        product?.variations?.find(
-          (v) => v._id.toString() === item.variationId.toString()
-        ) || {};
+      const variation = product?.variations?.find(
+        (v) => v._id.toString() === item.variationId.toString()
+      );
       return {
         productName: product?.productName || "",
+        variationId: item.variationId,
         thumbnail: variation?.thumbnailImage?.secureUrl || "",
+        size: variation?.size || "",
+        color: variation?.color || {},
         quantity: item.quantity,
         price: item.price,
       };
     });
+
     return {
       _id: order._id,
       products: formattedProducts,
       totalAmount: order.totalAmount,
       createdAt: order.createdAt,
+      status: order.order_status,
     };
   });
 
   const totalOrders = await Order.countDocuments({ userId });
   const totalPages = Math.ceil(totalOrders / limit);
+
+  // console.log("formattedOrders",formattedOrders[0].products)
 
   sendResponse(
     res,
@@ -221,6 +229,7 @@ export const myOrders = asyncHandler(async (req, res) => {
     "Orders fetched successfully"
   );
 });
+
 
 
 
