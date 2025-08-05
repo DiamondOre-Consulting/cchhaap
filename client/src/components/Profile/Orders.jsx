@@ -1,8 +1,7 @@
-import { userGetAllOrders, userGetSingleOrder,  } from "@/Redux/Slices/order.Slice";
+import { userGetAllOrders, userGetSingleOrder } from "@/Redux/Slices/order.Slice";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -56,10 +55,13 @@ const Orders = () => {
 
   if (viewMode === "detail" && selectedOrder) {
     return (
-      <div className="p-4 md:p-6 max-w-6xl mx-auto min-h-screen bg-gray-50 rounded-lg">
-        <button
+      <div className="p-4 md:p-6 max-w-6xl mx-auto  rounded-lg">
+    
+
+        <div className="bg-white rounded-lg shadow-sm p-6">
+              <button
           onClick={handleBackToOrders}
-          className="flex items-center text-c2 mb-6 hover:underline"
+          className="flex items-center text-c2 mb-1 hover:underline"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -75,27 +77,23 @@ const Orders = () => {
           </svg>
           Back to Orders
         </button>
-
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-6">
+          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">Order Details</h1>
-              <p className="text-gray-500 mt-1">
-                Order ID: {selectedOrder._id}
-              </p>
+              <h1 className="text-xl font-bold text-gray-800">Order Details</h1>
+  
             </div>
             <div className="mt-4 md:mt-0">
               <span
                 className={`px-3 py-1 rounded-full text-sm font-semibold ${
-                  selectedOrder.status === "pending"
-                    ? "bg-yellow-100 text-yellow-800"
-                    : selectedOrder.status === "shipped"
+                  selectedOrder.orderStatus === "pending"
+                    ? "bg-yellow-200 text-yellow-800"
+                    : selectedOrder.orderStatus === "shipped"
                     ? "bg-blue-100 text-blue-800"
                     : "bg-green-100 text-green-800"
                 }`}
               >
-                {selectedOrder.status.charAt(0).toUpperCase() +
-                  selectedOrder.status.slice(1)}
+                {selectedOrder?.orderStatus?.charAt(0)?.toUpperCase() +
+                  selectedOrder?.orderStatus?.slice(1)}
               </span>
               <p className="text-gray-500 mt-1 text-sm">
                 Ordered on{" "}
@@ -108,47 +106,28 @@ const Orders = () => {
             </div>
           </div>
 
-          <div className="border-t border-gray-200 pt-6">
+          <div className="border-t flex flex-col gap-x-10 border-gray-200 pt-4">
+            <div>
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               Products
             </h2>
-            {selectedOrder.products.map((product) => (
+            {selectedOrder.products.map((product, index) => (
               <div
-                key={product.variationId}
+                key={index}
                 className="flex flex-col sm:flex-row border-b border-gray-100 pb-6 mb-6"
               >
                 <div className="flex-shrink-0">
                   <img
                     src={product.thumbnail}
                     alt={product.productName}
-                    className="w-32 h-32 object-contain rounded-lg border border-gray-200"
+                    className="w-28 h-28 object-contain rounded-lg border border-gray-200"
                   />
                 </div>
                 <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
-                  <h3 className="text-lg font-medium text-gray-800">
+                  <h3 className="text-sm font-medium text-gray-800">
                     {product.productName}
                   </h3>
-                  <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
-                    <div className="flex items-center">
-                      <span className="text-gray-500 mr-1">Size:</span>
-                      <span className="font-medium">{product.size}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-gray-500 mr-1">Color:</span>
-                      <span
-                        className="w-4 h-4 rounded-full inline-block mr-1 border border-gray-300"
-                        style={{ backgroundColor: product.color.hex }}
-                      />
-                      <span className="font-medium capitalize">
-                        {product.color.name}
-                      </span>
-                    </div>
-                    <div className="flex items-center">
-                      <span className="text-gray-500 mr-1">Qty:</span>
-                      <span className="font-medium">{product.quantity}</span>
-                    </div>
-                  </div>
-                  <div className="mt-3">
+                  <div className="mt-1">
                     <span className="text-lg font-semibold text-gray-900">
                       {product.price.toLocaleString("en-IN", {
                         style: "currency",
@@ -157,23 +136,50 @@ const Orders = () => {
                       })}
                     </span>
                   </div>
+                  <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
+                    <div className="flex items-center">
+                      <span className="text-gray-500 mr-1">Qty:</span>
+                      <span className="font-medium">{product.quantity}</span>
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
-
-            <div className="bg-gray-50 p-4 rounded-lg mt-8">
-              <div className="flex justify-between items-center">
-                <div className="text-gray-600">
-                  {selectedOrder.products.length} item
-                  {selectedOrder.products.length > 1 ? "s" : ""}
+</div>
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                  Shipping Address
+                </h3>
+                <div className="text-gray-800">
+                  <p>{selectedOrder.shippingAddress.fullName}</p>
+                
+                  <p>
+                   {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} - {selectedOrder.shippingAddress.pinCode}
+                  </p>
+                  <p>{selectedOrder.shippingAddress.country}</p>
+                  <p className="mt-2">Phone: {selectedOrder.shippingAddress.phoneNumber}</p>
                 </div>
-                <div className="text-lg font-bold text-c1">
-                  Total:{" "}
-                  {selectedOrder.totalAmount.toLocaleString("en-IN", {
-                    style: "currency",
-                    currency: "INR",
-                    maximumFractionDigits: 0,
-                  })}
+              </div>
+
+              <div className="bg-gray-50 p-4 rounded-lg">
+                <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                  Payment Information
+                </h3>
+                <div className="text-gray-600">
+                  <p>
+                    <span className="font-medium">Method:</span>{" "}
+                    {selectedOrder?.paymentMethod?.charAt(0)?.toUpperCase() +
+                      selectedOrder?.paymentMethod?.slice(1)}
+                  </p>
+                  <p className="mt-2">
+                    <span className="font-medium">Total:</span>{" "}
+                    {selectedOrder.totalAmount.toLocaleString("en-IN", {
+                      style: "currency",
+                      currency: "INR",
+                      maximumFractionDigits: 0,
+                    })}
+                  </p>
                 </div>
               </div>
             </div>
@@ -257,11 +263,10 @@ const Orders = () => {
                       })}
                     </p>
                   </div>
-                 
                 </div>
               </div>
 
-              <div className="p-4 mb-10">
+                <div className="p-4 mb-10">
                 <div className="flex justify-between items-center mb-3">
                   <span
                     className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
@@ -281,9 +286,9 @@ const Orders = () => {
                   </span>
                 </div>
 
-                {order.products.map((product) => (
+                {order.products.map((product, index) => (
                   <div
-                    key={product.variationId}
+                    key={index}
                     className="flex border-b border-gray-100 pb-4 mb-4 last:border-b-0 last:pb-0 last:mb-0"
                   >
                     <div className="flex-shrink-0">
@@ -298,25 +303,21 @@ const Orders = () => {
                         {product.productName}
                       </h3>
                       <div className="mt-1 text-xs text-gray-500">
-                        <span>Size: {product.size}</span>
-                        <span className="mx-2">•</span>
                         <span>Qty: {product.quantity}</span>
                       </div>
-                      <div className="mt-1 flex items-center">
-                        <span
-                          className="w-3 h-3 rounded-full inline-block mr-1 border border-gray-300"
-                          style={{ backgroundColor: product.color.hex }}
-                        />
-                        <span className="text-xs text-gray-500 capitalize">
-                          {product.color.name}
-                        </span>
+                      <div className="mt-1 text-sm text-c1 font-semibold">
+                        {product.price.toLocaleString("en-IN", {
+                          style: "currency",
+                          currency: "INR",
+                          maximumFractionDigits: 0,
+                        })}
                       </div>
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div className="bg-gray-50  absolute bottom-0 w-full px-4 py-3 flex justify-end">
+              <div className="bg-gray-50 absolute bottom-0 w-full px-4 py-3 flex justify-end">
                 <button
                   onClick={() => handleViewOrder(order._id)}
                   className="text-sm font-medium text-c1 hover:underline"

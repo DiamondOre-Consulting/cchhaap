@@ -6,9 +6,13 @@ export const adminFetchAllOrders = createAsyncThunk(
   "/get-all-orders",
   async (data) => {
     try {
-      console.log(data);
+      const queryParams = new URLSearchParams();
+      if (data?.orderType) queryParams.append("orderType", data?.orderType);
+
       const response = await adminAxiosInstance.get(
-        `/get-all-orders-for-admin/${data?.page}/${data?.limit}`
+        `/get-all-orders-for-admin/${data?.page}/${
+          data?.limit
+        }?${queryParams?.toString()}`
       );
       console.log(response);
       return response?.data;
@@ -17,6 +21,32 @@ export const adminFetchAllOrders = createAsyncThunk(
     }
   }
 );
+
+export const adminGetSingleOrder = createAsyncThunk(
+  "/user/get-single-order",
+  async (orderId) => {
+    try {
+      const response = await userAxiosInstance.get(
+        `/get-single-order/${orderId}`
+      );
+      console.log(response);
+      return response?.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
+
+export const adminChangeStatus = createAsyncThunk('/admin/change-status' , async({orderId, orderStatus})=>{
+  try {
+    const response = await adminAxiosInstance.post('/change-order-status', {orderId , status:orderStatus});
+    console.log(response);
+    toast.success(response?.data?.message);
+    return response?.data
+  } catch (error) {
+    console.log(error)
+  }
+})
 
 const OrderSlice = createSlice({
   name: "order",
