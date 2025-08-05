@@ -120,6 +120,17 @@ export const editBanner = createAsyncThunk('/admin/banner-image' , async(formDat
   }
 })
 
+export const fetchAllUsers = createAsyncThunk('/admin/get-all-users', async()=>{
+  try {
+    const response = await adminAxiosInstance.get(`/fetch-all-users/${1}/${10}`);
+    console.log(response);
+    return response?.data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
 
 const authSlice = createSlice({
   name: "admin",
