@@ -39,7 +39,7 @@ export const adminGetSingleOrder = createAsyncThunk(
 
 export const adminChangeStatus = createAsyncThunk('/admin/change-status' , async({orderId, orderStatus})=>{
   try {
-    const response = await adminAxiosInstance.post('/change-order-status', {orderId , status:orderStatus});
+    const response = await adminAxiosInstance.post('/change-order-status', {orderId , orderStatus});
     console.log(response);
     toast.success(response?.data?.message);
     return response?.data
