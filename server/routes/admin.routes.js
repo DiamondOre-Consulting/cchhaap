@@ -128,7 +128,7 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
 
 
  adminRouter.get('/get-sales-data',adminMiddleware,validate({
-    params:getSalesDataParamsData, query: getSalesDataQuerySchema
+     query: getSalesDataQuerySchema
  }),getSalesData)
 
 
