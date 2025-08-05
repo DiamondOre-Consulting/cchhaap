@@ -40,7 +40,7 @@ export const getUser = asyncHandler(async (req, res) => {
 export const getSalesData = asyncHandler(async (req, res) => {
   const { orderStatus } = req.validatedData.query;
 //   const { page, limit } = req.validatedData.params;
-  const skip = (page - 1) * limit;
+  
 
   const queryFilter = {};
   if (orderStatus) queryFilter.order_status = orderStatus;
