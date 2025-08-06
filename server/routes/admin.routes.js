@@ -3,7 +3,7 @@ import { createCategory, createSubCategory, deleteCategory, deleteSubCategory, e
 import { multipleImageUpload, singleImageUpload } from '../middlewares/multer.middleware.js';
 import validate from '../middlewares/zod.validator.js';
 import { createCategoryBodySchema, createSubCategoryBodySchema, createSubCategoryParamsSchema, deleteCategoryParamsSchema, deleteSubCategoryBodySchema, deleteSubCategoryParamsSchema, editCategoryBodySchema, editCategoryParamsSchema, editSubCategoryBodySchema, editSubCategoryParamsSchema } from '../validator/category.validator.js';
-import { signin, signout, signup } from '../controllers/auth/admin.auth.js';
+import { forgotPassword, resetPassword, signin, signout, signup } from '../controllers/auth/admin.auth.js';
 import { signinSchema, signupSchema } from '../validator/admin.auth.validator.js';
 import { adminMiddleware } from '../middlewares/admin.middleware.js';
 import { createCoupon, deleteCoupon, editCoupon, getAllCoupons } from '../controllers/coupon.controller.js';
@@ -19,6 +19,8 @@ import { changeOrderStatus, fetchAllOrdersForAdmin } from '../controllers/order.
 import { changeOrderStatusBodySchema, fetchAllOrdersForAdminSchema, getSingleOrderQuerySchema } from '../validator/order.validator.js';
 import { fetchAllUsers, getSalesData, getUser, searchProductForAdmin } from '../controllers/admin.miscellaneous.controller.js';
 import { getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
+import { forgotPasswordBodySchema, resetPasswordBodySchema, resetPasswordParamsSchema, userSendOtpBodySchema } from '../validator/user.auth.validator.js';
+import {  sendOtp } from '../controllers/auth/user.auth.js';
 
 
 
@@ -139,6 +141,28 @@ adminRouter.put('/edit-banner-images',multipleImageUpload.array('bannerImages'),
 
  adminRouter.get('/fetch-all-users/:page/:limit',adminMiddleware,
     validate({params:getSalesDataParamsData}),fetchAllUsers)
+
+
+
+adminRouter.post('/send-otp',validate({
+   body:userSendOtpBodySchema
+}),sendOtp)
+
+
+
+adminRouter.post('/reset-password/:resetToken',validate({
+   body:resetPasswordBodySchema, params:resetPasswordParamsSchema
+}),resetPassword)
+
+
+userRouter.post('/forgot-password', validate({body:forgotPasswordBodySchema}),forgotPassword)
+
+
+
+
+
+
+
 
 
  

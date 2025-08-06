@@ -193,6 +193,8 @@ export const searchProductForAdmin = asyncHandler(async (req, res) => {
     throw new ApiError("No products found", 400);
   }
 
+  console.log(products)
+
   sendResponse(res, 200, products, "Products found");
 });
 
