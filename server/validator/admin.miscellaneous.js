@@ -13,3 +13,9 @@ export const getSalesDataParamsData = z.object({
 export const getSalesDataQuerySchema = z.object({
     orderStatus: z.string().optional(),
 })
+
+
+
+export const getLineChartSalesDataQuerySchema = z.object({
+  year: z.coerce.number().int().gte(2024, "Year must be >= 2024"),
+});

@@ -18,7 +18,7 @@ import { searchProductParamsSchema } from '../validator/user.product.validator.j
 import { changeOrderStatus, fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
 import { changeOrderStatusBodySchema, fetchAllOrdersForAdminSchema, getSingleOrderQuerySchema } from '../validator/order.validator.js';
 import { fetchAllUsers, getSalesDashboardData, getSalesData, getUser, searchProductForAdmin } from '../controllers/admin.miscellaneous.controller.js';
-import { getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
+import { getLineChartSalesDataQuerySchema, getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
 import { forgotPasswordBodySchema, resetPasswordBodySchema, resetPasswordParamsSchema, userSendOtpBodySchema } from '../validator/user.auth.validator.js';
 import {  sendOtp } from '../controllers/auth/user.auth.js';
 
@@ -45,7 +45,7 @@ adminRouter.delete('/delete-category/:categoryId',validate({params:deleteCategor
 
 adminRouter.post('/signin'  , validate({body:signinSchema}), signin)
 
-adminRouter.post('/signup', validate({body:signupSchema}),signup)
+adminRouter.post('/signup',adminMiddleware ,validate({body:signupSchema}),signup)
 
 adminRouter.get('/signout',signout)
 
@@ -158,7 +158,7 @@ adminRouter.post('/reset-password/:resetToken',validate({
 adminRouter.post('/forgot-password', validate({body:forgotPasswordBodySchema}),forgotPassword)
 
 
-adminRouter.get('/get-line-chart-sales-data',adminMiddleware,getSalesDashboardData)
+adminRouter.get('/get-line-chart-sales-data',validate({query:getLineChartSalesDataQuerySchema}),adminMiddleware,getSalesDashboardData)
 
 
 

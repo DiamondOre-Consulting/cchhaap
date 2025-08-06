@@ -199,39 +199,48 @@ export const searchProductForAdmin = asyncHandler(async (req, res) => {
   sendResponse(res, 200, products, "Products found");
 });
 
-
-
 export const getSalesDashboardData = asyncHandler(async (req, res) => {
-  const monthlySales = await Product.aggregate([
+  const year = parseInt(req.query.year); // e.g. ?year=2024
+  if (!year || isNaN(year)) {
+    throw new ApiError("Year query is required and must be a number", 400);
+  }
+
+  // Step 1: Get monthly sales for the selected year
+  const salesData = await Product.aggregate([
     { $unwind: "$variations" },
+    {
+      $match: {
+        updatedAt: {
+          $gte: new Date(`${year}-01-01T00:00:00.000Z`),
+          $lte: new Date(`${year}-12-31T23:59:59.999Z`)
+        }
+      }
+    },
     {
       $group: {
         _id: { $month: "$updatedAt" },
         totalSales: { $sum: "$variations.soldCount" },
       },
-    },
-    {
-      $project: {
-        month: {
-          $arrayElemAt: [
-            [
-              "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-            ],
-            "$_id"
-          ]
-        },
-        sales: "$totalSales",
-        _id: 0,
-      },
-    },
-    { $sort: { month: 1 } }
+    }
   ]);
 
+  // Step 2: Initialize all 12 months with zero
+  const monthNames = [
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+  ];
+
+  const monthlySales = monthNames.map((month, index) => {
+    const monthIndex = index + 1;
+    const found = salesData.find(item => item._id === monthIndex);
+    return {
+      month,
+      sales: found ? found.totalSales : 0
+    };
+  });
+
   sendResponse(res, 200, {
+    year,
     monthlySales,
-  }, "Monthly sales data");
+  }, `Monthly sales data for ${year}`);
 });
-
-
-

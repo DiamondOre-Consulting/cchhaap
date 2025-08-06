@@ -52,13 +52,13 @@ export const signin = asyncHandler(async(req, res) => {
 
 export const signup = asyncHandler(async(req, res) => {
   const { fullName, email, phoneNumber, password, role } = req.validatedData.body;
-
+   
   if (req.user.role !== "superAdmin") {
     throw new ApiError("Only admin can create admin", 403);
   }
 
   const existedUser = await Admin.findOne({
-    $or: [{ email }, { phoneNumber }],
+    $and: [{ email }, { phoneNumber }],
   });
 
   if (existedUser) {
