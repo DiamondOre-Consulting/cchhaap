@@ -31,42 +31,44 @@ import { useSelector } from "react-redux";
 
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
-  // { href: "#", label: "Home" },
-  { href: "#", label: "Featured Products" },
+  { href: "/", label: "Home" },
+  { href: "#featured", label: "Featured Products" },
+   { href: "/all-products", label: "All Products" },
+
   //  { href: "#", label: "All Categories" },
-  {
-    label: "For Men",
-    submenu: true,
-    type: "description",
-    items: [
-      {
-        href: "#",
-        label: "Components",
-        description: "Browse all components in the library.",
-      },
-      {
-        href: "#",
-        label: "Documentation",
-        description: "Learn how to use the library.",
-      },
-      {
-        href: "#",
-        label: "Templates",
-        description: "Pre-built layouts for common use cases.",
-      },
-    ],
-  },
-  {
-    label: "For Women",
-    submenu: true,
-    type: "simple",
-    items: [
-      { href: "#", label: "Product A" },
-      { href: "#", label: "Product B" },
-      { href: "#", label: "Product C" },
-      { href: "#", label: "Product D" },
-    ],
-  },
+  // {
+  //   label: "For Men",
+  //   submenu: true,
+  //   type: "description",
+  //   items: [
+  //     {
+  //       href: "#",
+  //       label: "Components",
+  //       description: "Browse all components in the library.",
+  //     },
+  //     {
+  //       href: "#",
+  //       label: "Documentation",
+  //       description: "Learn how to use the library.",
+  //     },
+  //     {
+  //       href: "#",
+  //       label: "Templates",
+  //       description: "Pre-built layouts for common use cases.",
+  //     },
+  //   ],
+  // },
+  // {
+  //   label: "For Women",
+  //   submenu: true,
+  //   type: "simple",
+  //   items: [
+  //     { href: "#", label: "Product A" },
+  //     { href: "#", label: "Product B" },
+  //     { href: "#", label: "Product C" },
+  //     { href: "#", label: "Product D" },
+  //   ],
+  // },
 ];
 const Navbar = ({cartCount , wishlistCount}) => {
 

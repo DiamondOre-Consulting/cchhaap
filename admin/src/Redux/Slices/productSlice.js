@@ -46,10 +46,10 @@ export const deleteProduct = createAsyncThunk(
 );
 export const getAllProduct = createAsyncThunk(
   "/admin/get-all-product",
-  async () => {
+  async ({limit , page}) => {
     try {
       const response = await adminAxiosInstance.get(
-        `/get-all-product/${10}/${1}`
+        `/get-all-product/${limit}/${page}`
       );
       return response?.data;
     } catch (error) {
@@ -57,6 +57,19 @@ export const getAllProduct = createAsyncThunk(
     }
   }
 );
+
+export const adminSearchProduct = createAsyncThunk("/admin/search", async (data) => {
+  try {
+    console.log(data)
+    const response = await adminAxiosInstance.get(`/search-product/${data}`);
+    console.log(response);
+  
+    return response.data;
+  } catch (error) {
+    toast.error(error?.response?.data?.message);
+  }
+});
+
 
 const productSlice = createSlice({
   name: "product",

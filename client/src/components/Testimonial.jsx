@@ -11,65 +11,94 @@ const testimonialData = {
 		"e60aa346-f6da-11ed-b67e-0242ac120005",
 		"e60aa346-f6da-11ed-b67e-0242ac120006",
 		"e60aa346-f6da-11ed-b67e-0242ac120007",
+		"e60aa346-f6da-11ed-b67e-0242ac120008",
+		"e60aa346-f6da-11ed-b67e-0242ac120009",
+		"e60aa346-f6da-11ed-b67e-0242ac120010",
 	],
 	details: {
 		"e60aa346-f6da-11ed-b67e-0242ac120002": {
 			id: "e60aa346-f6da-11ed-b67e-0242ac120002",
 			description:
-				"The component library has revolutionized our development workflow. The pre-built components are not only beautiful but also highly customizable. It's saved us countless hours of development time.",
+				"I'm in love with my new kurta set from CCHHAAP! The fabric is so comfortable and the embroidery is exquisite. Perfect fit and arrived 2 days earlier than expected. Will definitely shop again!",
 			profileImage:
-				"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-			name: "Sarah Chen",
-			designation: "Senior Frontend Developer",
+				"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2",
+			name: "Priya Sharma",
+			designation: "Happy Customer",
 		},
 		"e60aa346-f6da-11ed-b67e-0242ac120003": {
 			id: "e60aa346-f6da-11ed-b67e-0242ac120003",
 			description:
-				"As a startup founder, I needed a quick way to build a professional-looking product. This component library was exactly what I needed. The documentation is clear, and the components are production-ready.",
+				"CCHHAAP never disappoints! The latest kurta set I bought is perfect for festive occasions. The colors are vibrant and the stitching is flawless. Their size guide was accurate too.",
 			profileImage:
-				"https://images.unsplash.com/photo-1506794778202-cad84cf45f1d",
-			name: "Michael Rodriguez",
-			designation: "Founder, TechStart",
+				"https://images.unsplash.com/photo-1438761681033-6461ffad8d80",
+			name: "Ananya Patel",
+			designation: "Loyal Customer",
 		},
 		"e60aa346-f6da-11ed-b67e-0242ac120004": {
 			id: "e60aa346-f6da-11ed-b67e-0242ac120004",
 			description:
-				"The attention to detail in these components is impressive. From accessibility features to responsive design, everything is well thought out. It's become an essential part of our tech stack.",
+				"Excellent shopping experience! The website is easy to navigate with clear product images. My kurta set came beautifully packaged and the quality exceeded my expectations for the price.",
 			profileImage:
-				"https://images.unsplash.com/photo-1500648767791-00dcc994a43e",
-			name: "David Kim",
-			designation: "UI/UX Lead",
+				"https://images.unsplash.com/photo-1544005313-94ddf0286df2",
+			name: "Neha Gupta",
+			designation: "First-time Buyer",
 		},
 		"e60aa346-f6da-11ed-b67e-0242ac120005": {
 			id: "e60aa346-f6da-11ed-b67e-0242ac120005",
 			description:
-				"What sets this component library apart is its flexibility. We've been able to maintain consistency across our applications while still customizing components to match our brand identity perfectly.",
+				"Good product but delivery took longer than promised. The kurta is lovely but the dupatta was slightly different from the picture. Customer service was helpful in resolving my concern.",
 			profileImage:
-				"https://images.unsplash.com/photo-1494790108377-be9c29b29330",
-			name: "Emily Thompson",
-			designation: "Product Designer",
+				"https://images.unsplash.com/photo-1554151228-14d9def656e4",
+			name: "Riya Joshi",
+			designation: "Customer",
 		},
 		"e60aa346-f6da-11ed-b67e-0242ac120006": {
 			id: "e60aa346-f6da-11ed-b67e-0242ac120006",
 			description:
-				"The performance optimization in these components is outstanding. We've seen significant improvements in our application's load times and overall user experience since implementing them.",
+				"Absolutely stunning collection! Bought three kurta sets for a family wedding and we all received countless compliments. The fabric drapes beautifully and the colors don't fade after washing.",
 			profileImage:
-				"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d",
-			name: "James Wilson",
-			designation: "Performance Engineer",
+				"https://images.unsplash.com/photo-1524504388940-b1c1722653e1",
+			name: "Ayesha Khan",
+			designation: "Satisfied Customer",
 		},
 		"e60aa346-f6da-11ed-b67e-0242ac120007": {
 			id: "e60aa346-f6da-11ed-b67e-0242ac120007",
 			description:
-				"The community support and regular updates make this component library a reliable choice for our projects. It's clear that the team behind it is committed to maintaining high quality and adding new features.",
+				"Great value for money! The kurta set I received is perfect for daily wear - comfortable yet stylish. The only improvement would be adding more size options for petite frames.",
 			profileImage:
-				"https://images.unsplash.com/photo-1534528741775-53994a69daeb",
-			name: "Sophia Martinez",
-			designation: "Full Stack Developer",
+				"https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e",
+			name: "Divya Nair",
+			designation: "Regular Shopper",
+		},
+		"e60aa346-f6da-11ed-b67e-0242ac120008": {
+			id: "e60aa346-f6da-11ed-b67e-0242ac120008",
+			description:
+				"Perfect for summer! The lightweight fabric and breezy design of my new kurta set makes it ideal for hot weather. Washed it twice already and the color hasn't faded one bit.",
+			profileImage:
+				"https://images.unsplash.com/photo-1524502397800-2eeaad7c3fe5",
+			name: "Meera Desai",
+			designation: "Happy Customer",
+		},
+		"e60aa346-f6da-11ed-b67e-0242ac120009": {
+			id: "e60aa346-f6da-11ed-b67e-0242ac120009",
+			description:
+				"Beautiful traditional designs with modern cuts! I especially appreciate how CCHHAAP offers complete sets with matching bottoms. Saves me the hassle of finding coordinating pieces.",
+			profileImage:
+				"https://images.unsplash.com/photo-1528892952291-009c663ce843",
+			name: "Kavita Reddy",
+			designation: "Fashion Enthusiast",
+		},
+		"e60aa346-f6da-11ed-b67e-0242ac120010": {
+			id: "e60aa346-f6da-11ed-b67e-0242ac120010",
+			description:
+				"Minor issue with stitching on one kurta, but customer service was prompt in offering a replacement. Overall happy with the quality and will order again. Love their festive collection!",
+			profileImage:
+				"https://images.unsplash.com/photo-1545167622-3a6ac756afa4",
+			name: "Shreya Malhotra",
+			designation: "Customer",
 		},
 	},
 };
-
 
 const cards = testimonialData.ids.map((cardId, index) => {
 	const details = testimonialData.details 
@@ -94,7 +123,7 @@ const Testimonial = () => {
                 <div className='flex flex-col justify-center items-center'>
                     <h1 className='text-4xl'>छाप And ME</h1>
                 </div>
-				<div className="max-w-[90vw] mx-auto ">
+				<div className="max-w-[90vw] mx-auto  text-c1">
 					<Carousel items={cards} />
 				</div>
 			</section>
