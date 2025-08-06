@@ -21,6 +21,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "./Redux/Slices/authSlice";
 import { getNavbarCartWishlistCount } from "./Redux/Slices/cart";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import ShippingPolicy from "./pages/ShippingPolicy";
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
@@ -53,6 +54,7 @@ const App = () => {
         <Route path="/products/gender/:gender" element={<Products />} />
         <Route path="/each-product/:id" element={<EachProductPage />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
+        <Route path="/shipping-policy" element={<ShippingPolicy/>} />
 
 
         <Route element={<ProtectedRoute />}>

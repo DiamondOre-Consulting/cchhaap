@@ -2,10 +2,10 @@ import React from 'react';
 
 const FeatureCard = ({ icon, title, description }) => {
   return (
-    <div className="flex bg-black/20 flex-col items-center text-center p-6 max-w-xs">
+    <div className="flex bg-white/70  mx-auto flex-col items-center rounded-md text-center p-6 max-w-xs">
       <img src={icon} className="mb-4 text-3xl "/>
-      <h3 className="text-xl font-semibold mb-2">{title}</h3>
-      <p className="text-gray-100">{description}</p>
+      <h3 className="text-xl font-semibold mb-2 text-c1">{title}</h3>
+      <p className="text-gray-800">{description}</p>
     </div>
   );
 };
@@ -37,7 +37,7 @@ const FeaturesSection = () => {
   return (
     <section className="py-12">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid w-full grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (
             <FeatureCard
               key={index}

@@ -37,23 +37,21 @@ const data = {
   },
   contact: {
     email: "hello@mvpblocks.com",
-    phone: "+91 8637373116",
-    address: "Kolkata, West Bengal, India",
+    phone: "+91 1234567890",
+    address: "f-59, 2nd floor, kalkaji new delhi Pin code - 110019",
   },
   company: {
     name: "Mvpblocks",
-    description:
-      "Building beautiful and functional web experiences with modern technologies. We help startups and businesses create their digital presence.",
     logo: logo2,
   },
 };
  
 const socialLinks = [
-  { icon: Facebook, label: "Facebook", href: data.facebookLink },
-  { icon: Instagram, label: "Instagram", href: data.instaLink },
-  { icon: Twitter, label: "Twitter", href: data.twitterLink },
-  { icon: Github, label: "GitHub", href: data.githubLink },
-  { icon: Dribbble, label: "Dribbble", href: data.dribbbleLink },
+  // { icon: Facebook, label: "Facebook", href: data.facebookLink },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/chhaapp_in?igsh=MXA0ZGRmZzJvM3VoMg==" },
+  // { icon: Twitter, label: "Twitter", href: data.twitterLink },
+  // { icon: Github, label: "GitHub", href: data.githubLink },
+  // { icon: Dribbble, label: "Dribbble", href: data.dribbbleLink },
 ];
  
 const aboutLinks = [
@@ -64,16 +62,16 @@ const aboutLinks = [
 ];
  
 const serviceLinks = [
-  { text: "Web Development", href: data.services.webdev },
-  { text: "Web Design", href: data.services.webdesign },
-  { text: "Marketing", href: data.services.marketing },
-  { text: "Google Ads", href: data.services.googleads },
+  { text: "All Products", href: "/all-products" },
+  { text: "Featured Products", href: '#featured' },
+  // { text: "Marketing", href: data.services.marketing },
+  // { text: "Google Ads", href: data.services.googleads },
 ];
  
 const helpfulLinks = [
   { text: "Privacy Policy", href: "/privacy-policy" },
-  { text: "Support", href: data.help.support },
-  { text: "Live Chat", href: data.help.livechat, hasIndicator: true },
+  { text: "Shipping Policy", href: "/shipping-policy" },
+  // { text: "Live Chat", href: data.help.livechat, hasIndicator: true },
 ];
  
 const contactInfo = [
@@ -101,20 +99,11 @@ export default function Footer() {
               {data.company.description}
             </p>
  
-            <ul className="mt-8 flex justify-center gap-6 sm:justify-start md:gap-8">
-              {socialLinks.map(({ icon: Icon, label, href }) => (
-                <li key={label}>
-                  <Link href={href} className="text-primary transition hover:text-primary/80">
-                    <span className="sr-only">{label}</span>
-                    <Icon className="size-6" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+         
           </div>
  
-          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 lg:col-span-2">
-            <div className="text-center sm:text-left">
+          <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:col-span-2">
+            {/* <div className="text-center sm:text-left">
               <p className="text-lg font-medium">About Us</p>
               <ul className="mt-8 space-y-4 text-sm">
                 {aboutLinks.map(({ text, href }) => (
@@ -125,10 +114,10 @@ export default function Footer() {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
  
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Our Services</p>
+              <p className="text-lg text-c1 font-medium">Quick Links </p>
               <ul className="mt-8 space-y-4 text-sm">
                 {serviceLinks.map(({ text, href }) => (
                   <li key={text}>
@@ -141,7 +130,7 @@ export default function Footer() {
             </div>
  
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Helpful Links</p>
+              <p className="text-lg text-c1 font-medium">Helpful Links</p>
               <ul className="mt-8 space-y-4 text-sm">
                 {helpfulLinks.map(({ text, href, hasIndicator }) => (
                   <li key={text}>
@@ -167,7 +156,7 @@ export default function Footer() {
             </div>
  
             <div className="text-center sm:text-left">
-              <p className="text-lg font-medium">Contact Us</p>
+              <p className="text-lg  text-c1 font-medium">Contact Us</p>
               <ul className="mt-8 space-y-4 text-sm">
                 {contactInfo.map(({ icon: Icon, text, isAddress }) => (
                   <li key={text}>
@@ -195,8 +184,18 @@ export default function Footer() {
  
         <div className="mt-12 border-t pt-6">
           <div className="text-center sm:flex sm:justify-between sm:text-left">
-            <p className="text-sm">
-              <span className="block sm:inline">All rights reserved.</span>
+            <p className="text-sm flex items-center gap-x-2">
+              <span className="">All rights reserved.</span>
+                 <ul className=" flex justify-center gap-6">
+              {socialLinks.map(({ icon: Icon, label, href }) => (
+                <li key={label}>
+                  <Link href={href} target="_blank" className="text-primary transition hover:text-primary/80">
+                    <span className="sr-only">{label}</span>
+                    <Icon className="size-4" />
+                  </Link>
+                </li>
+              ))}
+            </ul>
             </p>
  
             <p className="text-secondary-foreground/70 mt-4 text-sm transition sm:order-first sm:mt-0">
