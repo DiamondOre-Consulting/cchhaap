@@ -34,7 +34,7 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
 
         if (!selectedVariation) throw new ApiError("Selected variation not found", 400);
 
-         if(selectedVariation.quantity<quantity||selectedVariation.quantity==0||selectedVariation.quantity-quantity<=0){
+         if(selectedVariation.quantity<quantity||selectedVariation.quantity==0||selectedVariation.quantity-quantity<0){
                 throw new ApiError("Not enough stock for selected variation", 400);
          }   
 
