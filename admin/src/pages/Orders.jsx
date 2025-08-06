@@ -138,7 +138,7 @@ const Orders = () => {
 
   return (
     <HomeLayout>
-      <div className="container mx-auto px-4 py-2">
+      <div className=" mx-auto  py-2">
         <div className="mb-6">
           <h1 className="text-2xl  text-gray-800">Manage Orders</h1>
           <div className="w-40 h-[2px] bg-c1 rounded-full"></div>

@@ -117,7 +117,7 @@ const ManageBanners = () => {
   return (
     <div>
       <HomeLayout>
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto ">
           <h1 className="text-2xl font-bold mb-6 text-gray-800">Manage Banner Images</h1>
           
           <div className="bg-white rounded-lg shadow-md p-6">
@@ -192,7 +192,7 @@ const ManageBanners = () => {
                 <button
                   onClick={handleSubmit}
                   disabled={uploading}
-                  className="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors disabled:bg-green-400 flex items-center gap-2"
+                  className="bg-c1 text-white px-6 py-2 rounded-md hover:bg-green-700 transition-colors disabled:bg-green-400 flex items-center gap-2"
                 >
                   {uploading ? (
                     <>

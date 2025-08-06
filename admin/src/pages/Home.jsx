@@ -161,9 +161,9 @@ const Home = () => {
   return (
     <HomeLayout>
       <h1 className="text-2xl">Welcome Admin</h1>
-      <div className="container mx-auto px-4 py-10 flex flex-col items-center justify-center text-center  rounded-xl shadow-xl ">
-        <div className="grid grid-cols-4 gap-x-6 w-full h-40">
-          <div className=" rounded gap-y-1  shadow-xl flex flex-col items-center  justify-center   bg-white">
+      <div className="container mx-auto  py-10 flex flex-col items-center justify-center text-center  rounded-xl shadow-xl ">
+        <div className="grid grid-cols-2  md:grid-cols-4 md:gap-y-0 gap-y-3 gap-x-6 w-full md:h-40">
+          <div className=" rounded gap-y-1  shadow-xl flex flex-col h-28 md:h-40  items-center  justify-center   bg-white">
             <p>
               {" "}
               <ShoppingCart className="" />
@@ -172,7 +172,7 @@ const Home = () => {
             <p>{salesData?.todayTotalOrders}</p>
           </div>
 
-          <div className=" rounded shadow-xl flex flex-col items-center  justify-center   bg-white">
+          <div className=" rounded shadow-xl flex flex-col items-center h-28 md:h-40   justify-center   bg-white">
             <HandCoins className="text-xl" />
             Today's Sales
             <p>
@@ -185,7 +185,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className=" gap-y-1 rounded  shadow-xl flex flex-col items-center  justify-center   bg-white">
+          <div className=" gap-y-1 rounded  shadow-xl flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
             <p>
               {" "}
               <ShoppingCart className="" />
@@ -194,7 +194,7 @@ const Home = () => {
             <p>{salesData?.totalOrders}</p>
           </div>
 
-          <div className=" shadow-xl rounded flex flex-col items-center  justify-center   bg-white">
+          <div className=" shadow-xl rounded flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
             <HandCoins className="text-xl" />
             Total Sales
             <p>
@@ -208,8 +208,8 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 mt-6 gap-x-6 w-full h-40">
-          <div className=" rounded shadow-xl flex flex-col items-center  justify-center   bg-white">
+        <div className="grid grid-cols-2 mt-6 md:gap-y-0 gap-y-4 gap-x-6 w-full h-40">
+          <div className=" rounded shadow-xl flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
             <HandCoins className="text-xl" />
             Total Users
             <p>
@@ -220,7 +220,7 @@ const Home = () => {
             </p>
           </div>
 
-          <div className=" shadow-xl rounded flex flex-col items-center  justify-center   bg-white">
+          <div className=" shadow-xl rounded flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
             <HandCoins className="text-xl" />
             Cancelled Orders
             <p>
@@ -230,7 +230,7 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 mt-10 bg-white p-4">
+        <div className="grid grid-cols-2 md:mt-10 bg-white p-4">
           <div>
             <div className="flex  items-center justify-between">
               <div className="w-fit">
@@ -256,7 +256,7 @@ const Home = () => {
                   
                   </TabsList>
                   <TabsContent value="tab-1">
-                    <div className="w-[60vw]">
+                    <div className="w-[80vw] md:w-[60vw]">
                       <canvas ref={lineChartRef}  />
                     </div>
                   </TabsContent>

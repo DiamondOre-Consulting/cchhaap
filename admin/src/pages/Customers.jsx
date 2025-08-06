@@ -112,7 +112,7 @@ const Customers = () => {
 
   return (
     <HomeLayout>
-      <div className="container mx-auto px-4 py-6">
+      <div className=" mx-auto  py-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-800">Manage Users</h1>
           <div className="w-40 h-1 bg-c1 rounded-full"></div>
@@ -120,7 +120,7 @@ const Customers = () => {
 
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="flex flex-col md:flex-row justify-between items-center p-4 space-y-4 md:space-y-0">
-            <div className="flex items-center space-x-4">
+            <div className="flex w-full items-center space-x-4">
               <div>
                 <select
                   value={itemsPerPage}

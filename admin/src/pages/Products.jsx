@@ -234,7 +234,7 @@ const Products = () => {
           </div>
         </div>
 
-        <div className="relative overflow-x-auto mt-10 shadow-md sm:rounded-lg">
+        <div className="relative  overflow-x-auto mt-10 shadow-md sm:rounded-lg">
           <div className="flex px-5 py-2 items-center justify-between flex-column flex-wrap md:flex-row space-y-4 md:space-y-0 pb-4 bg-white">
             <div className="flex gap-x-4">
               <div className="flex items-center gap-x-2">
@@ -325,15 +325,15 @@ const Products = () => {
                       >
                         <th
                           scope="row"
-                          className="flex items-center px-6 py-4 text-gray-900 whitespace-nowrap"
+                          className="flex w-full items-center px-6 py-4 text-gray-900 whitespace-nowrap"
                         >
                           <img
                             className="w-20 h-20"
                             src={product?.variations?.[0]?.thumbnailImage?.secureUrl}
                             alt={product?.productName}
                           />
-                          <div className="ps-3 text-wrap">
-                            <div className="text-base font-semibold">
+                          <div className="ps-3 w-40 md:w-auto text-wrap">
+                            <div className="text-base font-semibold line-clamp-2">
                               {product?.productName}
                             </div>
                           </div>
@@ -532,7 +532,7 @@ const Products = () => {
 
         {singleDataPopUP && singleData && (
           <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg shadow-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
+            <div className="bg-white  rounded-lg shadow-lg max-w-5xl w-full max-h-[90vh] overflow-y-auto p-6 relative">
               <button
                 onClick={() => setSingleDataPopUp(false)}
                 className="absolute top-3 right-3 text-gray-500 hover:text-black text-xl"

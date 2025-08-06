@@ -75,7 +75,7 @@ const Variations = () => {
       <div className="flex  w-full justify-between">
         <div className="flex justify-between ">
           <div>
-            <h1 className="text-2xl">Manage Attribute Definations</h1>
+            <h1 className="text-md md:text-2xl">Manage Attribute Definations</h1>
             <div className="w-40 h-[2px] bg-c1"></div>
           </div>
         </div>
