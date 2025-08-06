@@ -39,6 +39,7 @@ export const searchProduct = asyncHandler(async (req, res) => {
         productName: 1,
         _id: 1,
         score: 1,
+        isActive: 1,
         "thumbnailImage": "$variations.thumbnailImage", // bring thumbnailImage forward
       },
     },

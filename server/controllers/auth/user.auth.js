@@ -100,7 +100,7 @@ export const sendOtp = asyncHandler(async(req,res)=>{
    const emailTemplate = `
     <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f9f9f9; padding: 30px; border-radius: 8px; text-align: center;">
         <!-- Header with Brand Logo/Name -->
-        <h1 style="color: #000; font-weight: 300; letter-spacing: 2px; margin-bottom: 10px;">CHAAP</h1>
+        <h1 style="color: #000; font-weight: 300; letter-spacing: 2px; margin-bottom: 10px;">CHHAAP</h1>
         <p style="color: #888; font-size: 14px; margin-top: 0; letter-spacing: 1px;">Elevate Your Style</p>
         
         <!-- Divider -->
