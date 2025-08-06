@@ -4,6 +4,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import Order from "../models/order.model.js";
 import ApiError from "../utils/apiError.js";
 import sendResponse from "../utils/sendResponse.js";
+import Product from "../models/product.model.js";
+
 
 
 
@@ -141,4 +143,57 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
     "Users fetched successfully"
   );
 });
+
+
+
+
+export const searchProductForAdmin = asyncHandler(async (req, res) => {
+  const { searchTerm } = req.validatedData.params;
+
+  if (!searchTerm) {
+    throw new ApiError("Search term is required", 400);
+  }
+
+  const products = await Product.aggregate([
+    {
+      $search: {
+        index: "products_search_index",
+        text: {
+          query: searchTerm,
+          path: "productName",
+          fuzzy: { maxEdits: 2 },
+        },
+      },
+    },
+    {
+      $addFields: {
+        score: { $meta: "textScore" },
+      },
+    },
+    {
+      $unwind: "$variations", // Flatten variations
+    },
+    {
+      $replaceRoot: {
+        newRoot: {
+          $mergeObjects: ["$$ROOT", "$variations"],
+        },
+      },
+    },
+    {
+      $sort: {
+        score: -1,
+        _id: 1,
+      },
+    },
+    { $limit: 8 },
+  ]);
+
+  if (!products || products.length === 0) {
+    throw new ApiError("No products found", 400);
+  }
+
+  sendResponse(res, 200, products, "Products found");
+});
+
 
