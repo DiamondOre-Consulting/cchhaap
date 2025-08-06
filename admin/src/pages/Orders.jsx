@@ -4,7 +4,6 @@ import { useDispatch } from "react-redux";
 import {
   adminChangeStatus,
   adminFetchAllOrders,
-  adminGetSingleOrder,
 } from "@/Redux/Slices/orderSlice";
 
 const Orders = () => {
@@ -19,7 +18,7 @@ const Orders = () => {
       const response = await dispatch(
         adminFetchAllOrders({ page, limit, orderType: orderStatusFilter })
       );
-      console.log(response)
+      console.log(response);
       setAllOrders(response?.payload?.data?.orders);
     } catch (error) {
       console.log(error);
@@ -45,14 +44,7 @@ const Orders = () => {
     setOrderStatusFilter(e.target.value);
   };
 
-  const handleGetSingleOrder = async (id) => {
-    try {
-      const response = await dispatch(adminGetSingleOrder(id));
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
+
 
   const handleChangeStatus = async (orderId, newStatus) => {
     try {
@@ -60,6 +52,7 @@ const Orders = () => {
         adminChangeStatus({ orderId, orderStatus: newStatus })
       );
       if (response?.payload?.success) {
+        handleGetAllOrders()
         setAllOrders((prevOrders) =>
           prevOrders.map((order) =>
             order._id === orderId ? { ...order, orderStatus: newStatus } : order
@@ -158,7 +151,11 @@ const Orders = () => {
               {allOrders?.map((order) => (
                 <tr
                   key={order._id}
-                  className={` border-b ${order?.orderStatus == "delivered" ? "bg-green-100" :"bg-white" }   dark:border-gray-700 border-gray-200  dark:hover:bg-gray-600`}
+                  className={` border-b ${
+                    order?.orderStatus == "delivered"
+                      ? "bg-green-100"
+                      : "bg-white"
+                  }   dark:border-gray-700 border-gray-200  dark:hover:bg-gray-600`}
                 >
                   <td className="px-6 py-4">{formatDate(order.createdAt)}</td>
                   <td className="px-6 py-4">{order.user.email}</td>
@@ -168,7 +165,7 @@ const Orders = () => {
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
                         order.paymentStatus === "paid"
-                          ? "bg-green-100 text-green-800"
+                          ? "bg-green-200 text-green-800"
                           : "bg-red-100 text-red-800"
                       }`}
                     >

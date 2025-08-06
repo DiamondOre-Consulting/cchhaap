@@ -55,7 +55,7 @@ const Orders = () => {
 
   if (viewMode === "detail" && selectedOrder) {
     return (
-      <div className="p-4 md:p-6 max-w-6xl mx-auto  rounded-lg">
+      <div className="p-4 md:p-6 max-w-6xl  mx-auto  rounded-lg">
     
 
         <div className="bg-white rounded-lg shadow-sm p-6">
@@ -190,7 +190,7 @@ const Orders = () => {
   }
 
   return (
-    <div className="p-4 md:p-6 md:max-w-7xl mx-auto min-h-screen ">
+    <div className="p-4 md:p-6 w-full  mx-auto min-h-screen ">
       <div className="flex items-center justify-center relative w-fit mx-auto mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
           Your Orders
