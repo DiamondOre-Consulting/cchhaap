@@ -24,7 +24,7 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
         totalPriceAfterDiscount: 0,
         totalDiscountedPrice: 0,
         totalItems: cart.products.length,
-        shippingCost:150 
+        shippingCost:177
     };
 
     checkoutValues.totalMRP = cart.products.reduce((acc, cartItem) => {
@@ -51,10 +51,10 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
     
     checkoutValues.totalDiscountedPrice = checkoutValues.totalMRP - checkoutValues.totalPriceAfterDiscount;
 
-    checkoutValues.totalPriceAfterDiscount *= 1.12 
+    
 
     checkoutValues.totalPriceAfterDiscount = Math.round(
-  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost + 27
+  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost 
 );
 
     console.log(checkoutValues)
@@ -95,13 +95,13 @@ export const buyNowCheckoutValues = asyncHandler(async (req, res) => {
     ? variation.price * quantity - variation.discountPrice * quantity
     : 0,
   totalItems: 1,
-  shippingCost: 150,
+  shippingCost: 177,
 };
 
-checkoutValues.totalPriceAfterDiscount *= 1.12 
+
 
 checkoutValues.totalPriceAfterDiscount = Math.round(
-  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost + 27
+  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost 
 );
 
   sendResponse(
