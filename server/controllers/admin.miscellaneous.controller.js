@@ -147,6 +147,7 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
 
 
 
+
 export const searchProductForAdmin = asyncHandler(async (req, res) => {
   const { searchTerm } = req.validatedData.params;
 
@@ -197,5 +198,40 @@ export const searchProductForAdmin = asyncHandler(async (req, res) => {
 
   sendResponse(res, 200, products, "Products found");
 });
+
+
+
+export const getSalesDashboardData = asyncHandler(async (req, res) => {
+  const monthlySales = await Product.aggregate([
+    { $unwind: "$variations" },
+    {
+      $group: {
+        _id: { $month: "$updatedAt" },
+        totalSales: { $sum: "$variations.soldCount" },
+      },
+    },
+    {
+      $project: {
+        month: {
+          $arrayElemAt: [
+            [
+              "", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+              "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+            ],
+            "$_id"
+          ]
+        },
+        sales: "$totalSales",
+        _id: 0,
+      },
+    },
+    { $sort: { month: 1 } }
+  ]);
+
+  sendResponse(res, 200, {
+    monthlySales,
+  }, "Monthly sales data");
+});
+
 
 

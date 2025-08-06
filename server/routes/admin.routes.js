@@ -17,7 +17,7 @@ import { searchProduct } from '../controllers/user.miscellaneous.controller.js';
 import { searchProductParamsSchema } from '../validator/user.product.validator.js';
 import { changeOrderStatus, fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
 import { changeOrderStatusBodySchema, fetchAllOrdersForAdminSchema, getSingleOrderQuerySchema } from '../validator/order.validator.js';
-import { fetchAllUsers, getSalesData, getUser, searchProductForAdmin } from '../controllers/admin.miscellaneous.controller.js';
+import { fetchAllUsers, getSalesDashboardData, getSalesData, getUser, searchProductForAdmin } from '../controllers/admin.miscellaneous.controller.js';
 import { getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
 import { forgotPasswordBodySchema, resetPasswordBodySchema, resetPasswordParamsSchema, userSendOtpBodySchema } from '../validator/user.auth.validator.js';
 import {  sendOtp } from '../controllers/auth/user.auth.js';
@@ -156,6 +156,9 @@ adminRouter.post('/reset-password/:resetToken',validate({
 
 
 adminRouter.post('/forgot-password', validate({body:forgotPasswordBodySchema}),forgotPassword)
+
+
+adminRouter.get('/get-line-chart-sales-data',adminMiddleware,getSalesDashboardData)
 
 
 
