@@ -353,7 +353,7 @@ const ProductForm = ({
         featuredProduct: singleData.featuredProduct ?? true,
 
         sku: singleData.sku || "",
-        variations: (singleData.variations || []).map((v) => ({
+        variations: (singleData?.variations || []).map((v) => ({
           _id: v._id,
           size: v.size || "",
           color: {

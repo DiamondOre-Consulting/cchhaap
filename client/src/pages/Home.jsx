@@ -1,6 +1,7 @@
 import AboutSection from "@/components/AboutSection";
 import Categories from "@/components/Categories";
 import FeaturedProducts from "@/components/FeaturedProducts";
+import FeaturesSection from "@/components/FeaturesSection";
 import Hero from "@/components/Hero";
 import ShopFor from "@/components/ShopFor";
 import Testimonial from "@/components/Testimonial";
@@ -19,6 +20,7 @@ const Home = () => {
       <ShopFor/>
       <FeaturedProducts/>
       <Testimonial/>
+      <FeaturesSection/>
       
     </>
   );

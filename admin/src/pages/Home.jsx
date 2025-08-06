@@ -76,7 +76,7 @@ const Home = () => {
             Today's Sales
             <p>
               {" "}
-              {salesData.todayTotalAmount?.toLocaleString("en-IN", {
+              {salesData?.todayTotalAmount?.toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
                 maximumFractionDigits: 0,
@@ -98,7 +98,7 @@ const Home = () => {
             Total Sales
             <p>
               {" "}
-              {salesData.totalSales?.toLocaleString("en-IN", {
+              {salesData?.totalSales?.toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
                 maximumFractionDigits: 0,
@@ -113,7 +113,7 @@ const Home = () => {
             Total Users
             <p>
               {" "}
-              {salesData.totalUser?.toLocaleString("en-IN", {
+              {salesData?.totalUser?.toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
                 maximumFractionDigits: 0,
@@ -126,7 +126,7 @@ const Home = () => {
             Cancelled Orders
             <p>
               {" "}
-              {salesData.cancelledOrders?.toLocaleString("en-IN", {
+              {salesData?.cancelledOrders?.toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
                 maximumFractionDigits: 0,

@@ -42,7 +42,7 @@ const FeaturedProducts = () => {
   }, []);
 
   return (
-    <div className="w-full mx-auto">
+    <div className="w-full mx-auto" id="featured">
       <CardCarousel
         images={allFeatured}
         autoplayDelay={1000}

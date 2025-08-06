@@ -9,6 +9,7 @@ import {
   Twitter,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import logo2 from '../assets/logo2.jpg'
 
  
 const data = {
@@ -43,7 +44,7 @@ const data = {
     name: "Mvpblocks",
     description:
       "Building beautiful and functional web experiences with modern technologies. We help startups and businesses create their digital presence.",
-    logo: "/logo.webp",
+    logo: logo2,
   },
 };
  
@@ -83,7 +84,7 @@ const contactInfo = [
  
 export default function Footer() {
   return (
-    <footer className="mt-16 w-full place-self-end rounded-t-xl bg-secondary dark:bg-secondary/20">
+    <footer className="mt-16 w-full place-self-end rounded-t-xl bg-white dark:bg-secondary/20">
       <div className="mx-auto max-w-screen-xl px-4 pb-6 pt-16 sm:px-6 lg:px-8 lg:pt-24">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
           <div>
@@ -91,9 +92,9 @@ export default function Footer() {
               <img
                 src={data.company.logo || "/placeholder.svg"}
                 alt="logo"
-                className="h-8 w-8 rounded-full"
+                className="w-40 "
               />
-              <span className="text-2xl font-semibold">{data.company.name}</span>
+              {/* <span className="text-2xl font-semibold">{data.company.name}</span> */}
             </div>
  
             <p className="mt-6 max-w-md text-center leading-relaxed text-foreground/50 sm:max-w-xs sm:text-left">
