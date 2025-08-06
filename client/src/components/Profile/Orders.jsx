@@ -201,7 +201,7 @@ const Orders = () => {
       </div>
 
       {orders.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm max-w-2xl mx-auto">
+        <div className="text-center py-12 bg-white rounded-lg shadow-sm  mx-auto">
           <div className="max-w-md mx-auto p-6">
             <svg
               className="w-20 h-20 mx-auto text-gray-400"
@@ -235,7 +235,7 @@ const Orders = () => {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {orders.map((order) => (
             <div
               key={order._id}
