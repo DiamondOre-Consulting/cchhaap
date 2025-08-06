@@ -11,6 +11,7 @@ import Login from "./pages/Auth/Login";
 import ManageBanners from "./pages/ManageBanners";
 import { useDispatch } from "react-redux";
 import Customers from "./pages/Customers";
+import ResetPassword from "./pages/Auth/ResetPassword";
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
@@ -30,7 +31,8 @@ const App = () => {
         <Route path="/manage-orders" element={<Orders />} />
         <Route path="/manage-variations" element={<Variations />} />
         <Route path="/manage-banner" element={<ManageBanners/>}/>
-        <Route path="/customers" element={<Customers/>}/> 
+        <Route path="/customers" element={<Customers/>}/>
+          <Route path="/reset-password/:token/:email/:expiry" element={<ResetPassword/>}/> 
       {/* </Route> */}
     </Routes>
   );

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
+import logo from '../assets/logo2.jpg'
 import {
   Home,
   Package,
@@ -103,9 +104,9 @@ const AdminLayout = ({ children }) => {
             <Menu size={24} />
           </button>
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8  bg-gradient-to-r from-[#f76d04] to-[#FF8C00] flex items-center justify-center text-white font-bold"></div>
+            {/* <div className="w-8 h-8  bg-gradient-to-r from-[#f76d04] to-[#FF8C00] flex items-center justify-center text-white font-bold"></div> */}
             <h1 className="text-xl font-bold bg-gradient-to-r from-[#f76d04] to-[#FF8C00] bg-clip-text text-transparent">
-              छाप
+            <img src={logo} alt=""  className="w-10"   />
             </h1>
           </div>
           <div className="w-10" />
@@ -123,11 +124,9 @@ const AdminLayout = ({ children }) => {
             <div className="fixed top-0 left-0 h-full w-72 bg-white shadow-xl z-50 lg:hidden overflow-y-auto">
               <div className="flex items-center justify-between p-6 border-b border-gray-100">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10  bg-gradient-to-r from-[#f76d04] to-[#FF8C00] flex items-center justify-center text-white font-bold text-lg">
-                    छाप
-                  </div>
+               
                   <h2 className="text-xl font-bold bg-gradient-to-r from-[#f76d04] to-[#FF8C00] bg-clip-text text-transparent">
-                    छाप
+                  <img src={logo} alt=""  className="w-10"   />
                   </h2>
                 </div>
                 <button
@@ -169,7 +168,7 @@ const AdminLayout = ({ children }) => {
                 CB
               </div> */}
               <h2 className="text-xl font-bold bg-gradient-to-r from-[#f76d04] to-[#FF8C00] bg-clip-text text-transparent">
-                छाप
+              <img src={logo} alt="" className="w-20" />
               </h2>
             </div>
           )}

@@ -75,6 +75,7 @@ const CheckOutPage = () => {
   const handleGetCheckOutValue = async () => {
     try {
       const response = await dispatch(userGetCheckoutValues());
+      console.log("checkout value",response)
       setCheckOutValues(response?.payload?.data);
     } catch (error) {
       console.log(error);
@@ -86,6 +87,7 @@ const CheckOutPage = () => {
       const response = await dispatch(
         userBuyNowCheckOutValues({ productId, variationId, quantity })
       );
+      console.log("buy now checout value" , response)
       setCheckOutValues(response?.payload?.data?.data?.checkoutValues);
     } catch (error) {
       console.log(error);
@@ -472,6 +474,17 @@ const CheckOutPage = () => {
               <p>
                 -
                 {checkoutvalues?.totalDiscountedPrice.toLocaleString("en-US", {
+                  style: "currency",
+                  currency: "INR",
+                })}
+              </p>
+            </div>
+
+              <div className="flex justify-between">
+              <p>Shipping Cost</p>
+              <p>
+                -
+                {checkoutvalues?.shippingCost.toLocaleString("en-US", {
                   style: "currency",
                   currency: "INR",
                 })}

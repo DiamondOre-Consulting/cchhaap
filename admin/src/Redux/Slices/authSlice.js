@@ -28,7 +28,7 @@ export const forgotPassword = createAsyncThunk(
     try {
       console.log(email);
       const response = await adminAxiosInstance.post(
-        "/admin/forgot-password",
+        "/forgot-password",
         email
       );
       toast.success(response.data?.message);
@@ -45,7 +45,7 @@ export const resetPassword = createAsyncThunk(
   async ({ resetToken, newPassword }) => {
     try {
       const response = await adminAxiosInstance.post(
-        `/admin/reset-password/${resetToken}`,
+        `/reset-password/${resetToken}`,
         { newPassword }
       );
       toast.success(response?.data?.message);
@@ -133,6 +133,20 @@ export const fetchAllUsers = createAsyncThunk('/admin/fetch-all-users', async({p
 export const getSalesData = createAsyncThunk('/admin/sales-data' , async()=>{
   try {
     const response = await adminAxiosInstance.get('/get-sales-data');
+    console.log(response);
+    return response?.data;
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+
+export const getLineChartData = createAsyncThunk('/admin/line-chart-data' , async({year})=>{
+  try {
+     const queryParams = new URLSearchParams();
+     if (year) queryParams.append("year", year);
+    const response = await adminAxiosInstance.get(`/get-line-chart-sales-data?${queryParams?.toString()}`);
     console.log(response);
     return response?.data;
   } catch (error) {

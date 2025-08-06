@@ -27,6 +27,7 @@ export const editProduct = createAsyncThunk(
         formData
       );
       toast.success(response?.data?.message);
+      return response?.data
     } catch (error) {
       console.log(error);
     }

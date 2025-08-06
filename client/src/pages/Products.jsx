@@ -29,6 +29,9 @@ const ProductItem = ({ product, isLoggedIn }) => {
   const [isWish, setIsWish] = useState(product.isInWishlist || false);
   const [isWishLoading, setIsWishLoading] = useState(false);
 
+  // Check if all variations are out of stock
+  const isOutOfStock = product.variations?.every(v => v.quantity === 0) || false;
+
   const toggleWishList = () => {
     if (!isLoggedIn) {
       navigate("/login");
@@ -94,9 +97,16 @@ const ProductItem = ({ product, isLoggedIn }) => {
   }, []);
 
   return (
-    <div className="">
-      <div className="relative h-full">
-        <div className="flex justify-center items-center px-4">
+    <div className="relative">
+      {isOutOfStock && (
+        <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/30">
+          <span className="bg-white px-4 py-2 font-bold rotate-[-15deg] text-lg">
+            OUT OF STOCK
+          </span>
+        </div>
+      )}
+      <div className={`h-full ${isOutOfStock ? 'grayscale' : ''}`}>
+        <div className="flex justify-center items-center ">
           <Swiper
             loop={true}
             autoplay={{
@@ -135,12 +145,14 @@ const ProductItem = ({ product, isLoggedIn }) => {
               </SwiperSlide>
             ))}
 
-            <Link
-              to={`/each-product/${product._id}`}
-              className="absolute text-c1 bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-6 py-2 z-40 shadow-md"
-            >
-              Quick View
-            </Link>
+            {!isOutOfStock && (
+              <Link
+                to={`/each-product/${product._id}`}
+                className="absolute text-c1 bottom-4 left-1/2 transform -translate-x-1/2 bg-white px-6 py-2 z-40 shadow-md"
+              >
+                Quick View
+              </Link>
+            )}
           </Swiper>
 
           <div className="absolute top-2 left-6 bg-white/60 p-2 z-40 shadow-md rounded-full">
@@ -175,6 +187,25 @@ const ProductItem = ({ product, isLoggedIn }) => {
           </div>
         </div>
       </div>
+      {/* <div className={`mt-2 text-center ${isOutOfStock ? 'opacity-70' : ''}`}>
+        <h3 className="text-lg line-clamp-1 font-medium">
+          {product.productName}
+        </h3>
+        {firstVariation && (
+          <p className="font-bold">
+            ₹{firstVariation.price}
+            {firstVariation.discountPrice > 0 && (
+              <span className="ml-2 text-sm text-red-500 line-through">
+                ₹
+                {Math.round(
+                  firstVariation.price +
+                    (firstVariation.price * firstVariation.discountPrice) / 100
+                )}
+              </span>
+            )}
+          </p>
+        )}
+      </div> */}
     </div>
   );
 };

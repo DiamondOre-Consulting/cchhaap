@@ -103,7 +103,6 @@ const ProductPreviews = ({ previews }) => {
 };
 
 const ColorVariant = ({ groupedByColor, selectedVariation, onColorChange }) => {
-  // Get all available colors from the groupedByColor object
   const availableColors = Object.keys(groupedByColor || {});
 
   return (
@@ -116,17 +115,26 @@ const ColorVariant = ({ groupedByColor, selectedVariation, onColorChange }) => {
         {availableColors.map((colorName) => {
           const colorGroup = groupedByColor[colorName];
           const isSelected = selectedVariation?.color?.name === colorName;
+          const isOutOfStock = colorGroup.variations.every(
+            (v) => v.quantity === 0
+          );
 
           return (
             <div
               key={colorName}
               onClick={() => {
-                const firstVariation = colorGroup.variations[0];
-                onColorChange(firstVariation);
+                if (!isOutOfStock) {
+                  const firstAvailableVariation = colorGroup.variations.find(
+                    (v) => v.quantity > 0
+                  );
+                  if (firstAvailableVariation) {
+                    onColorChange(firstAvailableVariation);
+                  }
+                }
               }}
-              className={`cursor-pointer ${
+              className={`relative cursor-pointer ${
                 isSelected ? "ring-2 ring-[#620A1A]" : ""
-              }`}
+              } ${isOutOfStock ? "opacity-60 cursor-not-allowed" : ""}`}
             >
               <img
                 src={colorGroup.thumbnailImage?.secureUrl}
@@ -134,10 +142,22 @@ const ColorVariant = ({ groupedByColor, selectedVariation, onColorChange }) => {
                 className="w-20 h-20 object-cover"
                 title={colorName}
               />
+              {isOutOfStock && (
+                <div className="absolute inset-0 bg-black/60 bg-opacity-50 flex items-center justify-center">
+                  <span className="text-white text-[10px] font-bold rotate-[-45deg]">
+                    OUT OF STOCK
+                  </span>
+                </div>
+              )}
             </div>
           );
         })}
       </div>
+      {selectedVariation?.quantity === 0 && (
+        <div className="text-red-600 text-sm mt-2">
+          This color variant is currently out of stock
+        </div>
+      )}
     </div>
   );
 };
@@ -230,37 +250,36 @@ const EachProductPage = () => {
     }
   }, [cartCount]);
 
-  console.log("injsx",selectedAttributes)
+  console.log("injsx", selectedAttributes);
   const handleGetSingleProduct = async () => {
     try {
-      
       const payload = {
         id,
         userId: user?.data?._id,
         size: selectedSize,
         color: selectedVariation?.color?.name,
         variationId: selectedVariation?._id,
-         selectedAttributes
+        selectedAttributes,
       };
 
       const response = await dispatch(getSingleProduct(payload));
       const productData = response?.payload?.data;
       setSingleData(productData);
-      
+
       if (productData?.variations?.length > 0) {
         // Find the variation that matches our current selection
         let matchingVariation;
-        
+
         // First try to find by variationId if we have one
         if (selectedVariation?._id) {
           matchingVariation = productData.variations.find(
-            v => v._id === selectedVariation._id
+            (v) => v._id === selectedVariation._id
           );
         }
-        
+
         // If not found by ID, try to match by attributes
         if (!matchingVariation) {
-          matchingVariation = productData.variations.find(v => {
+          matchingVariation = productData.variations.find((v) => {
             return (
               v.size === selectedSize &&
               v.color?.name === selectedVariation?.color?.name &&
@@ -270,13 +289,13 @@ const EachProductPage = () => {
             );
           });
         }
-        
+
         // Fallback to first variation if no match found
         matchingVariation = matchingVariation || productData.variations[0];
-        
+
         setSelectedVariation(matchingVariation);
         setSelectedSize(matchingVariation.size);
-        
+
         // Update selected attributes to match the found variation
         const newSelectedAttributes = { ...selectedAttributes };
         Object.entries(matchingVariation.attributes).forEach(([key, value]) => {
@@ -288,8 +307,6 @@ const EachProductPage = () => {
       console.log(error);
     }
   };
-
-  
 
   const handleColorChange = (variation) => {
     setSelectedVariation(variation);
@@ -305,7 +322,6 @@ const EachProductPage = () => {
     setSelectedAttributes(newAttributes);
   };
 
- 
   useEffect(() => {
     handleGetSingleProduct();
   }, [id, user, isLoggedIn]);
@@ -327,7 +343,7 @@ const EachProductPage = () => {
           variationId: selectedVariation._id,
         })
       );
-     
+
       await handleGetSingleProduct();
       await dispatch(getNavbarCartWishlistCount());
     } catch (error) {
@@ -362,7 +378,6 @@ const EachProductPage = () => {
     }
   };
 
-
   useEffect(() => {
     if (singleData?.attributes) {
       const initialAttributes = {};
@@ -380,13 +395,13 @@ const EachProductPage = () => {
   const handleAttributeClick = async (attributeName, option) => {
     const newAttributes = {
       ...selectedAttributes,
-      [attributeName]: option
+      [attributeName]: option,
     };
     setSelectedAttributes(newAttributes);
 
     // Find variation that matches all current selections
     if (singleData?.variations) {
-      const matchingVariation = singleData.variations.find(v => {
+      const matchingVariation = singleData.variations.find((v) => {
         return (
           v.size === selectedSize &&
           v.color?.name === selectedVariation?.color?.name &&
@@ -401,7 +416,6 @@ const EachProductPage = () => {
       }
     }
   };
-
 
   const renderAttributeOptions = () => {
     if (!singleData?.attributes) return null;
@@ -445,7 +459,7 @@ const EachProductPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-   useEffect(() => {
+  useEffect(() => {
     if (selectedVariation) {
       handleGetSingleProduct();
     }
@@ -458,8 +472,7 @@ const EachProductPage = () => {
   //   }));
   // };
 
-
-  console.log("selectedAttributeis" , selectedAttributes)
+  console.log("selectedAttributeis", selectedAttributes);
 
   return (
     <div>

@@ -331,6 +331,7 @@ const ProductForm = ({
      res=   await dispatch(createProduct(formData));
       }
       await handleGetAllProducts()
+      console.log("respnse",res)
      if (res?.payload?.success) {
       setProductPopUp(false);
     }

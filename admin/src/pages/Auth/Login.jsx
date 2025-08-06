@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { adminSignin, forgotPassword } from "@/Redux/Slices/authSlice";
 import { useNavigate } from "react-router-dom";
+import logo from "../../assets/logo2.jpg"
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -59,7 +60,7 @@ const Login = () => {
           <div className="w-96 max-w-lg bg-white rounded-lg overflow-hidden shadow-lg">
             <div className="p-8">
               <div className="mb-8 ">
-                {/* <img src={logo} className="w-[60%] mx-auto mb-4" alt="" /> */}
+                {/* <img src={logo} className="w-[20%] absolute top-0 left-0 mx-auto mb-4" alt="" /> */}
                 <h1 className="text-3xl text-center  text-gray-900 leading-tight">
                   Admin Login
                 </h1>
@@ -182,7 +183,7 @@ const Login = () => {
           <div className="mt-7 bg-white w-full md:w-md rounded-xl shadow-lg">
             <div className="p-4 sm:p-7">
               <div className="text-center">
-                <img src={logo} className="w-[60%] mx-auto mb-4" alt="" />
+                <img src={logo} className="w-[20%] mx-auto mb-4" alt="" />
 
                 <h1 className="block text-2xl font-bold text-gray-800 ">
                   Forgot password?
@@ -229,7 +230,7 @@ const Login = () => {
                     </div>
                     <button
                       type="submit"
-                      className="py-3 px-4 cursor-pointer inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-black text-white focus:ring-offset-2 transition-all text-sm "
+                      className="py-3 px-4 cursor-pointer inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-c1 text-white focus:ring-offset-2 transition-all text-sm "
                     >
                       Send Link
                     </button>

@@ -1,50 +1,31 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import HomeLayout from "../Layout/HomeLayout";
-import { ShoppingCart } from "lucide-react";
-import { HandCoins } from "lucide-react";
-import {
-  LineChart,
-  Line,
-  CartesianGrid,
-  XAxis,
-  YAxis,
-  Legend,
-  Tooltip,
-  Cell,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-} from "recharts";
+import { ShoppingCart, HandCoins } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDispatch } from "react-redux";
-import { getSalesData } from "@/Redux/Slices/authSlice";
+import { getLineChartData, getSalesData } from "@/Redux/Slices/authSlice";
+import { Chart, registerables } from "chart.js";
+import { LineChart } from "recharts";
+
+Chart.register(...registerables);
 
 const Home = () => {
+  const dispatch = useDispatch();
+  const [salesData, setSalesData] = useState([]);
+  const [selectedYear, setSelectedYear] = useState("2025");
+  const [sales, setSales] = useState([]);
+  const lineChartRef = useRef(null);
+  const pieChartRef = useRef(null);
+  const [chartInstance, setChartInstance] = useState(null);
+  const [pieChartInstance, setPieChartInstance] = useState(null);
+
   const pieData = [
     { name: "Group A", value: 400 },
     { name: "Group B", value: 300 },
     { name: "Group C", value: 300 },
     { name: "Group D", value: 200 },
   ];
-  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
-
-  const data = [
-    { name: "Jan", sales: 2400, uv: "500" },
-    { name: "Feb", sales: 200, uv: "1000" },
-    { name: "Mar", sales: 2200, uv: "1500" },
-    { name: "Apr", sales: 1800, uv: "2000" },
-    { name: "May", sales: 3000, uv: "3000" },
-    { name: "June", sales: 2500, uv: "500" },
-    { name: "July", sales: 2700, uv: "3500" },
-    { name: "Aug", sales: 3200, uv: "20000" },
-    { name: "Sep", sales: 2800, uv: "50" },
-    { name: "Oct", sales: 3100, uv: "2500" },
-    { name: "Nov", sales: 3500, uv: "2800" },
-    { name: "Dec", sales: 4000, uv: "500" },
-  ];
-
-  const dispatch = useDispatch();
-  const [salesData, setSalesData] = useState([]);
+  const COLORS = ["#620A1A", "#620A1A", "#FFBB28", "#FF8042"];
 
   const handleGetAllSalesData = async () => {
     const response = await dispatch(getSalesData());
@@ -52,11 +33,131 @@ const Home = () => {
     console.log(response);
   };
 
+  const handleGetLineChartData = async () => {
+    try {
+      const response = await dispatch(getLineChartData({ year: selectedYear }));
+      setSales(response?.payload?.data?.monthlySales);
+      console.log(response);
+
+      if (lineChartRef.current) {
+        initLineChart(response?.payload?.data?.monthlySales);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const initLineChart = (monthlySales) => {
+    if (chartInstance) {
+      chartInstance.destroy();
+    }
+
+    const ctx = lineChartRef.current.getContext("2d");
+    const newChartInstance = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: monthlySales?.map((item) => item.month) || [],
+        datasets: [
+          {
+            label: "Sales",
+            data: monthlySales?.map((item) => item.sales) || [],
+            borderColor: "#620A1A",
+            tension: 0.1,
+            fill: false,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          tooltip: {
+            mode: "index",
+            intersect: false,
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+      },
+    });
+
+    setChartInstance(newChartInstance);
+  };
+
+  const initPieChart = () => {
+    if (pieChartInstance) {
+      pieChartInstance.destroy();
+    }
+
+    const ctx = pieChartRef.current.getContext("2d");
+    const newPieChartInstance = new Chart(ctx, {
+      type: "pie",
+      data: {
+        labels: pieData.map((item) => item.name),
+        datasets: [
+          {
+            data: pieData.map((item) => item.value),
+            backgroundColor: COLORS,
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: "top",
+          },
+          tooltip: {
+            callbacks: {
+              label: function (context) {
+                const label = context.label || "";
+                const value = context.raw || 0;
+                const total = context.dataset.data.reduce(
+                  (acc, data) => acc + data,
+                  0
+                );
+                const percentage = Math.round((value / total) * 100);
+                return `${label}: ${value} (${percentage}%)`;
+              },
+            },
+          },
+        },
+      },
+    });
+
+    setPieChartInstance(newPieChartInstance);
+  };
+
   useEffect(() => {
     handleGetAllSalesData();
-  }, []);
+    handleGetLineChartData();
 
-  console.log(salesData);
+    if (pieChartRef.current) {
+      initPieChart();
+    }
+
+    return () => {
+      if (chartInstance) {
+        chartInstance.destroy();
+      }
+      if (pieChartInstance) {
+        pieChartInstance.destroy();
+      }
+    };
+  }, [selectedYear]);
+
+  useEffect(() => {
+    if (sales.length > 0 && lineChartRef.current) {
+      initLineChart(sales);
+    }
+  }, [sales]);
+
   return (
     <HomeLayout>
       <h1 className="text-2xl">Welcome Admin</h1>
@@ -113,11 +214,9 @@ const Home = () => {
             Total Users
             <p>
               {" "}
-              {salesData?.totalUser?.toLocaleString("en-IN", {
-                style: "currency",
-                currency: "INR",
-                maximumFractionDigits: 0,
-              })}
+              {salesData?.totalUser
+             
+              }
             </p>
           </div>
 
@@ -126,11 +225,7 @@ const Home = () => {
             Cancelled Orders
             <p>
               {" "}
-              {salesData?.cancelledOrders?.toLocaleString("en-IN", {
-                style: "currency",
-                currency: "INR",
-                maximumFractionDigits: 0,
-              })}
+              {salesData?.cancelledOrders}
             </p>
           </div>
         </div>
@@ -140,6 +235,17 @@ const Home = () => {
             <div className="flex  items-center justify-between">
               <div className="w-fit">
                 <Tabs defaultValue="tab-1" className="items-start ">
+                  <select
+                    value={selectedYear}
+                    onChange={(e) => setSelectedYear(e.target.value)}
+                    className="ml-4 p-2 border rounded"
+                  >
+                  
+                    <option value="2024">2024</option>
+                    <option value="2025">2025</option>
+                     <option value="2026">2026</option>
+                    <option value="2027">2027</option>
+                  </select>
                   <TabsList className="h-auto rounded-none border-b bg-transparent p-0">
                     <TabsTrigger
                       value="tab-1"
@@ -147,96 +253,17 @@ const Home = () => {
                     >
                       Sales
                     </TabsTrigger>
-                    <TabsTrigger
-                      value="tab-2"
-                      className="data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-                    >
-                      Orders
-                    </TabsTrigger>
+                  
                   </TabsList>
                   <TabsContent value="tab-1">
-                    <LineChart
-                      width={500}
-                      height={300}
-                      data={data}
-                      margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-                    >
-                      <CartesianGrid stroke="#aaa" strokeDasharray="2 2" />
-                      <Line
-                        type="monotone"
-                        dataKey="uv"
-                        stroke="purple"
-                        strokeWidth={2}
-                        name="Sales"
-                      />
-                      <XAxis dataKey="name" />
-                      <YAxis
-                        width="auto"
-                        label={{
-                          value: "Sales",
-                          position: "insideLeft",
-                          angle: -90,
-                        }}
-                      />
-                      <Legend align="right" />
-                      <Tooltip />
-                    </LineChart>
+                    <div className="w-[60vw]">
+                      <canvas ref={lineChartRef}  />
+                    </div>
                   </TabsContent>
-                  <TabsContent value="tab-2">
-                    <LineChart
-                      width={500}
-                      height={300}
-                      data={data}
-                      margin={{ top: 5, right: 20, bottom: 5, left: 0 }}
-                    >
-                      <CartesianGrid stroke="#aaa" strokeDasharray="2 2" />
-                      <Line
-                        type="monotone"
-                        dataKey="uv"
-                        stroke="purple"
-                        strokeWidth={2}
-                        name="Sales"
-                      />
-                      <XAxis dataKey="name" />
-                      <YAxis
-                        width="auto"
-                        label={{
-                          value: "Sales",
-                          position: "insideLeft",
-                          angle: -90,
-                        }}
-                      />
-                      <Legend align="right" />
-                      <Tooltip />
-                    </LineChart>
-                  </TabsContent>
+              
                 </Tabs>
               </div>
             </div>
-          </div>
-          <div className="bg-white border border-0 w-full h-[300px] p-4 rounded ">
-            <ResponsiveContainer width="100%" height="100%" className="">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  nameKey="name"
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  label
-                >
-                  {pieData.map((entry, index) => (
-                    <Cell
-                      key={`cell-${index}`}
-                      fill={COLORS[index % COLORS.length]}
-                    />
-                  ))}
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
           </div>
         </div>
       </div>
