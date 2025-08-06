@@ -24,6 +24,7 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
         totalPriceAfterDiscount: 0,
         totalDiscountedPrice: 0,
         totalItems: cart.products.length,
+        shippingCost:150 
     };
 
     checkoutValues.totalMRP = cart.products.reduce((acc, cartItem) => {

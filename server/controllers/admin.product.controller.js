@@ -28,6 +28,11 @@ export const createProduct = asyncHandler(async (req, res) => {
   } = req.body;
 
 
+  if(variations.discountPrice>variations.price){
+    throw new ApiError(400, "Discount price cannot be greater than actual price");
+  }
+
+
   // Convert null prototype objects to plain objects
   const parsedVariations = variations.map(variation => ({
     ...variation,
@@ -65,6 +70,7 @@ export const createProduct = asyncHandler(async (req, res) => {
   if (existingProduct) {
     throw new ApiError(400, "Product with this name or sku already exists");
   }
+
 
   const newProduct = await Product.create({
     productName,
@@ -204,6 +210,11 @@ export const editProduct = asyncHandler(async (req, res) => {
     variations,
     isActive
   } = req.body;
+
+   if(variations.discountPrice>variations.price){
+    throw new ApiError(400, "Discount price cannot be greater than actual price");
+  }
+
 
   // 1. Find existing product
   const existingProduct = await Product.findById(productId);
