@@ -47,7 +47,17 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
         return acc + (price * cartItem.quantity);
     }, 0);
 
+    
+    
     checkoutValues.totalDiscountedPrice = checkoutValues.totalMRP - checkoutValues.totalPriceAfterDiscount;
+
+    checkoutValues.totalPriceAfterDiscount *= 1.12 
+
+    checkoutValues.totalPriceAfterDiscount = Math.round(
+  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost + 27
+);
+
+    console.log(checkoutValues)
 
     sendResponse(res, 200, checkoutValues, "Checkout values fetched successfully");
 });
@@ -77,15 +87,22 @@ export const buyNowCheckoutValues = asyncHandler(async (req, res) => {
   }
 
   const checkoutValues = {
-    totalMRP: variation.price * quantity,
-    totalPriceAfterDiscount: variation.discountPrice
-      ? variation.discountPrice * quantity
-      : variation.price * quantity,
-    totalDiscountedPrice: variation.discountPrice
-      ? variation.price * quantity - variation.discountPrice * quantity
-      : 0,
-    totalItems: 1,
-  };
+  totalMRP: variation.price * quantity,
+  totalPriceAfterDiscount: variation.discountPrice
+    ? variation.discountPrice * quantity
+    : variation.price * quantity,
+  totalDiscountedPrice: variation.discountPrice
+    ? variation.price * quantity - variation.discountPrice * quantity
+    : 0,
+  totalItems: 1,
+  shippingCost: 150,
+};
+
+checkoutValues.totalPriceAfterDiscount *= 1.12 
+
+checkoutValues.totalPriceAfterDiscount = Math.round(
+  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost + 27
+);
 
   sendResponse(
     res,
