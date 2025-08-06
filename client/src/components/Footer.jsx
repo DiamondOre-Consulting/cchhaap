@@ -71,7 +71,7 @@ const serviceLinks = [
 ];
  
 const helpfulLinks = [
-  { text: "FAQs", href: data.help.faqs },
+  { text: "Privacy Policy", href: "/privacy-policy" },
   { text: "Support", href: data.help.support },
   { text: "Live Chat", href: data.help.livechat, hasIndicator: true },
 ];
@@ -145,8 +145,8 @@ export default function Footer() {
               <ul className="mt-8 space-y-4 text-sm">
                 {helpfulLinks.map(({ text, href, hasIndicator }) => (
                   <li key={text}>
-                    <a
-                      href={href}
+                    <Link
+                     to={href}
                       className={`${
                         hasIndicator
                           ? "group flex justify-center gap-1.5 sm:justify-start"
@@ -160,7 +160,7 @@ export default function Footer() {
                           <span className="relative inline-flex size-2 rounded-full bg-primary" />
                         </span>
                       )}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

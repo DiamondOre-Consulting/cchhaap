@@ -20,6 +20,7 @@ import ProtectedRoute from "./pages/Auth/ProtectedRoute";
 import { useDispatch, useSelector } from "react-redux";
 import { getUserData } from "./Redux/Slices/authSlice";
 import { getNavbarCartWishlistCount } from "./Redux/Slices/cart";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
@@ -51,6 +52,8 @@ const App = () => {
         <Route path="/products/:id/:categoryName" element={<Products />} />
         <Route path="/products/gender/:gender" element={<Products />} />
         <Route path="/each-product/:id" element={<EachProductPage />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
+
 
         <Route element={<ProtectedRoute />}>
           <Route path="/my-account" element={<ProfilePage />} />

@@ -483,7 +483,7 @@ const CheckOutPage = () => {
               <div className="flex justify-between">
               <p>Shipping Cost</p>
               <p>
-                -
+                
                 {checkoutvalues?.shippingCost.toLocaleString("en-US", {
                   style: "currency",
                   currency: "INR",
