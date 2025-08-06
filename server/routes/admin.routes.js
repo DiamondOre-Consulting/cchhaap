@@ -155,7 +155,7 @@ adminRouter.post('/reset-password/:resetToken',validate({
 }),resetPassword)
 
 
-userRouter.post('/forgot-password', validate({body:forgotPasswordBodySchema}),forgotPassword)
+adminRouter.post('/forgot-password', validate({body:forgotPasswordBodySchema}),forgotPassword)
 
 
 
