@@ -15,9 +15,10 @@ import { sendMail } from "../../utils/mail.util.js";
 
 const cookieOptions = {
   httpOnly: true,
-  // secure: true,
-  sameSite: "Lax",
+  secure: true,
+  sameSite: "None",
 };
+
 
 export const signin = asyncHandler(async(req, res) => {
   const { email, password } = req.validatedData.body;
