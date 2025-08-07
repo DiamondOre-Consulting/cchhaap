@@ -1,8 +1,9 @@
 import React from 'react'
+import logo from '../assets/logo.png'
 
 const AboutSection = () => {
   return (
-    <div className='grid grid-cols-1 px-2 md:px-0 md:grid-cols-2 '>
+    <div className='grid grid-cols-1 px-2 md:px-0 md:grid-cols-2 md:gap-y-0 gap-y-4'>
       
       <video src="https://videos.pexels.com/video-files/853800/853800-hd_1920_1080_25fps.mp4
       "
@@ -10,7 +11,7 @@ const AboutSection = () => {
       />
 
       <div className='flex  flex-col max-w-md  mx-auto text-center justify-center items-center'>
-     <p className='text-[4rem]'>छाप</p>  
+     <img src={logo} alt="" className='w-40 mb-4'/>  
      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maiores iusto perferendis dolores, ad ab, consequatur, et veritatis aut amet dolorem reprehenderit! Fuga delectus saepe cum reiciendis eius, consequuntur enim dolores!</p>
       </div>
     </div>

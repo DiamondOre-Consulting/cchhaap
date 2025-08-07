@@ -1,16 +1,31 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { userBuyNowCheckOutValues, userGetCheckoutValues } from "../Redux/Slices/checkoutSlice";
+import {
+  userBuyNowCheckOutValues,
+  userGetCheckoutValues,
+} from "../Redux/Slices/checkoutSlice";
 import { IoClose } from "react-icons/io5";
-import { userAddNewAddress, userDeleteAddress, userEditAddress, userGetAllAddress } from "@/Redux/Slices/authSlice";
+import {
+  userAddNewAddress,
+  userDeleteAddress,
+  userEditAddress,
+  userGetAllAddress,
+} from "@/Redux/Slices/authSlice";
 import { IoIosAdd } from "react-icons/io";
 import { toast } from "sonner";
 import { FaPhoneAlt } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import { userApplyCoupon, userBuyNowCoupon } from "../Redux/Slices/coupon.Slice";
+import {
+  userApplyCoupon,
+  userBuyNowCoupon,
+} from "../Redux/Slices/coupon.Slice";
 import { RxCross1 } from "react-icons/rx";
 import confetti from "canvas-confetti";
-import { userCheckoutPayment, userGetRazorpayKey, userVarifyPayment } from "../Redux/Slices/paymentSlice";
+import {
+  userCheckoutPayment,
+  userGetRazorpayKey,
+  userVarifyPayment,
+} from "../Redux/Slices/paymentSlice";
 import { userCreateOrder } from "../Redux/Slices/order.Slice";
 import { SiRazorpay } from "react-icons/si";
 import { IoIosCash } from "react-icons/io";
@@ -75,7 +90,7 @@ const CheckOutPage = () => {
   const handleGetCheckOutValue = async () => {
     try {
       const response = await dispatch(userGetCheckoutValues());
-      console.log("checkout value",response)
+      console.log("checkout value", response);
       setCheckOutValues(response?.payload?.data);
     } catch (error) {
       console.log(error);
@@ -87,7 +102,7 @@ const CheckOutPage = () => {
       const response = await dispatch(
         userBuyNowCheckOutValues({ productId, variationId, quantity })
       );
-      console.log("buy now checout value" , response)
+      console.log("buy now checout value", response);
       setCheckOutValues(response?.payload?.data?.data?.checkoutValues);
     } catch (error) {
       console.log(error);
@@ -116,9 +131,25 @@ const CheckOutPage = () => {
     e.preventDefault();
     setLoader(true);
     try {
-      const { fullName, phoneNumber, street, city, state, country = "India", pinCode } = addAddressForm;
-      
-      if (!fullName || !phoneNumber || !street || !city || !state || !country || !pinCode) {
+      const {
+        fullName,
+        phoneNumber,
+        street,
+        city,
+        state,
+        country = "India",
+        pinCode,
+      } = addAddressForm;
+
+      if (
+        !fullName ||
+        !phoneNumber ||
+        !street ||
+        !city ||
+        !state ||
+        !country ||
+        !pinCode
+      ) {
         toast.error("Please fill all required fields.");
         setLoader(false);
         return;
@@ -265,7 +296,7 @@ const CheckOutPage = () => {
         toast.error("Please Select Payment Method");
         return;
       }
-      
+
       if (!selectedAddress) {
         toast.error("Please select the shipping address");
         return;
@@ -285,7 +316,9 @@ const CheckOutPage = () => {
       if (paymentMethod === "online") {
         if (!razorpayKey) {
           console.error("Razorpay key is missing");
-          return toast.error("Payment system is not available. Try again later.");
+          return toast.error(
+            "Payment system is not available. Try again later."
+          );
         }
 
         const options = {
@@ -300,7 +333,7 @@ const CheckOutPage = () => {
             paymentDetails.razorpay_payment_id = res.razorpay_payment_id;
             paymentDetails.razorpay_order_id = res.razorpay_order_id;
             paymentDetails.razorpay_signature = res.razorpay_signature;
-            
+
             const response = await dispatch(userVarifyPayment(paymentDetails));
             if (response?.payload?.success === true) {
               const res = await dispatch(
@@ -359,7 +392,7 @@ const CheckOutPage = () => {
         toast.error("Please select the payment method");
         return;
       }
-      
+
       if (!selectedAddress) {
         toast.error("Please select the shipping address");
         return;
@@ -401,175 +434,346 @@ const CheckOutPage = () => {
   }, []);
 
   return (
-    <div className="py-6">
-      <div className="flex flex-col md:flex-row px-4 md:px-10 justify-between md:space-y-0 space-y-4 md:space-x-8">
-        <div className="shadow-xl md:min-w-4xl p-4 myfont">
-          <div>
-            <div className="flex justify-between">
-              <p className="text-xl underline font-bold">Select Delivery Address</p>
+    <div className="min-h-screen bg-[#6d0c04] text-white py-8 px-4 md:px-8">
+      {/* Header with Breadcrumbs */}
+      <div className="max-w-6xl mx-auto mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold text-white">Checkout</h1>
+        <div className="flex items-center mt-2 text-amber-100">
+          <span className="text-sm">Cart</span>
+          <span className="mx-2">›</span>
+          <span className="text-sm font-medium text-white">Delivery</span>
+          <span className="mx-2">›</span>
+          <span className="text-sm">Payment</span>
+        </div>
+      </div>
+
+      <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left Column - Delivery Address */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Delivery Address Section */}
+          <div className="bg-[#8a1c0b] rounded-xl p-6 shadow-lg border border-amber-900">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold text-white">
+                Delivery Address
+              </h2>
               <button
                 onClick={() => setAddAddressPopUp(true)}
-                className="cursor-pointer flex items-center text-sm md:text-md bg-c2 text-c1 font-bold px-1 md:px-6 py-2"
+                className="flex items-center space-x-1 bg-c1  px-4 py-2 rounded-lg transition-colors text-white"
               >
-                <IoIosAdd className="text-c1 z-40" /> Address
+                <IoIosAdd className="text-lg" />
+                <span>Add New</span>
               </button>
             </div>
 
-            <div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {allAddress?.addresses?.map((address, index) => (
-                <div key={index} className="mt-4 md:w-xl">
-                  <div className="flex space-x-2">
+                <div
+                  key={index}
+                  className={`border rounded-lg p-4 cursor-pointer transition-all ${
+                    selectedAddress?._id === address._id
+                      ? "border-amber-500 bg-[#7a1505]"
+                      : "border-amber-900 hover:bg-[#7a1505]"
+                  }`}
+                  onClick={() => setSelectedAddress(address)}
+                >
+                  <div className="flex items-start">
                     <input
                       type="radio"
-                      className="w-4"
-                      checked={address?.isDefault}
-                      onChange={() => setSelectedAddress(address)}
+                      className="mt-1 mr-2 accent-amber-600"
+                      checked={selectedAddress?._id === address._id}
+                      onChange={() => {}}
                     />
-                    <p>{address?.fullName}</p>
-                  </div>
-                  <p>
-                    {address?.street}, {address?.city}, {address?.state}, {address?.pinCode}, {address?.country}
-                  </p>
-                  <p className="flex items-center space-x-2">
-                    <FaPhoneAlt />
-                    <span>{address?.phoneNumber}</span>
-                  </p>
-                  <div className="flex space-x-4 text-c1 mt-2">
-                    <button
-                      className="bg-c2 px-6 py-2 cursor-pointer"
-                      onClick={() => handleEditClick(address)}
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onClick={() => handleDeleteAddress(address?._id)}
-                      className="cursor-pointer bg-white px-6 py-2"
-                    >
-                      Delete
-                    </button>
+                    <div>
+                      <div className="flex justify-between">
+                        <h3 className="font-medium text-white">
+                          {address.fullName}
+                        </h3>
+                        {address.isDefault && (
+                          <span className="bg-amber-700 text-white text-xs px-2 py-1 rounded ml-2">
+                            Default
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-amber-100 text-sm mt-1">
+                        {address.street}, {address.city}, {address.state} -{" "}
+                        {address.pinCode}
+                      </p>
+                      <p className="flex items-center text-amber-100 text-sm mt-2">
+                        <FaPhoneAlt className="mr-1" />
+                        {address.phoneNumber}
+                      </p>
+                      <div className="flex space-x-3 mt-3">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleEditClick(address);
+                          }}
+                          className="text-amber-300 hover:text-amber-200 text-sm"
+                        >
+                          Edit
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteAddress(address._id);
+                          }}
+                          className="text-amber-300 hover:text-amber-200 text-sm"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               ))}
             </div>
           </div>
-        </div>
 
-        <div className="shadow-xl bg-white rounded text-c1 myfont w-full py-3">
-          <p className="font-bold text-center text-xl underline">Delivery Estimates</p>
-
-          <div className="mt-4 text-lg space-y-2 px-4">
-            <p>Total Items ({checkoutvalues?.totalItems})</p>
-            <div className="flex justify-between">
-              <p>Total MRP</p>
-              <p>
-                {checkoutvalues?.totalMRP.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "INR",
-                })}
-              </p>
-            </div>
-
-            <div className="flex justify-between">
-              <p>Discount</p>
-              <p>
-                -
-                {checkoutvalues?.totalDiscountedPrice.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "INR",
-                })}
-              </p>
-            </div>
-
+          {/* Order Summary Section (Mobile) */}
+          <div className="lg:hidden bg-[#8a1c0b] rounded-xl p-6 shadow-lg border border-amber-900">
+            <h2 className="text-xl font-semibold mb-4 text-white">
+              Order Summary
+            </h2>
+            <div className="space-y-3">
               <div className="flex justify-between">
-              <p>Shipping Cost</p>
-              <p>
-                
-                {checkoutvalues?.shippingCost.toLocaleString("en-US", {
-                  style: "currency",
-                  currency: "INR",
-                })}
-              </p>
-            </div>
-
-            <div className="flex my-3 space-x-4 items-center justify-between">
-              <div className="relative flex items-center justify-end">
-                <input
-                  onChange={(e) => setTempCouponName(e.target.value)}
-                  value={tempCouponName}
-                  className="border border-gray-400 px-2 rounded-md w-full"
-                  type="text"
-                  placeholder="Apply Coupon Code"
-                />
-                <RxCross1
-                  className="absolute text-sm mr-2 cursor-pointer"
-                  onClick={() => {
-                    setTempCouponName("");
-                    setCouponValue(null);
-                  }}
-                />
-              </div>
-
-              <button
-                onClick={() => {
-                  if (productId) {
-                    handleBuyNowCouponApply();
-                  } else {
-                    handleApplyCoupon();
-                  }
-                }}
-                className="bg-black cursor-pointer text-white py-2 px-4 text-sm rounded-md"
-              >
-                Apply
-              </button>
-            </div>
-
-            {couponValue && (
-              <div className="flex justify-between">
-                <p>Coupon applied</p>
-                <p className="text-green-600">
-                  {couponValue.discountAfterApplyingCoupon?.toLocaleString("en-US", {
+                <span className="text-amber-100">
+                  Items ({checkoutvalues?.totalItems})
+                </span>
+                <span className="text-white">
+                  {checkoutvalues?.totalMRP.toLocaleString("en-US", {
                     style: "currency",
                     currency: "INR",
                   })}
-                </p>
+                </span>
               </div>
-            )}
+              <div className="flex justify-between">
+                <span className="text-amber-100">Discount</span>
+                <span className="text-green-300">
+                  -
+                  {checkoutvalues?.totalDiscountedPrice.toLocaleString(
+                    "en-US",
+                    {
+                      style: "currency",
+                      currency: "INR",
+                    }
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-amber-100">Delivery</span>
+                <span className="text-white">
+                  {checkoutvalues?.shippingCost.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "INR",
+                  })}
+                </span>
+              </div>
+              {couponValue && (
+                <div className="flex justify-between">
+                  <span className="text-amber-100">Coupon Discount</span>
+                  <span className="text-green-300">
+                    -
+                    {couponValue.discountAfterApplyingCoupon?.toLocaleString(
+                      "en-US",
+                      {
+                        style: "currency",
+                        currency: "INR",
+                      }
+                    )}
+                  </span>
+                </div>
+              )}
+              <div className="border-t border-amber-900 pt-3 flex justify-between font-medium">
+                <span className="text-white">Total Amount</span>
+                <span className="text-white">
+                  {couponValue
+                    ? couponValue?.amountAfterApplyingCoupon?.toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "INR",
+                        }
+                      )
+                    : checkoutvalues?.totalPriceAfterDiscount?.toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "INR",
+                        }
+                      )}
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
 
-            <div className="flex border-t-2 py-2 justify-between">
-              <p>Total Amount</p>
-              <p>
-                {couponValue
-                  ? couponValue?.amountAfterApplyingCoupon?.toLocaleString("en-US", {
+        <div className="space-y-6">
+          <div className="bg-[#8a1c0b] rounded-xl p-6 shadow-lg border border-amber-900">
+            <h2 className="text-xl font-semibold mb-4 text-white">
+              Order Summary
+            </h2>
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span className="text-amber-100">
+                  Items ({checkoutvalues?.totalItems})
+                </span>
+                <span className="text-white">
+                  {checkoutvalues?.totalMRP.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "INR",
+                  })}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-amber-100">Discount</span>
+                <span className="text-green-300">
+                  -
+                  {checkoutvalues?.totalDiscountedPrice.toLocaleString(
+                    "en-US",
+                    {
                       style: "currency",
                       currency: "INR",
-                    })
-                  : checkoutvalues?.totalPriceAfterDiscount?.toLocaleString("en-US", {
-                      style: "currency",
-                      currency: "INR",
-                    })}
-              </p>
+                    }
+                  )}
+                </span>
+              </div>
+              <div className="flex justify-between items-center py-2">
+                <div className="flex flex-col gap-1">
+                  <span className="text-amber-100 font-medium">
+                    Shipping Cost
+                  </span>
+                  <span className="text-gray-200 text-[14px]">
+                    All taxes included
+                  </span>
+                </div>
+                <span className="text-white font-medium">
+                  {checkoutvalues?.shippingCost.toLocaleString("en-US", {
+                    style: "currency",
+                    currency: "INR",
+                  })}
+                </span>
+              </div>
+              {couponValue && (
+                <div className="flex justify-between">
+                  <span className="text-amber-100">Coupon Discount</span>
+                  <span className="text-green-300">
+                    -
+                    {couponValue.discountAfterApplyingCoupon?.toLocaleString(
+                      "en-US",
+                      {
+                        style: "currency",
+                        currency: "INR",
+                      }
+                    )}
+                  </span>
+                </div>
+              )}
+              <div className="border-t border-amber-900 pt-3 flex justify-between font-medium">
+                <span className="text-white">Total Amount</span>
+                <span className="text-white">
+                  {couponValue
+                    ? couponValue?.amountAfterApplyingCoupon?.toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "INR",
+                        }
+                      )
+                    : checkoutvalues?.totalPriceAfterDiscount?.toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "INR",
+                        }
+                      )}
+                </span>
+              </div>
             </div>
 
-            <div className="flex justify-between space-x-4 items-center">
+            {/* Coupon Code */}
+            <div className="mt-6">
+              <div className="flex items-center space-x-2">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="Enter coupon code"
+                    className="w-full bg-[#6d0c04] border border-[#edb141] text-white rounded-lg py-2 px-3 focus:outline-none focus:ring-2 focus:ring-amber-600 placeholder-amber-200"
+                    value={tempCouponName}
+                    onChange={(e) => setTempCouponName(e.target.value)}
+                  />
+                  {tempCouponName && (
+                    <button
+                      onClick={() => {
+                        setTempCouponName("");
+                        setCouponValue(null);
+                      }}
+                      className="absolute right-3 top-2.5 text-amber-300 hover:text-white"
+                    >
+                      <RxCross1 />
+                    </button>
+                  )}
+                </div>
+                <button
+                  onClick={() => {
+                    if (productId) {
+                      handleBuyNowCouponApply();
+                    } else {
+                      handleApplyCoupon();
+                    }
+                  }}
+                  className="bg-c1  px-4 py-2 rounded-lg transition-colors text-white"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Payment Options */}
+          <div className="bg-[#8a1c0b] rounded-xl p-6 shadow-lg border border-[#edb141]/20">
+            <h2 className="text-xl font-semibold mb-4 text-white">
+              Payment Options
+            </h2>
+            <div className="space-y-3">
               <button
                 onClick={() => setPaymentMethod("online")}
-                className={`border py-2 cursor-pointer text-white text-center flex justify-center items-center w-full ${
-                  paymentMethod === "online" ? "border-4 border-blue-500" : "border-blue-900"
-                } bg-blue-900`}
+                className={`w-full flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                  paymentMethod === "online"
+                    ? "border-[#edb141] bg-[#7a1505]"
+                    : "border-[#edb141]/20 hover:bg-[#7a1505]"
+                }`}
               >
-                <SiRazorpay />
-                Razerpay
+                <div className="flex items-center">
+                  <SiRazorpay className="text-2xl text-blue-400 mr-3" />
+                  <span className="text-white">Pay with Razorpay</span>
+                </div>
+                {paymentMethod === "online" && (
+                  <div className="w-5 h-5 rounded-full border-2 border-amber-500 flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                  </div>
+                )}
               </button>
               <button
                 onClick={() => setPaymentMethod("cod")}
-                className={`border py-2 cursor-pointer flex justify-center items-center w-full text-white bg-yellow-600 space-x-1 ${
-                  paymentMethod === "cod" ? "border-4 border-yellow-500" : ""
+                className={`w-full flex items-center justify-between p-4 rounded-lg border transition-colors ${
+                  paymentMethod === "cod"
+                    ? "border-amber-500 bg-[#7a1505]"
+                    : "border-amber-900 hover:bg-[#7a1505]"
                 }`}
               >
-                <IoIosCash />
-                <span>COD</span>
+                <div className="flex items-center">
+                  <IoIosCash className="text-2xl text-yellow-400 mr-3" />
+                  <span className="text-white">Cash on Delivery</span>
+                </div>
+                {paymentMethod === "cod" && (
+                  <div className="w-5 h-5 rounded-full border-2 border-amber-500 flex items-center justify-center">
+                    <div className="w-3 h-3 rounded-full bg-amber-500"></div>
+                  </div>
+                )}
               </button>
             </div>
+
+            {/* Pay Now Button */}
             <button
               onClick={() => {
                 if (!selectedAddress) {
@@ -582,30 +786,53 @@ const CheckOutPage = () => {
                   handleCreateOrderId();
                 }
               }}
-              className="bg-black cursor-pointer w-full rounded-md text-white py-2"
+              disabled={loader}
+              className={`w-full mt-6 py-3 text-c1 rounded-lg font-medium flex items-center justify-center ${
+                loader ? "bg-[#edb141]" : "bg-[#edb141] "
+              } transition-colors text-white`}
             >
               {loader ? (
-                <div role="status" className="flex items-center justify-center">
+                <>
                   <svg
-                    aria-hidden="true"
-                    className="inline w-6 h-6 text-gray-200 animate-spin fill-gray-600"
-                    viewBox="0 0 100 101"
-                    fill="none"
+                    className="animate-spin -ml-1 mr-2 h-5 w-5 text-white"
                     xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
                   >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    ></circle>
                     <path
-                      d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
+                      className="opacity-75"
                       fill="currentColor"
-                    />
-                    <path
-                      d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                      fill="currentFill"
-                    />
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
                   </svg>
-                  <span className="ml-2">Loading...</span>
-                </div>
+                  Processing...
+                </>
               ) : (
-                "Pay Now"
+                `Pay ${
+                  couponValue
+                    ? couponValue?.amountAfterApplyingCoupon?.toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "INR",
+                        }
+                      )
+                    : checkoutvalues?.totalPriceAfterDiscount?.toLocaleString(
+                        "en-US",
+                        {
+                          style: "currency",
+                          currency: "INR",
+                        }
+                      )
+                }`
               )}
             </button>
           </div>
@@ -646,7 +873,7 @@ const CheckOutPage = () => {
                         />
                       </label>
                     </div>
-                    
+
                     <div className="flex w-full space-x-8 justify-between">
                       <div className="flex w-full flex-col justify-start items-start">
                         <label>Name</label>
@@ -740,7 +967,9 @@ const CheckOutPage = () => {
                         value={editFormData.addressType}
                         onChange={handleEditInputChange}
                       >
-                        <option value="" disabled>Select</option>
+                        <option value="" disabled>
+                          Select
+                        </option>
                         <option value="home">Home</option>
                         <option value="work">Work</option>
                         <option value="office">Office</option>
@@ -890,7 +1119,9 @@ const CheckOutPage = () => {
                         value={addAddressForm.addressType}
                         onChange={handleInputChange}
                       >
-                        <option value="" disabled>Select</option>
+                        <option value="" disabled>
+                          Select
+                        </option>
                         <option value="home">Home</option>
                         <option value="work">Work</option>
                         <option value="office">Office</option>
@@ -933,7 +1164,9 @@ const CheckOutPage = () => {
                 </svg>
               </div>
               <div className="ml-4">
-                <h3 className="text-xl font-semibold text-gray-900">Order Confirmed!</h3>
+                <h3 className="text-xl font-semibold text-gray-900">
+                  Order Confirmed!
+                </h3>
                 <div className="mt-2">
                   <p className="text-sm text-gray-600">
                     Your order has been placed successfully. We've sent a

@@ -117,7 +117,7 @@ const cards = testimonialData.ids.map((cardId, index) => {
 const Testimonial = () => {
   return (
     <div>
-        <div className="min-h-screen">
+        <div className="">
 			
 			<section className="py-12 ">
                 <div className='flex flex-col justify-center items-center'>
