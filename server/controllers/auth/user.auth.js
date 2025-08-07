@@ -18,9 +18,9 @@ import Address from "../../models/address.model.js";
 const otpStore = new Map()
 
 const cookieOptions = {
-    httpOnly: true,
-    // secure: true,
-    sameSite: "Lax",
+  httpOnly: true,
+  secure: true,
+  sameSite: "None",
 };
 
 
