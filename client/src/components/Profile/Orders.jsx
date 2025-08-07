@@ -239,7 +239,7 @@ const Orders = () => {
           {orders.map((order) => (
             <div
               key={order._id}
-              className="bg-white relative border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+              className="bg-white relative w-80 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
             >
               <div className="p-4 border-b border-gray-100">
                 <div className="flex justify-between items-start">
