@@ -153,7 +153,7 @@ const Home = () => {
   }, [selectedYear]);
 
   useEffect(() => {
-    if (sales.length > 0 && lineChartRef.current) {
+    if (sales?.length > 0 && lineChartRef?.current) {
       initLineChart(sales);
     }
   }, [sales]);
