@@ -33,7 +33,7 @@ import { useSelector } from "react-redux";
 const navigationLinks = [
   { href: "/", label: "Home" },
   { href: "#featured", label: "Featured Products" },
-   { href: "/all-products", label: "All Products" },
+  { href: "/all-products", label: "All Products" },
 
   //  { href: "#", label: "All Categories" },
   // {
@@ -70,8 +70,7 @@ const navigationLinks = [
   //   ],
   // },
 ];
-const Navbar = ({cartCount , wishlistCount}) => {
-
+const Navbar = ({ cartCount, wishlistCount }) => {
   // console.log(Count)
   const [cartDrawer, setCartDrawer] = useState(false);
   const [searchDrawer, setSearchDrawer] = useState(false);
@@ -292,12 +291,9 @@ const Navbar = ({cartCount , wishlistCount}) => {
                         </NavigationMenuContent>
                       </>
                     ) : (
-                      <NavigationMenuLink
-                        href={link.href}
-                        className=" py-1.5 px-4 font-medium"
-                      >
+                      <Link to={link.href} className="py-1.5 px-4 font-medium">
                         {link.label}
-                      </NavigationMenuLink>
+                      </Link>
                     )}
                   </NavigationMenuItem>
                 ))}
@@ -343,13 +339,15 @@ const Navbar = ({cartCount , wishlistCount}) => {
                   if (!isLoggedIn) {
                     navigate("/login");
                   } else {
-                   {handleOpenCart()}
+                    {
+                      handleOpenCart();
+                    }
                   }
                 }}
               />
               {isLoggedIn ? (
                 <div className="size-4 aspect-square bg-white flex justify-center items-center text-sm text-black absolute -top-1 -right-2 rounded-full">
-                 {cartCount}
+                  {cartCount}
                 </div>
               ) : (
                 ""

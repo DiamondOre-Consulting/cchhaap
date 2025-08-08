@@ -113,9 +113,9 @@ const Wishlist = () => {
                     )}
                   </p>
 
-                  <button className="w-full bg-c2 text-c1 mt-3 py-2 rounded-md font-medium hover:bg-c2/90 transition">
+                  <Link  to={`/each-product/${product?._id}`}  className="w-full text-center bg-c2 text-c1 mt-3 py-2 rounded-md font-medium hover:bg-c2/90 transition">
                     View Product
-                  </button>
+                  </Link>
                 </div>
               )}
             </div>

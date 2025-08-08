@@ -22,7 +22,7 @@ import { getUserData } from "./Redux/Slices/authSlice";
 import { getNavbarCartWishlistCount } from "./Redux/Slices/cart";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
-import { ErrorPage } from "./pages/ErrorPage";
+import ErrorPage from "./pages/ErrorPage";
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 

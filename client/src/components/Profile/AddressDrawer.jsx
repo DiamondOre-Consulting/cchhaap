@@ -32,7 +32,9 @@ const AddressDrawer = ({
     },
   });
 
-  useEffect(() => {
+ // Change this in AddressDrawer.js
+useEffect(() => {
+  if (isOpen) {
     if (editAdd) {
       reset({
         fullName: editAdd.fullName || "",
@@ -45,8 +47,21 @@ const AddressDrawer = ({
         addressType: editAdd.addressType || "",
         isDefault: editAdd.isDefault || false,
       });
+    } else {
+      reset({
+        fullName: "",
+        phoneNumber: "",
+        street: "",
+        city: "",
+        state: "",
+        pinCode: "",
+        country: "India",
+        addressType: "",
+        isDefault: false,
+      });
     }
-  }, [editAdd, reset]);
+  }
+}, [editAdd, isOpen, reset]);
 
   const onSubmit = async (data) => {
     try {

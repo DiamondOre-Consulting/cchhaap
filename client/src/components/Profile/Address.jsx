@@ -190,7 +190,10 @@ const Address = () => {
             </div>
           ))}
           <div
-            onClick={() => setAddressDrawer(true)}
+            onClick={() => {
+              setEditAdd(null);
+              setAddressDrawer(true);
+            }}
             className="bg-[#edb141]/10 p-4 cursor-pointer mx-auto flex flex-col space-y-4 text-white  justify-center border items-center w-80 h-48 "
           >
             <p>
