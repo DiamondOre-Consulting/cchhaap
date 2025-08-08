@@ -4,9 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-// import { userForgotPassword, userSignin } from "../Redux/Slices/auth.slice";
-// import { toast } from "sonner";
-// import { getNavbarCartCount } from "../Redux/Slices/cart";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +29,6 @@ const Login = () => {
     e.preventDefault();
     setLoader(true);
     try {
-
       if (!formData?.password || formData.password.length < 6) {
         toast.error("Password must contain at least 6 characters");
       }
@@ -43,7 +39,6 @@ const Login = () => {
         dispatch(getNavbarCartWishlistCount())
         navigate("/");
       }
-   
     } catch (error) {
       console.log(error);
     }
@@ -71,27 +66,25 @@ const Login = () => {
     }
   };
 
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
-
-  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div>
-      <div className="max-h-screen flex flex-col pb-20 mt-20 items-center">
+    <div className="w-full">
+      <div className="w-full flex flex-col pb-20 mt-20 items-center">
         <h1 className="myfont text-center text-3xl">Account Sigin</h1>
 
-        <div>
-          <div>
+        <div className="w-full px-4 sm:px-0 sm:w-96">
+          <div className="w-full">
             <form onSubmit={handleSignIn}>
-              <div className="py-4 w-sm md:w-md space-y-4 ">
+              <div className="py-4 w-full space-y-4">
                 <div className="flex flex-col space-y-1">
-                  <label className="text-xs  uppercase text-gray-100">Email</label>
+                  <label className="text-xs uppercase text-gray-100">Email</label>
                   <input
                     type="text"
-                    className="border px-1 py-1 "
-                    autocomplete="off"
+                    className="border px-1 py-1 w-full"
+                    autoComplete="off"
                     name="email"
                     value={formData?.email}
                     onChange={handleInputChange}
@@ -99,20 +92,20 @@ const Login = () => {
                 </div>
 
                 <div className="flex flex-col space-y-1">
-                  <label className="text-xs  uppercase text-gray-100">password</label>
+                  <label className="text-xs uppercase text-gray-100">password</label>
                   <input
                     type={showPassword ? "text" : "password"}
-                    className="border px-1 py-1 "
-                    autocomplete="off"
+                    className="border px-1 py-1 w-full"
+                    autoComplete="off"
                     name="password"
                     value={formData?.password}
                     onChange={handleInputChange}
                   />
 
-                  <p className="space-x-2 text-sm  flex items-center mt-2">
+                  <p className="space-x-2 text-sm flex items-center mt-2">
                     <input
                       type="checkbox"
-                      onClick={() => setShowPassword(true)}
+                      onClick={() => setShowPassword(!showPassword)}
                     />
                     <span>Show Password</span>
                   </p>
@@ -157,8 +150,8 @@ const Login = () => {
                 </p>
                 <p className="text-center">
                   Don't have an account
-                  <Link className="underline ml-1"  to={"/signup"}>
-                     signup
+                  <Link className="underline ml-1" to={"/signup"}>
+                    signup
                   </Link>
                   ?
                 </p>
@@ -168,25 +161,21 @@ const Login = () => {
         </div>
 
         {forgotPasswordPopUp && (
-          <main
-            id="content"
-            role="main"
-            className="w-full z-40  absolute  max-w-xl mx-auto p-6"
-          >
-            <div className=" bg-white h-96 -mt-8  rounded-xl shadow-lg">
+          <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50 w-full">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-md mx-4">
               <div className="p-4 sm:p-7">
                 <div className="text-center">
-                  <h1 className="block text-2xl myfont  text-gray-900 ">
+                  <h1 className="block text-2xl myfont text-gray-900">
                     Forgot password?
                   </h1>
-                  <p className="mt-2 text-sm text-gray-600 ">
+                  <p className="mt-2 text-sm text-gray-600">
                     Remember your password?
-                    <p
+                    <span
                       onClick={() => setForgotPasswordPopUp(false)}
-                      className="text-blue-600 cursor-pointer decoration-2 hover:underline font-medium"
+                      className="text-blue-600 cursor-pointer decoration-2 hover:underline font-medium ml-1"
                     >
                       Login here
-                    </p>
+                    </span>
                   </p>
                 </div>
 
@@ -195,8 +184,8 @@ const Login = () => {
                     <div className="grid gap-y-4">
                       <div>
                         <label
-                          for="email"
-                          className="block text-xs uppercase text-c1 ml-1 mb-2 "
+                          htmlFor="email"
+                          className="block text-xs uppercase text-c1 ml-1 mb-2"
                         >
                           Email
                         </label>
@@ -212,7 +201,7 @@ const Login = () => {
                           />
                         </div>
                         <p
-                          className=" text-xs text-red-600 mt-2"
+                          className="text-xs text-red-600 mt-2"
                           id="email-error"
                         >
                           Please include a valid email address so we can get
@@ -221,7 +210,7 @@ const Login = () => {
                       </div>
                       <button
                         type="submit"
-                        className="py-3 px-4 cursor-pointer inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-c1 text-white  focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm "
+                        className="py-3 px-4 cursor-pointer inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-c1 text-white focus:ring-blue-500 focus:ring-offset-2 transition-all text-sm w-full"
                       >
                         {loader ? (
                           <div
@@ -255,7 +244,7 @@ const Login = () => {
                 </div>
               </div>
             </div>
-          </main>
+          </div>
         )}
       </div>
     </div>

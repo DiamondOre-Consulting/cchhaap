@@ -325,7 +325,7 @@ const CheckOutPage = () => {
           key: razorpayKey,
           amount: response?.payload?.data?.amount,
           currency: response?.payload?.data?.currency,
-          name: "CCHHAAP",
+          name: "CHHAAPP",
           description: "",
           image: "",
           order_id: response?.payload?.data?.id,
