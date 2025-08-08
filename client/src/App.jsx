@@ -26,6 +26,8 @@ import ErrorPage from "./pages/ErrorPage";
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
+
+
 const App = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -43,8 +45,11 @@ const App = () => {
   const { user } = useSelector((state) => state.user);
   console.log("data", user);
 
+
+
   return (
     <HomeLayout cartCount={cartCount} wishlistCount={wishlistCount}>
+      
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />

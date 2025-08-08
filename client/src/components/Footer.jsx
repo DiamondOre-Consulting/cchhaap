@@ -121,9 +121,9 @@ export default function Footer() {
               <ul className="mt-8 space-y-4 text-sm">
                 {serviceLinks.map(({ text, href }) => (
                   <li key={text}>
-                    <a className="text-secondary-foreground/70 transition" href={href}>
+                    <Link className="text-secondary-foreground/70 transition" to={href}>
                       {text}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -160,9 +160,9 @@ export default function Footer() {
               <ul className="mt-8 space-y-4 text-sm">
                 {contactInfo.map(({ icon: Icon, text, isAddress }) => (
                   <li key={text}>
-                    <a
+                    <Link
                       className="flex items-center justify-center gap-1.5 sm:justify-start"
-                      href="#"
+                 
                     >
                       <Icon className="size-5 shrink-0 text-primary shadow-sm" />
                       {isAddress ? (
@@ -174,7 +174,7 @@ export default function Footer() {
                           {text}
                         </span>
                       )}
-                    </a>
+                    </Link>
                   </li>
                 ))}
               </ul>

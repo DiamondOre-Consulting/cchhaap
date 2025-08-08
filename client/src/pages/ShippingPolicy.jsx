@@ -1,6 +1,12 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 const ShippingPolicy = () => {
+
+   useEffect(() => {
+      window.scrollTo(0, 0);
+    }, []);
+
+  
   return (
     <div className="min-h-screen  text-gray-200 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
