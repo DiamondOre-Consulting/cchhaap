@@ -173,7 +173,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     <div className="text-right">
                       <p className="font-medium">
                         ₹
-                        {(variation?.price * item.quantity).toLocaleString(
+                        {(variation?.discountPrice * item.quantity).toLocaleString(
                           "en-IN"
                         )}
                       </p>
@@ -181,13 +181,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         <p className="text-sm line-through text-gray-500">
                           ₹
                           {(
-                            variation.price + variation.discountPrice
+                            variation.price
                           ).toLocaleString("en-IN")}
                         </p>
                       )}
                       <p className="text-xs text-gray-500">
                         {item.quantity} × ₹
-                        {variation?.price?.toLocaleString("en-IN")}
+                        {variation?.discountPrice?.toLocaleString("en-IN")}
                       </p>
                     </div>
                   </div>
@@ -208,7 +208,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                         );
                         return (
                           total +
-                          (variation?.price || item.price || 0) * item.quantity
+                          (variation?.discountPrice || item.price || 0) * item.quantity
                         );
                       }, 0)
                       .toLocaleString("en-IN")}

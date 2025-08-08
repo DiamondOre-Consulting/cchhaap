@@ -239,6 +239,8 @@ const Products = () => {
         response = await dispatch(getAllProducts({ userId: user?.data?._id }));
       }
 
+
+      console.log(response)
       const productsData =
         response?.payload?.data?.products ||
         response?.payload?.data ||
@@ -301,16 +303,11 @@ const Products = () => {
                     </h3>
                     {product.variations?.[0] && (
                       <p className="font-bold">
-                        ₹{product.variations[0].price}
+                        ₹{product.variations[0].discountPrice}
                         {product.variations[0].discountPrice > 0 && (
                           <span className="ml-2 text-sm text-red-500 line-through">
-                            ₹
-                            {Math.round(
-                              product.variations[0].price +
-                                (product.variations[0].price *
-                                  product.variations[0].discountPrice) /
-                                  100
-                            )}
+                            
+                            ₹{product.variations[0].price}
                           </span>
                         )}
                       </p>

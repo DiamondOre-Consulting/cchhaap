@@ -494,15 +494,15 @@ const EachProductPage = () => {
                 <div>
                   <div className="flex items-center gap-x-4">
                     <h3 className="text-2xl font-medium">
-                      {selectedVariation?.price?.toLocaleString("en-US", {
+                      {selectedVariation?.discountPrice?.toLocaleString("en-US", {
                         style: "currency",
                         currency: "INR",
                       })}
                       {selectedVariation?.discountPrice > 0 && (
                         <span className="ml-2 text-sm line-through text-gray-200">
                           {(
-                            selectedVariation.price +
-                            selectedVariation.discountPrice
+                          
+                            selectedVariation.price
                           ).toLocaleString("en-US", {
                             style: "currency",
                             currency: "INR",
