@@ -88,7 +88,7 @@ const Signup = () => {
     <div className="max-h-screen flex flex-col pb-20 mt-20 items-center">
       <h1 className="myfont text-center text-3xl">Account Signup</h1>
 
-      <form className="py-6 w-md space-y-4">
+      <form className="py-6 w-sm md:w-md space-y-4">
         <div className="flex flex-col space-y-1">
           <label className="text-xs text-gray-50 uppercase">Email</label>
           <input

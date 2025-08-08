@@ -76,7 +76,7 @@ const CheckOutPage = () => {
   const [couponValue, setCouponValue] = useState();
   const [razorpayKey, setRazorpayKey] = useState();
   const [checkOutPaymentValues, setCheckOutPaymentValues] = useState();
-  const [paymentMethod, setPaymentMethod] = useState(null);
+  const [paymentMethod, setPaymentMethod] = useState("online");
   const [selectedAddress, setSelectedAddress] = useState("");
 
   const handleConfetti = () => {
@@ -753,7 +753,7 @@ const CheckOutPage = () => {
                   </div>
                 )}
               </button>
-              <button
+              {/* <button
                 onClick={() => setPaymentMethod("cod")}
                 className={`w-full flex items-center justify-between p-4 rounded-lg border transition-colors ${
                   paymentMethod === "cod"
@@ -770,7 +770,7 @@ const CheckOutPage = () => {
                     <div className="w-3 h-3 rounded-full bg-amber-500"></div>
                   </div>
                 )}
-              </button>
+              </button> */}
             </div>
 
             {/* Pay Now Button */}

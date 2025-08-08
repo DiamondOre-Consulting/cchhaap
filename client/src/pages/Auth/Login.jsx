@@ -79,18 +79,18 @@ const Login = () => {
 
   return (
     <div>
-      <div className="max-h-screen flex flex-col pb-20 mt-20 items-center ">
+      <div className="max-h-screen flex flex-col pb-20 mt-20 items-center">
         <h1 className="myfont text-center text-3xl">Account Sigin</h1>
 
         <div>
           <div>
             <form onSubmit={handleSignIn}>
-              <div className="py-4 w-md space-y-4 ">
+              <div className="py-4 w-sm md:w-md space-y-4 ">
                 <div className="flex flex-col space-y-1">
                   <label className="text-xs  uppercase text-gray-100">Email</label>
                   <input
                     type="text"
-                    className="border px-1 py-1"
+                    className="border px-1 py-1 "
                     autocomplete="off"
                     name="email"
                     value={formData?.email}
@@ -173,7 +173,7 @@ const Login = () => {
             role="main"
             className="w-full z-40  absolute  max-w-xl mx-auto p-6"
           >
-            <div className=" bg-c2 h-96 -mt-8  rounded-xl shadow-lg">
+            <div className=" bg-white h-96 -mt-8  rounded-xl shadow-lg">
               <div className="p-4 sm:p-7">
                 <div className="text-center">
                   <h1 className="block text-2xl myfont  text-gray-900 ">

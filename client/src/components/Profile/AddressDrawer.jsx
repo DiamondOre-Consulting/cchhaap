@@ -3,6 +3,8 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineShoppingCart } from "react-icons/ai";
 import { useDispatch } from "react-redux";
+import { toast } from "sonner";
+
 
 const AddressDrawer = ({
   isOpen,
@@ -64,6 +66,12 @@ useEffect(() => {
 }, [editAdd, isOpen, reset]);
 
   const onSubmit = async (data) => {
+
+   if(data.phoneNumber.length < 10){
+      toast.error("Phone number should contain at least 10 digits");
+      return;                                                   
+    }
+    
     try {
       let res;
       if (editAdd?._id) {

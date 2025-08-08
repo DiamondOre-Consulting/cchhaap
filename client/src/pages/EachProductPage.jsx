@@ -540,7 +540,7 @@ const EachProductPage = () => {
                 </div>
                 {renderAttributeOptions()}
 
-                <div className="flex  gap-3 items-center my-7">
+                <div className="flex flex-col md:flex-row gap-3 items-center my-7">
                   {!singleData?.cartQuantity ||
                   singleData?.cartQuantity === 0 ? (
                     <button

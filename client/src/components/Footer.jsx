@@ -9,9 +9,8 @@ import {
   Twitter,
 } from "lucide-react";
 import { Link } from "react-router-dom";
-import logo2 from '../assets/logo2.jpg'
+import logo2 from "../assets/logo2.jpg";
 
- 
 const data = {
   facebookLink: "https://facebook.com/mvpblocks",
   instaLink: "https://instagram.com/mvpblocks",
@@ -36,50 +35,54 @@ const data = {
     livechat: "/live-chat",
   },
   contact: {
-    email: "hello@mvpblocks.com",
-    phone: "+91 1234567890",
+    email: "anantasinghal28@gmail.Com",
+    phone: "+91 9891444077",
     address: "f-59, 2nd floor, kalkaji new delhi Pin code - 110019",
   },
   company: {
-    name: "Mvpblocks",
+    name: "Chhaapp",
     logo: logo2,
   },
 };
- 
+
 const socialLinks = [
   // { icon: Facebook, label: "Facebook", href: data.facebookLink },
-  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/chhaapp_in?igsh=MXA0ZGRmZzJvM3VoMg==" },
+  {
+    icon: Instagram,
+    label: "Instagram",
+    href: "https://www.instagram.com/chhaapp_in?igsh=MXA0ZGRmZzJvM3VoMg==",
+  },
   // { icon: Twitter, label: "Twitter", href: data.twitterLink },
   // { icon: Github, label: "GitHub", href: data.githubLink },
   // { icon: Dribbble, label: "Dribbble", href: data.dribbbleLink },
 ];
- 
+
 const aboutLinks = [
   { text: "Company History", href: data.about.history },
   { text: "Meet the Team", href: data.about.team },
   { text: "Employee Handbook", href: data.about.handbook },
   { text: "Careers", href: data.about.careers },
 ];
- 
+
 const serviceLinks = [
   { text: "All Products", href: "/all-products" },
-  { text: "Featured Products", href: '#featured' },
+  { text: "Featured Products", href: "#featured" },
   // { text: "Marketing", href: data.services.marketing },
   // { text: "Google Ads", href: data.services.googleads },
 ];
- 
+
 const helpfulLinks = [
   { text: "Privacy Policy", href: "/privacy-policy" },
   { text: "Shipping Policy", href: "/shipping-policy" },
   // { text: "Live Chat", href: data.help.livechat, hasIndicator: true },
 ];
- 
+
 const contactInfo = [
   { icon: Mail, text: data.contact.email },
   { icon: Phone, text: data.contact.phone },
   { icon: MapPin, text: data.contact.address, isAddress: true },
 ];
- 
+
 export default function Footer() {
   return (
     <footer className="mt-16 w-full place-self-end rounded-t-xl bg-white dark:bg-secondary/20">
@@ -94,14 +97,12 @@ export default function Footer() {
               />
               {/* <span className="text-2xl font-semibold">{data.company.name}</span> */}
             </div>
- 
+
             <p className="mt-6 max-w-md text-center leading-relaxed text-foreground/50 sm:max-w-xs sm:text-left">
               {data.company.description}
             </p>
- 
-         
           </div>
- 
+
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-3 lg:col-span-2">
             {/* <div className="text-center sm:text-left">
               <p className="text-lg font-medium">About Us</p>
@@ -115,34 +116,39 @@ export default function Footer() {
                 ))}
               </ul>
             </div> */}
- 
+
             <div className="text-center sm:text-left">
               <p className="text-lg text-c1 font-medium">Quick Links </p>
               <ul className="mt-8 space-y-4 text-sm">
                 {serviceLinks.map(({ text, href }) => (
                   <li key={text}>
-                    <Link className="text-secondary-foreground/70 transition" to={href}>
+                    <Link
+                      className="text-secondary-foreground/70 transition"
+                      to={href}
+                    >
                       {text}
                     </Link>
                   </li>
                 ))}
               </ul>
             </div>
- 
+
             <div className="text-center sm:text-left">
               <p className="text-lg text-c1 font-medium">Helpful Links</p>
               <ul className="mt-8 space-y-4 text-sm">
                 {helpfulLinks.map(({ text, href, hasIndicator }) => (
                   <li key={text}>
                     <Link
-                     to={href}
+                      to={href}
                       className={`${
                         hasIndicator
                           ? "group flex justify-center gap-1.5 sm:justify-start"
                           : "text-secondary-foreground/70 transition"
                       }`}
                     >
-                      <span className="text-secondary-foreground/70 transition">{text}</span>
+                      <span className="text-secondary-foreground/70 transition">
+                        {text}
+                      </span>
                       {hasIndicator && (
                         <span className="relative flex size-2">
                           <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
@@ -154,16 +160,13 @@ export default function Footer() {
                 ))}
               </ul>
             </div>
- 
+
             <div className="text-center sm:text-left">
               <p className="text-lg  text-c1 font-medium">Contact Us</p>
               <ul className="mt-8 space-y-4 text-sm">
                 {contactInfo.map(({ icon: Icon, text, isAddress }) => (
                   <li key={text}>
-                    <Link
-                      className="flex items-center justify-center gap-1.5 sm:justify-start"
-                 
-                    >
+                    <Link className="flex items-center justify-center gap-1.5 sm:justify-start">
                       <Icon className="size-5 shrink-0 text-primary shadow-sm" />
                       {isAddress ? (
                         <address className="-mt-0.5 flex-1 not-italic text-secondary-foreground/70 transition">
@@ -181,23 +184,27 @@ export default function Footer() {
             </div>
           </div>
         </div>
- 
+
         <div className="mt-12 border-t pt-6">
           <div className="text-center sm:flex sm:justify-between sm:text-left">
             <p className="text-sm flex items-center gap-x-2">
-              <span className="">All rights reserved.</span>
-                 <ul className=" flex justify-center gap-6">
-              {socialLinks.map(({ icon: Icon, label, href }) => (
-                <li key={label}>
-                  <Link href={href} target="_blank" className="text-primary transition hover:text-primary/80">
-                    <span className="sr-only">{label}</span>
-                    <Icon className="size-4" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
+              <span className=" text-gray-800">All rights reserved.</span>
+              <ul className=" flex justify-center gap-6">
+                {socialLinks.map(({ icon: Icon, label, href }) => (
+                  <li key={label}>
+                    <Link
+                      to={href}
+                      target="_blank"
+                      className="text-primary transition hover:text-primary/80"
+                    >
+                      <span className="sr-only">{label}</span>
+                      <Icon className="size-4" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </p>
- 
+
             <p className="text-secondary-foreground/70 mt-4 text-sm transition sm:order-first sm:mt-0">
               &copy; 2025 {data.company.name}
             </p>
@@ -207,4 +214,3 @@ export default function Footer() {
     </footer>
   );
 }
- 
