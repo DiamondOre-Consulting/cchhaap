@@ -74,6 +74,8 @@ const serviceLinks = [
 const helpfulLinks = [
   { text: "Privacy Policy", href: "/privacy-policy" },
   { text: "Shipping Policy", href: "/shipping-policy" },
+  { text: "Return & Refund Policy", href: "/return-refund-policy" },
+
   // { text: "Live Chat", href: data.help.livechat, hasIndicator: true },
 ];
 
