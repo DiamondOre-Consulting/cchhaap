@@ -592,10 +592,10 @@ const EachProductPage = () => {
                       }
 
                       try {
-                        // Determine the quantity (use 1 if nothing in cart)
+                   
                         const quantityToBuy = singleData?.cartQuantity || 1;
 
-                        // If nothing in cart, add to cart first
+                       
                         if (!singleData?.cartQuantity) {
                           await dispatch(
                             userUpdateCart({
@@ -613,7 +613,7 @@ const EachProductPage = () => {
                         console.error("Error during buy now:", error);
                       }
                     }}
-                    className="bg-c2 border text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
+                    className="bg-c2 border cursor-pointer text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
                   >
                     Buy it Now
                   </button>

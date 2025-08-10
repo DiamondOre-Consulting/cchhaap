@@ -101,14 +101,17 @@ const Wishlist = () => {
               {firstVariation && (
                 <div className="flex flex-col items-start">
                   <p className="text-lg font-bold text-white">
-                    ₹{firstVariation?.price}
+                        {firstVariation?.discountPrice?.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "INR",
+                      })}
                     {firstVariation?.discountPrice > 0 && (
                       <span className="ml-2 text-sm text-red-400 line-through">
                         ₹
-                        {Math.round(
-                          firstVariation.price +
-                            (firstVariation.price * firstVariation.discountPrice) / 100
-                        )}
+                          {firstVariation?.price?.toLocaleString("en-US", {
+                        style: "currency",
+                        currency: "INR",
+                      })}
                       </span>
                     )}
                   </p>

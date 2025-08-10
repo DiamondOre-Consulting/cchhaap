@@ -272,7 +272,7 @@ const Products = () => {
       return `${gender.charAt(0).toUpperCase() + gender.slice(1)}'s Collection`;
     }
     if (categoryName) {
-      return `${categoryName} Collection`;
+      return `${categoryName} `;
     }
     return "Our Products";
   };

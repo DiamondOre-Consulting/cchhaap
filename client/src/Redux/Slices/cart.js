@@ -69,16 +69,16 @@ const cartSlice = createSlice({
     builder
     .addCase(getNavbarCartWishlistCount.fulfilled, (state, action) => {
         if (action.payload?.data) {
-          state.cartCount = action.payload.data.totalCartProductCount;
-          state.wishlistCount = action.payload.data.totalWishlistProductCount;
+          state.cartCount = action.payload?.data?.totalCartProductCount;
+          state.wishlistCount = action?.payload?.data?.totalWishlistProductCount;
         }
       })
       .addCase(userUpdateCart.fulfilled, (state, action) => {
         state.cartItems = action?.payload?.data?.products || [];
-        state.cartCount = action.payload.data.products.length;     
+        state.cartCount = action.payload?.data?.products?.length;     
       })
       .addCase(userRomoveProductFromCart.fulfilled, (state, action) => {
-        state.cartCount = action.payload.data
+        state.cartCount = action.payload?.data
       });
   
   },

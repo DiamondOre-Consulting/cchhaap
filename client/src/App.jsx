@@ -27,8 +27,6 @@ import ReturnRefundPolicy from "./pages/ReturnRefundPolicy";
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
-
-
 const App = () => {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -46,11 +44,8 @@ const App = () => {
   const { user } = useSelector((state) => state.user);
   console.log("data", user);
 
-
-
   return (
     <HomeLayout cartCount={cartCount} wishlistCount={wishlistCount}>
-      
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -60,9 +55,9 @@ const App = () => {
         <Route path="/products/:id/:categoryName" element={<Products />} />
         <Route path="/products/gender/:gender" element={<Products />} />
         <Route path="/each-product/:id" element={<EachProductPage />} />
-        <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
-        <Route path="/shipping-policy" element={<ShippingPolicy/>} />
- <Route path="/return-refund-policy" element={<ReturnRefundPolicy/>} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/shipping-policy" element={<ShippingPolicy />} />
+        <Route path="/return-refund-policy" element={<ReturnRefundPolicy />} />
 
         <Route element={<ProtectedRoute />}>
           <Route path="/my-account" element={<ProfilePage />} />
@@ -72,7 +67,7 @@ const App = () => {
           />
           <Route path="/checkout" element={<CheckOutPage />} />
         </Route>
-        <Route path="*" element={<ErrorPage/>}/>
+        <Route path="*" element={<ErrorPage />} />
       </Routes>
     </HomeLayout>
   );
