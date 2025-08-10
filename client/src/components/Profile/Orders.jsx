@@ -7,7 +7,7 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
-  const [viewMode, setViewMode] = useState("deck"); // 'deck' or 'detail'
+  const [viewMode, setViewMode] = useState("deck"); 
   const dispatch = useDispatch();
 
   const handleGetAllOrders = async () => {
@@ -201,10 +201,10 @@ const Orders = () => {
       </div>
 
       {orders.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg shadow-sm  mx-auto">
+        <div className="text-center  rounded-lg shadow-sm  mx-auto">
           <div className="max-w-md mx-auto p-6">
             <svg
-              className="w-20 h-20 mx-auto text-gray-400"
+              className="w-18 h-18 mx-auto text-gray-200"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -217,10 +217,10 @@ const Orders = () => {
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
               />
             </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-900">
+            <h3 className="mt-4 text-lg font-medium text-gray-100">
               No orders yet
             </h3>
-            <p className="mt-2 text-gray-500">
+            <p className="mt-2 text-gray-200">
               You haven't placed any orders. Start shopping to see your orders
               here.
             </p>

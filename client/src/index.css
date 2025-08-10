@@ -122,7 +122,8 @@
 }
 
 body{
-   font-family: "Playfair Display", serif;
+   /* font-family: "Playfair Display", serif; */
+    font-family: "Lora", serif;
 }
 
 .text-c1{

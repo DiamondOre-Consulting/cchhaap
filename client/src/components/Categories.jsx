@@ -43,7 +43,7 @@ const Categories = () => {
                 className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
               />
             </div>
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-90 px-6 py-2  shadow-md">
+            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white bg-opacity-90 px-4 border w-fit py-2  shadow-md">
               <p className="text-sm  tracking-wider text-c1">
                 {item.categoryName}
               </p>
@@ -57,7 +57,7 @@ const Categories = () => {
         >
           <div className="relative h-[500px] w-full overflow-hidden">
             <motion.img
-              src="https://i.pinimg.com/736x/b8/fa/38/b8fa38115616cd6f72be0be883bedb37.jpg"
+              src="https://staticm247.kalkifashion.com/media/wysiwyg/Pitampura5.jpg"
               alt="Saree"
               className="h-full w-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
             />

@@ -10,7 +10,6 @@ import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { GetAllBannerImages } from "../Redux/Slices/authSlice";
 
-
 const Hero = () => {
   const [activeIndex, setActiveIndex] = useState(0);
   const dispatch = useDispatch();
@@ -40,6 +39,8 @@ const Hero = () => {
             autoplay={{
               delay: 4000,
               disableOnInteraction: false,
+              pauseOnMouseEnter: false,
+              waitForTransition: true,
             }}
             pagination={{
               clickable: true,
@@ -78,12 +79,15 @@ const Hero = () => {
                     </span> */}
                     </motion.h1>
 
-                    <Link to={'/all-products'} class="group relative inline-flex h-12 mx-auto items-center justify-center overflow-hidden  font-medium">
+                    <Link
+                      to={"/all-products"}
+                      class="group relative inline-flex h-12 mx-auto items-center justify-center overflow-hidden  font-medium"
+                    >
                       <div class="inline-flex  border border-neutral-200 h-12 translate-x-0 items-center justify-center uppercase px-6 text-neutral-100 transition group-hover:-translate-x-[150%]">
-                       Explore Project
+                        Explore Project
                       </div>
                       <div class="absolute  border border-[#6d0c04] inline-flex h-12 w-full translate-x-[100%] items-center justify-center bg-[#6d0c04]/60 px-6 text-neutral-50 transition duration-300 group-hover:translate-x-0">
-                         Explore Project
+                        Explore Project
                       </div>
                     </Link>
                     {/* <motion.div
