@@ -163,7 +163,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                           onClick={() =>
                             handleDeleteProductFromCart(item?.productId?._id)
                           }
-                          className="underline text-xs text-black/60 hover:text-red-500"
+                          className="underline text-xs cursor-pointer text-black/60 hover:text-red-500"
                         >
                           Remove
                         </button>
@@ -219,7 +219,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                     navigate("/checkout");
                     onClose();
                   }}
-                  className="w-full bg-c1 text-white py-3 hover:bg-gray-800 transition-colors"
+                  className="w-full bg-c1 text-white py-3 cursor-pointer hover:bg-gray-800 transition-colors"
                 >
                   Proceed to Checkout (
                   {cartData.products.reduce(

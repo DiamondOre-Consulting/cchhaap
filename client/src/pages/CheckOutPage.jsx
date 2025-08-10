@@ -433,9 +433,11 @@ const CheckOutPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
+
+  console.log("checkout value",checkoutvalues)
   return (
     <div className="min-h-screen bg-[#6d0c04] text-white py-8 px-4 md:px-8">
-      {/* Header with Breadcrumbs */}
+     
       <div className="max-w-6xl mx-auto mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-white">Checkout</h1>
         <div className="flex items-center mt-2 text-amber-100">
@@ -458,7 +460,7 @@ const CheckOutPage = () => {
               </h2>
               <button
                 onClick={() => setAddAddressPopUp(true)}
-                className="flex items-center space-x-1 bg-c1  px-4 py-2 rounded-lg transition-colors text-white"
+                className="flex items-center cursor-pointer space-x-1 bg-c1  px-4 py-2 rounded-lg transition-colors text-white"
               >
                 <IoIosAdd className="text-lg" />
                 <span>Add New</span>
@@ -529,82 +531,8 @@ const CheckOutPage = () => {
             </div>
           </div>
 
-          {/* Order Summary Section (Mobile) */}
-          <div className="lg:hidden bg-[#8a1c0b] rounded-xl p-6 shadow-lg border border-amber-900">
-            <h2 className="text-xl font-semibold mb-4 text-white">
-              Order Summary
-            </h2>
-            <div className="space-y-3">
-              <div className="flex justify-between">
-                <span className="text-amber-100">
-                  Items ({checkoutvalues?.totalItems})
-                </span>
-                <span className="text-white">
-                  {checkoutvalues?.totalMRP.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "INR",
-                  })}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-amber-100">Discount</span>
-                <span className="text-green-300">
-                  -
-                  {checkoutvalues?.totalDiscountedPrice.toLocaleString(
-                    "en-US",
-                    {
-                      style: "currency",
-                      currency: "INR",
-                    }
-                  )}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-amber-100">Delivery</span>
-                <span className="text-white">
-                  {checkoutvalues?.shippingCost.toLocaleString("en-US", {
-                    style: "currency",
-                    currency: "INR",
-                  })}
-                </span>
-              </div>
-              {couponValue && (
-                <div className="flex justify-between">
-                  <span className="text-amber-100">Coupon Discount</span>
-                  <span className="text-green-300">
-                    -
-                    {couponValue.discountAfterApplyingCoupon?.toLocaleString(
-                      "en-US",
-                      {
-                        style: "currency",
-                        currency: "INR",
-                      }
-                    )}
-                  </span>
-                </div>
-              )}
-              <div className="border-t border-amber-900 pt-3 flex justify-between font-medium">
-                <span className="text-white">Total Amount</span>
-                <span className="text-white">
-                  {couponValue
-                    ? couponValue?.amountAfterApplyingCoupon?.toLocaleString(
-                        "en-US",
-                        {
-                          style: "currency",
-                          currency: "INR",
-                        }
-                      )
-                    : checkoutvalues?.totalPriceAfterDiscount?.toLocaleString(
-                        "en-US",
-                        {
-                          style: "currency",
-                          currency: "INR",
-                        }
-                      )}
-                </span>
-              </div>
-            </div>
-          </div>
+       
+         
         </div>
 
         <div className="space-y-6">
@@ -615,9 +543,13 @@ const CheckOutPage = () => {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-amber-100">
-                  Items ({checkoutvalues?.totalItems})
+                 Total Items ({checkoutvalues?.totalItems})
                 </span>
-                <span className="text-white">
+             
+              </div>
+                  <div className="flex justify-between">
+                <span className="text-amber-100">Total MRP</span>
+                 <span className="text-white">
                   {checkoutvalues?.totalMRP.toLocaleString("en-US", {
                     style: "currency",
                     currency: "INR",
@@ -690,7 +622,7 @@ const CheckOutPage = () => {
               </div>
             </div>
 
-            {/* Coupon Code */}
+         
             <div className="mt-6">
               <div className="flex items-center space-x-2">
                 <div className="relative flex-1">
@@ -721,7 +653,7 @@ const CheckOutPage = () => {
                       handleApplyCoupon();
                     }
                   }}
-                  className="bg-c1  px-4 py-2 rounded-lg transition-colors text-white"
+                  className="bg-c1  px-4 py-2 rounded-lg cursor-pointer transition-colors text-white"
                 >
                   Apply
                 </button>
@@ -787,7 +719,7 @@ const CheckOutPage = () => {
                 }
               }}
               disabled={loader}
-              className={`w-full mt-6 py-3 text-c1 rounded-lg font-medium flex items-center justify-center ${
+              className={`w-full mt-6 py-3 text-c1 rounded-lg cursor-pointer font-medium flex items-center justify-center ${
                 loader ? "bg-[#edb141]" : "bg-[#edb141] "
               } transition-colors text-white`}
             >

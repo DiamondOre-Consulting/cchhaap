@@ -540,14 +540,14 @@ const EachProductPage = () => {
                 </div>
                 {renderAttributeOptions()}
 
-                <div className="flex flex-col md:flex-row gap-3 items-center my-7">
+                <div className="flex gap-3 items-center my-7">
                   {!singleData?.cartQuantity ||
                   singleData?.cartQuantity === 0 ? (
                     <button
                       type="button"
                       onClick={handleAddToCart}
                       disabled={isUpdatingCart}
-                      className="border border-c2 text-white cursor-pointer hover:bg-[#edb141] hover:text-white text-sm uppercase px-6 py-4 md:px-12 min-w-[202px]"
+                      className="border border-c2 text-white cursor-pointer hover:bg-[#edb141] hover:text-white text-sm uppercase px-6 py-4 md:px-12 md:min-w-[202px]"
                     >
                       Add To Cart
                     </button>
