@@ -35,12 +35,12 @@ export const createOrder = asyncHandler(async (req, res) => {
       if (!variation) throw new ApiError("Variation not found", 404);
       if (variation.quantity < quantity) throw new ApiError("Insufficient stock", 400);
       const gst= variation.price*0.12
-      const price = variation.discountPrice+gst || variation.price+gst;
+      const price = variation.discountPrice+gst+177 || variation.price+gst+177;
       productsToOrder.push({
         productId,
         variationId,
         quantity,
-        price: price * quantity,
+        price: (price * quantity),
       });
       totalPriceAfterDiscount = price * quantity;
       totalMRPPrice = variation.price * quantity;
