@@ -3,10 +3,23 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { categories } from "@/Redux/Slices/productsSlice";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const Categories = () => {
   const dispatch = useDispatch();
   const [allCategory, setAllCategory] = useState([]);
+
+  useEffect(() => {
+    AOS.init({
+      duration: 500,
+      once: false,
+      easing: "ease-in-out",
+      offset: 100,
+    });
+
+    AOS.refresh();
+  }, [allCategory]);
 
   const allCategories = async () => {
     try {
@@ -25,11 +38,15 @@ const Categories = () => {
   // console.log(allCategories)
   return (
     <div className="py-6 px-4">
-      <h1 className="text-center text-[2rem] md:text-[3rem] mb-8 uppercase">Our Categories</h1>
+      <div data-aos = "fade-up" className="text-center text-[2rem] md:text-[3rem] mb-8 uppercase">
+        Our Categories
+      </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {allCategory.map((item, index) => (
           <Link
+            data-aos="fade-up"
+            data-aos-delay={(index % 4) * 100}
             to={`/products/${item?._id}/${encodeURIComponent(
               item.categoryName
             )}`}
@@ -52,7 +69,7 @@ const Categories = () => {
         ))}
 
         <Link
-          to={`/all-products`}         
+          to={`/all-products`}
           className="relative overflow-hidden  w-full max-w-sm mx-auto cursor-pointer group"
         >
           <div className="relative h-[500px] w-full overflow-hidden">

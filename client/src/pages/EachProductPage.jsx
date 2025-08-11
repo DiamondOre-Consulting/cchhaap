@@ -228,10 +228,7 @@ const SizeVariant = ({
   );
 };
 
-
-
 const EachProductPage = () => {
-  
   const { id } = useParams();
   const { cartCount } = useSelector((state) => state.cart);
   console.log("cartCount", cartCount);
@@ -551,12 +548,12 @@ const EachProductPage = () => {
                       type="button"
                       onClick={handleAddToCart}
                       disabled={isUpdatingCart}
-                      className="border border-c2 text-white cursor-pointer hover:bg-[#edb141] hover:text-white text-sm uppercase px-6 py-4 md:px-12 md:min-w-[202px]"
+                      className="border border-c2 text-white cursor-pointer hover:bg-[#edb141] hover:text-c1 text-sm uppercase px-6 py-4 md:px-12 md:min-w-[202px]"
                     >
                       Add To Cart
                     </button>
                   ) : (
-                    <div className="flex items-center border border-[#edb141] px-4 py-2 min-w-[202px] justify-between text-[#edb141]">
+                    <div className="flex items-center border border-[#edb141] px-4 py-2 w-[150px] md:min-w-[202px] justify-between text-[#edb141]">
                       <button
                         type="button"
                         onClick={handleDecreaseQuantity}
@@ -617,7 +614,7 @@ const EachProductPage = () => {
                         console.error("Error during buy now:", error);
                       }
                     }}
-                    className="bg-c2 border cursor-pointer text-white text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 min-w-[202px]"
+                    className="bg-c2 border cursor-pointer text-c1 text-sm uppercase hover:bg-opacity-90 px-10 py-4 md:px-12 md:min-w-[202px]"
                   >
                     Buy it Now
                   </button>

@@ -62,7 +62,7 @@ export const changePassword = createAsyncThunk(
     try {
       console.log("passsword new ", newPassword, "old", oldPassword);
       const response = await adminAxiosInstance.post(
-        `/admin/change-password/${newPassword}/${oldPassword}`
+        `/change-password/${newPassword}/${oldPassword}`
       );
       console.log(response);
       toast.success(response?.data?.message);
@@ -78,7 +78,7 @@ export const adminData = createAsyncThunk(
   "/admin/get-user-profile",
   async () => {
     try {
-      const response = await adminAxiosInstance.get("/admin/get-user-profile");
+      const response = await adminAxiosInstance.get("/get-user-profile");
       return response?.data;
     } catch (error) {
       console.log(error);
@@ -158,7 +158,9 @@ const authSlice = createSlice({
   name: "admin",
   initialState: null,
   reducers: {},
-  extraReducers: (builder) => {},
+  extraReducers: (builder) => {
+
+  },
 });
 
 export default authSlice.reducer;

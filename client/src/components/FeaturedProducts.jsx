@@ -3,6 +3,8 @@ import { CardCarousel } from "./card-carousel";
 import { useDispatch } from "react-redux";
 import { getFeaturedProducts } from "@/Redux/Slices/productsSlice";
 import { useNavigate } from "react-router-dom";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const FeaturedProducts = () => {
   const dispatch = useDispatch();

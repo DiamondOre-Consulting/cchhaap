@@ -105,7 +105,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                   className="flex border-black px-8 gap-x-4 items-center"
                 >
 
-                     <div className="h-32 w-40 overflow-hidden">
+                     <Link to={`/each-product/${item?.productId?._id}`} onClick={onClose} className="h-32 w-40 overflow-hidden">
                     <img
                      src={
                       variation?.thumbnailImage?.secureUrl ||
@@ -114,7 +114,7 @@ const CartDrawer = ({ isOpen, onClose }) => {
                       className="h-full w-full object-cover"
                       alt={item?.productId?.productName}
                     />
-                  </div>
+                  </Link>
                  
                   <div className="flex w-full justify-between">
                     <div className="flex flex-col">

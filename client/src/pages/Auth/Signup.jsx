@@ -3,12 +3,15 @@ import { getNavbarCartWishlistCount } from "@/Redux/Slices/cart";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import {Link, useNavigate} from 'react-router-dom'
+import { FiMail, FiLock, FiEye, FiEyeOff, FiArrowRight } from 'react-icons/fi';
+import { FaShieldAlt } from 'react-icons/fa';
 
 const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [otpField, setOtpField] = useState(false);
   const [passwordField, setPasswordField] = useState(false);
   const [loader, setLoader] = useState(false);
+  const [slideStage, setSlideStage] = useState(0); // 0: email, 1: otp, 2: password
   const navigate = useNavigate()
 
   const dispatch = useDispatch();
@@ -39,8 +42,7 @@ const Signup = () => {
     try {
       const response = await dispatch(sendOtp({ email: formData?.email }));
       if (response?.payload?.statusCode === 200) {
-        setPasswordField(true);
-        setOtpField(true);
+        setSlideStage(1); 
       }
     } catch (error) {
       console.log(error);
@@ -57,18 +59,16 @@ const Signup = () => {
       !formData?.otp.trim() ||
       !formData?.password.trim()
     ) {
-      toast.error("All the feilds are required");
+      toast.error("All the fields are required");
       return;
     }
     setLoader(true);
 
     try {
-
-      console.log(formData)
       const response = await dispatch(userSignUp(formData));
       if (response?.payload?.statusCode === 200) {
-            navigate('/')
-            dispatch(getNavbarCartWishlistCount())
+        navigate('/')
+        dispatch(getNavbarCartWishlistCount())
       }
     } catch (error) {
       console.log(error);
@@ -77,102 +77,207 @@ const Signup = () => {
     }
   };
 
+  const goToPasswordStage = () => {
+    if (formData.otp.trim()) {
+      setSlideStage(2); 
+    } else {
+      toast.error("Please enter OTP");
+    }
+  };
 
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
-
-  
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <div className="max-h-screen flex flex-col pb-20 mt-20 items-center">
-      <h1 className="myfont text-center text-3xl">Account Signup</h1>
+    <div className="min-h-screen flex flex-col items-center justify-start py-10" style={{ backgroundColor: '#6d0c04' }}>
+      <div className="w-full max-w-md px-4 ">
+        <div className="relative overflow-hidden">
+          
+          <div className="flex justify-center mb-8">
+            <div className="flex items-center space-x-4">
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="flex flex-col items-center">
+                  <div 
+                    className={`w-8 h-8 rounded-full flex items-center justify-center 
+                      ${slideStage >= step - 1 ? 'bg-white text-c2' : 'bg-gray-600 text-white'}`}
+                  >
+                    {step}
+                  </div>
+                  <span className="text-xs text-white mt-1">
+                    {step === 1 ? 'Email' : step === 2 ? 'OTP' : 'Password'}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
 
-      <form className="py-6 w-full sm:w-96 px-4 space-y-4">
-        <div className="flex flex-col space-y-1">
-          <label className="text-xs text-gray-50 uppercase">Email</label>
-          <input
-            type="email"
-            className="border px-1 py-1"
-            autoComplete="off"
-            name="email"
-            value={formData.email}
-            onChange={handleInputChange}
-          />
-        </div>
-
-        {otpField && passwordField && (
-          <>
-            <div className="flex flex-col w-full">
-              <label className="pb-1 text-xs text-gray-100 ">OTP</label>
-              <div className="flex justify-start gap-2">
-                <input
-                  type="text"
-                  className="border px-1 py-1 w-full"
-                  autoComplete="off"
-                  name="otp"
-                  value={formData.otp}
-                  onChange={handleInputChange}
-                />
+          <div className="relative h-74">
+        
+            <div 
+              className={`absolute top-0 left-0 w-full transition-all duration-500 ${slideStage === 0 ? 'translate-x-0' : '-translate-x-full'}`}
+            >
+              <div className=" bg-white/20 backdrop-blur border-gray-200 rounded-lg p-6 shadow-lg">
+                <div className="flex flex-col items-center mb-6">
+                  <div className="bg-c2 p-3 text-white rounded-full mb-3">
+                    <FiMail className="text-gray-100 text-2xl" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-100">Enter Your Email</h2>
+                </div>
+                
+                <div className="flex flex-col space-y-4">
+                  <div className="flex items-center border-b border-gray-300 py-2">
+                    <FiMail className="text-gray-500 mr-2" />
+                    <input
+                      type="email"
+                      className="flex-1 outline-none"
+                      placeholder="Your email address"
+                      autoComplete="off"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <button
+                    onClick={handleSendOtp}
+                    className="w-full bg-c2 text-c1 py-2 cursor-pointer rounded-lg flex items-center justify-center"
+                    disabled={loader}
+                  >
+                    {loader ? (
+                      <div className="flex items-center">
+                        <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        Sending...
+                      </div>
+                    ) : (
+                      <>
+                        Continue <FiArrowRight className="ml-2" />
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col space-y-1">
-              <label className="text-xs uppercase text-gray-100">Password</label>
-              <input
-                type={showPassword ? "text" : "password"}
-                className="border px-1 py-1"
-                autoComplete="off"
-                name="password"
-                value={formData.password}
-                onChange={handleInputChange}
-              />
-              <p className="space-x-2 text-sm flex items-center mt-2">
-                <input
-                  type="checkbox"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                />
-                <span>Show Password</span>
-              </p>
+           
+            <div 
+              className={`absolute top-0 left-0 w-full transition-all duration-500 ${slideStage === 1 ? 'translate-x-0' : slideStage < 1 ? 'translate-x-full' : '-translate-x-full'}`}
+            >
+              <div className="bg-white/20 backdrop-blur rounded-lg p-6 shadow-lg">
+                <div className="flex flex-col items-center mb-6">
+                  <div className="bg-c2 p-3 rounded-full mb-3">
+                    <FaShieldAlt className="text-white text-2xl" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-100">Enter OTP</h2>
+                  <p className="text-sm text-gray-200 mt-1">We sent a code to {formData.email}</p>
+                </div>
+                
+                <div className="flex flex-col space-y-4">
+                  <div className="flex items-center border-b border-gray-300 py-2">
+                    <FaShieldAlt className="text-gray-500 mr-2" />
+                    <input
+                      type="text"
+                      className="flex-1 outline-none"
+                      placeholder="Enter 6-digit OTP"
+                      autoComplete="off"
+                      name="otp"
+                      value={formData.otp}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => setSlideStage(0)}
+                      className="flex-1 border cursor-pointer  border-gray-300 text-gray-100 py-2 rounded-lg"
+                    >
+                      Back
+                    </button>
+                    <button
+                      onClick={goToPasswordStage}
+                      className="flex-1 bg-c2 text-c1 cursor-pointer py-2 rounded-lg flex items-center justify-center"
+                    >
+                      Continue <FiArrowRight className="ml-2" />
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          </>
-        )}
 
-        <button
-          onClick={otpField && passwordField ? handleSignup : handleSendOtp}
-          className="cursor-pointer bg-c2 w-full py-2 text-c1"
-          disabled={loader}
-        >
-          {loader ? (
-            <div role="status" className="flex items-center justify-center">
-              <svg
-                aria-hidden="true"
-                className="inline w-6 h-6 text-gray-200 animate-spin fill-gray-600"
-                viewBox="0 0 100 101"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z"
-                  fill="currentColor"
-                />
-                <path
-                  d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z"
-                  fill="currentFill"
-                />
-              </svg>
-              <span className="ml-2">Loading...</span>
+            
+            <div 
+              className={`absolute top-0 left-0 w-full transition-all duration-500 ${slideStage === 2 ? 'translate-x-0' : 'translate-x-full'}`}
+            >
+              <div className="bg-white/20 backdrop-blur rounded-lg p-6 shadow-lg">
+                <div className="flex flex-col items-center mb-6">
+                  <div className="bg-c2 p-3 rounded-full mb-3">
+                    <FiLock className="text-white text-2xl" />
+                  </div>
+                  <h2 className="text-xl font-bold text-gray-100">Create Password</h2>
+                  <p className="text-sm text-gray-200 mt-1">Secure your account</p>
+                </div>
+                
+                <div className="flex flex-col space-y-4">
+                  <div className="flex items-center border-b border-gray-300 py-2">
+                    <FiLock className="text-gray-100 mr-2" />
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      className="flex-1 outline-none"
+                      placeholder="Create a password"
+                      autoComplete="off"
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                    />
+                    <button 
+                      onClick={() => setShowPassword(!showPassword)} 
+                      className="text-gray-100"
+                    >
+                      {showPassword ?    <FiEye />  :<FiEyeOff /> }
+                    </button>
+                  </div>
+                  
+                  <div className="flex space-x-3">
+                    <button
+                      onClick={() => setSlideStage(1)}
+                      className="flex-1 border border-gray-300 cursor-pointer text-gray-100 py-2 rounded-lg"
+                    >
+                      Back
+                    </button>
+                    <button
+                      onClick={handleSignup}
+                      className="flex-1 bg-c2 text-c1 py-2 cursor-pointer rounded-lg flex items-center justify-center"
+                      disabled={loader}
+                    >
+                      {loader ? (
+                        <div className="flex items-center">
+                          <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Signing Up...
+                        </div>
+                      ) : (
+                        "Sign Up"
+                      )}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-          ) : otpField && passwordField ? (
-            "Sign Up"
-          ) : (
-            "Send Otp"
-          )}
-        </button>
-        <p className="text-center">Already have an account <Link className="underline" to={'/login'}>signin</Link>?</p>
-      </form>
+          </div>
+        </div>
 
-
+        <p className="text-center text-white ">
+          Already have an account?{' '}
+          <Link to="/login" className="font-semibold underline">
+            Sign in
+          </Link>
+        </p>
+      </div>
     </div>
   );
 };

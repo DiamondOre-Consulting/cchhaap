@@ -3,6 +3,8 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
 import { FaSpinner } from "react-icons/fa";
+import AOS from "aos";
+import "aos/dist/aos.css";
 import "swiper/css/pagination";
 import { Navigation, Autoplay } from "swiper/modules";
 import PropTypes from "prop-types";
@@ -30,7 +32,8 @@ const ProductItem = ({ product, isLoggedIn }) => {
   const [isWishLoading, setIsWishLoading] = useState(false);
 
   // Check if all variations are out of stock
-  const isOutOfStock = product.variations?.every(v => v.quantity === 0) || false;
+  const isOutOfStock =
+    product.variations?.every((v) => v.quantity === 0) || false;
 
   const toggleWishList = () => {
     if (!isLoggedIn) {
@@ -105,7 +108,7 @@ const ProductItem = ({ product, isLoggedIn }) => {
           </span>
         </div>
       )}
-      <div className={`h-full ${isOutOfStock ? 'grayscale' : ''}`}>
+      <div className={`h-full ${isOutOfStock ? "grayscale" : ""}`}>
         <div className="flex justify-center items-center ">
           <Swiper
             loop={true}
@@ -224,13 +227,25 @@ const Products = () => {
   const categoryName = urlCategoryName || location.state?.categoryName || "";
   const { user, isLoggedIn } = useSelector((state) => state.user);
 
+  useEffect(() => {
+    AOS.init({
+      duration: 500,
+      once: false,
+      easing: "ease-in-out",
+      offset: 100,
+    });
+
+    AOS.refresh();
+  }, [products]);
   const fetchProducts = async () => {
     try {
       setLoading(true);
       let response;
 
       if (gender) {
-        response = await dispatch(getGenderWiseProduct({gender , userId: user?.data?._id }));
+        response = await dispatch(
+          getGenderWiseProduct({ gender, userId: user?.data?._id })
+        );
       } else if (id) {
         response = await dispatch(
           getCategorizedProduct({ id, userId: user?.data?._id })
@@ -239,8 +254,7 @@ const Products = () => {
         response = await dispatch(getAllProducts({ userId: user?.data?._id }));
       }
 
-
-      console.log(response)
+      console.log(response);
       const productsData =
         response?.payload?.data?.products ||
         response?.payload?.data ||
@@ -257,7 +271,7 @@ const Products = () => {
 
   useEffect(() => {
     fetchProducts();
-  }, [id, gender, user?._id , user , isLoggedIn]);
+  }, [id, gender, user?._id, user, isLoggedIn]);
 
   if (loading) {
     return (
@@ -294,8 +308,12 @@ const Products = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-20">
-              {products?.map((product) => (
-                <div key={product._id}>
+              {products?.map((product, index) => (
+                <div
+                  data-aos="fade-up"
+                  data-aos-delay={(index % 4) * 100}
+                  key={product._id}
+                >
                   <ProductItem product={product} isLoggedIn={isLoggedIn} />
                   <div className="mt-2 text-center">
                     <h3 className="text-lg line-clamp-1 font-medium">
@@ -303,10 +321,15 @@ const Products = () => {
                     </h3>
                     {product.variations?.[0] && (
                       <p className="font-bold">
-                        ₹{product.variations[0].discountPrice}
+                        {product.variations[0].discountPrice?.toLocaleString(
+                          "en-US",
+                          {
+                            style: "currency",
+                            currency: "INR",
+                          }
+                        )}
                         {product.variations[0].discountPrice > 0 && (
                           <span className="ml-2 text-sm text-red-500 line-through">
-                            
                             ₹{product.variations[0].price}
                           </span>
                         )}
