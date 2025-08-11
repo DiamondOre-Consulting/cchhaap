@@ -170,10 +170,19 @@ export const createOrder = asyncHandler(async (req, res) => {
   }
 });
 
+
 export const myOrders = asyncHandler(async (req, res) => {
   const userId = req.user.id;
-  const { page, limit } = req.validatedData.params;
+  const page = parseInt(req.validatedData.params.page, 10) || 1;
+  const limit = parseInt(req.validatedData.params.limit, 10) || 10;
   const skip = (page - 1) * limit;
+
+  const toPlainAttributes = (attrs) => {
+    if (!attrs) return null;
+    if (attrs instanceof Map) return Object.fromEntries(attrs);
+    if (typeof attrs === "object" && !Array.isArray(attrs)) return attrs; // already plain object
+    return null;
+  };
 
   const orders = await Order.find({ userId })
     .sort({ createdAt: -1 })
@@ -185,20 +194,29 @@ export const myOrders = asyncHandler(async (req, res) => {
     })
     .lean();
 
-  if (!orders.length) {
-    throw new ApiError("User has zero orders", 400);
-  }
+  if (!orders.length) throw new ApiError("User has zero orders", 400);
 
   const formattedOrders = orders.map((order) => {
     const formattedProducts = (order.products || []).map((item) => {
       const product = item.productId;
-      const variations = product?.variations || [];
+      if (!product) {
+        return {
+          productId: null,
+          productName: "",
+          brandName: "",
+          thumbnail: "",
+          quantity: item.quantity,
+          linePrice: item.price,
+          selectedVariation: null,
+          allVariations: [],
+        };
+      }
 
+      const variations = product.variations || [];
       const selectedVariation = variations.find(
         (v) => v._id.toString() === item.variationId.toString()
       );
 
-      // shape all variations (lightweight but complete)
       const allVariations = variations.map((v) => ({
         _id: v._id,
         size: v.size,
@@ -207,20 +225,21 @@ export const myOrders = asyncHandler(async (req, res) => {
         discountPrice: v.discountPrice ?? null,
         quantity: v.quantity,
         inStock: v.inStock,
-        attributes: v.attributes ? Object.fromEntries(v.attributes) : null,
+        attributes: toPlainAttributes(v.attributes),
         thumbnailImage: v.thumbnailImage,
         images: v.images,
       }));
 
       return {
-        productId: product?._id,
-        productName: product?.productName || "",
-        brandName: product?.brandName || "",
-        thumbnail: selectedVariation?.thumbnailImage?.secureUrl || product?.thumbnailImage?.secureUrl || "",
+        productId: product._id,
+        productName: product.productName || "",
+        brandName: product.brandName || "",
+        thumbnail:
+          selectedVariation?.thumbnailImage?.secureUrl ||
+          product.thumbnailImage?.secureUrl ||
+          "",
         quantity: item.quantity,
-        linePrice: item.price, // as stored at order time
-
-        // selected variation details
+        linePrice: item.price,
         selectedVariation: selectedVariation
           ? {
               _id: selectedVariation._id,
@@ -228,14 +247,12 @@ export const myOrders = asyncHandler(async (req, res) => {
               color: selectedVariation.color,
               price: selectedVariation.price,
               discountPrice: selectedVariation.discountPrice ?? null,
-              attributes: selectedVariation.attributes ? Object.fromEntries(selectedVariation.attributes) : null,
+              attributes: toPlainAttributes(selectedVariation.attributes),
               inStock: selectedVariation.inStock,
               images: selectedVariation.images,
               thumbnailImage: selectedVariation.thumbnailImage,
             }
           : null,
-
-        // all variations of this product
         allVariations,
       };
     });
@@ -251,7 +268,7 @@ export const myOrders = asyncHandler(async (req, res) => {
 
   const totalOrders = await Order.countDocuments({ userId });
   const totalPages = Math.ceil(totalOrders / limit);
-
+   console.log("formattedOrders",formattedOrders[0].products[0].allVariations)
   sendResponse(
     res,
     200,
