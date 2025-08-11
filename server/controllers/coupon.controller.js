@@ -86,113 +86,145 @@ export const editCoupon = asyncHandler(async(req,res)=>{
 })
 
 
+export const applyCoupon = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+  const { couponCode } = req.validatedData.params;
 
-export const applyCoupon = asyncHandler(async(req,res)=>{
+  const GST_RATE = 0.12;
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const addGST = (amt) => (amt == null ? null : round2(amt * (1 + GST_RATE)));
 
-    const userId = req.user.id
-    const {couponCode}= req.validatedData.params
+  // 1) Validate coupon
+  const coupon = await Coupon.findOne({ couponCode });
+  if (!coupon) throw new ApiError("Coupon not found", 400);
+  if (!coupon.isActive || new Date() > new Date(coupon.endDate)) {
+    throw new ApiError("Coupon is expired", 400);
+  }
 
-    const coupon = await Coupon.findOne({couponCode})
+  // 2) Load cart
+  const cart = await Cart.findOne({ userId }).populate("products.productId");
+  if (!cart || !cart.products?.length) throw new ApiError("Cart is empty", 400);
 
-    if(!coupon){
-        throw new ApiError("Coupon not found",400)
-    }
+  // 3) Build GST-inclusive cart total
+  let totalPriceAfterDiscount = 0;
 
-    if(!coupon.isActive|| new Date() > new Date(coupon.endDate)){
-        throw new ApiError("Coupon is expired",400)
-    }
+  for (const cartItem of cart.products) {
+    const product = cartItem.productId;
+    const variation = product?.variations?.find(
+      (v) => v._id.toString() === cartItem.variationId.toString()
+    );
+    if (!variation) throw new ApiError("Cart has invalid variation", 400);
 
+    const mrpWithGst = addGST(variation.price);              // MRP + GST
+    const gstDiff = mrpWithGst - variation.price;            // GST amount on MRP
 
+    const finalUnitPrice =
+      variation.discountPrice != null
+        ? round2(variation.discountPrice + gstDiff)          // discounted + GST diff
+        : mrpWithGst;
 
+    totalPriceAfterDiscount += round2(finalUnitPrice * (cartItem.quantity ?? 1));
+  }
 
-    const cart = await Cart.findOne({userId}).populate('products.productId')
+  // 4) Check coupon min amount against GST-inclusive total
+  if (totalPriceAfterDiscount < coupon.minAmount) {
+    throw new ApiError(
+      `Order amount must be at least ₹${coupon.minAmount} to use this coupon`,
+      400
+    );
+  }
 
-          let totalPriceAfterDiscount = cart.products.reduce((acc, cartItem) => {
-        const variation = cartItem.productId.variations.find(v => 
-            v._id.toString() === cartItem.variationId.toString()
-        );
-        const price = variation.discountPrice || variation.price;
-        return acc + (price * cartItem.quantity);
-          }, 0);
+  // 5) Apply coupon
+  let couponValue = 0;
+  if (coupon.discountType === "percentage") {
+    couponValue = round2(totalPriceAfterDiscount * (coupon.discountValue / 100));
+  } else {
+    couponValue = round2(coupon.discountValue);
+  }
 
-        if(totalPriceAfterDiscount<coupon.minAmount){
-            throw new ApiError("Price of product is smaller than required value to apply coupon",400)
-        }
+  let amountAfterApplyingCoupon = totalPriceAfterDiscount+177 - couponValue;
+  console.log("couponValue",couponValue)
+  console.log("totalPriceAfterDiscount",totalPriceAfterDiscount)
 
+  // 6) Respond (keeping your integer rounding style)
+  sendResponse(
+    res,
+    200,
+    {
+      discountAfterApplyingCoupon: Math.floor(couponValue),
+      amountAfterApplyingCoupon: Math.floor(amountAfterApplyingCoupon),
+      cartTotalWithGST: Math.floor(totalPriceAfterDiscount),
+    },
+    "Coupon applied successfully"
+  );
+});
 
+export const buyNowApplyCoupon = asyncHandler(async (req, res) => {
+  const { couponCode, productId, variationId } = req.validatedData.params;
+  const qty = Number(req.validatedData.query?.quantity ?? 1);
 
-         let amountAfterApplyingCoupon = 0
+  const SHIPPING = 177;
+  const GST_RATE = 0.12;
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const addGST = (amt) => (amt == null ? null : round2(amt * (1 + GST_RATE)));
 
-         let couponValue = 0
+  // 1) Validate coupon
+  const coupon = await Coupon.findOne({ couponCode });
+  if (!coupon) throw new ApiError("Coupon not found", 400);
+  if (!coupon.isActive || new Date() > new Date(coupon.endDate)) {
+    throw new ApiError("Coupon is expired", 400);
+  }
 
-        if(coupon.discountType === 'percentage'){
-            couponValue = totalPriceAfterDiscount * (coupon.discountValue/100)
-            amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
-        }
-        else{
-            couponValue = coupon.discountValue
-            amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
-        }
-        
+  // 2) Load product & variation
+  const product = await Product.findById(productId);
+  if (!product) throw new ApiError("Product not found", 400);
 
-       sendResponse(res,200,{discountAfterApplyingCoupon:Math.floor(couponValue),amountAfterApplyingCoupon:Math.floor(amountAfterApplyingCoupon)},"Coupon applied successfully")
+  const v = product.variations?.find((x) => x._id.toString() === variationId.toString());
+  if (!v) throw new ApiError("Selected variation not found", 400);
 
-})
+  if (!v.inStock || v.quantity <= 0 || v.quantity < qty) {
+    throw new ApiError("Product is out of stock", 400);
+  }
 
+  // 3) Price with GST and final unit price
+  const mrpWithGst = addGST(v.price);           // MRP + 12% GST
+  const gstDiff = mrpWithGst - v.price;         // GST amount on MRP
+  const unitFinal =
+    v.discountPrice != null ? round2(v.discountPrice + gstDiff) : mrpWithGst;
 
-export const buyNowApplyCoupon = asyncHandler(async(req,res)=>{
+  const itemsSubtotal = round2(unitFinal * qty); // GST-inclusive items total (no shipping)
 
-        const {couponCode,productId,variationId} = req.params
+  // 4) Min amount check (against items subtotal)
+  if (coupon.minAmount && itemsSubtotal < coupon.minAmount) {
+    throw new ApiError(
+      `Order amount must be at least ₹${coupon.minAmount} to use this coupon`,
+      400
+    );
+  }
 
-        const coupon = await Coupon.findOne({couponCode})
-         
-        if(!coupon){
-            throw new ApiError("Coupon not found",400)
-        }
-     
-        if(!coupon.isActive|| new Date() > new Date(coupon.endDate)){
-            throw new ApiError("Coupon is expired",400)
-        }
-    
-        const product = await Product.findOne({_id:productId})
+  // 5) Apply coupon on items subtotal
+  let couponValue =
+    coupon.discountType === "percentage"
+      ? round2(itemsSubtotal * (coupon.discountValue / 100))
+      : round2(coupon.discountValue);
 
-        if(!product){
-            throw new ApiError("Product not found",400)
-        }
+  couponValue = Math.min(couponValue, itemsSubtotal); // safety
 
+  // 6) Add shipping after coupon (shipping not discounted)
+  const amountAfterApplyingCoupon = Math.floor(Math.max(0, itemsSubtotal + SHIPPING - couponValue));
 
-        
-        
-        let variation=product.variations.find(v=>v._id.toString()===variationId.toString())
-        
-        let totalPriceAfterDiscount = variation.discountPrice||variation.price
-        
-        
-                if(variation.quantity<=0){
-                    throw new ApiError("Product is out of stock",400)
-                }
+  sendResponse(
+    res,
+    200,
+    {
+      discountAfterApplyingCoupon: Math.floor(couponValue),
+      amountAfterApplyingCoupon,
+      itemTotalWithGST: Math.floor(itemsSubtotal),
+      shipping: SHIPPING,
+      quantity: qty,
+    },
+    "Coupon applied successfully"
+  );
+});
 
-
-        if(totalPriceAfterDiscount<coupon.minAmount){
-            throw new ApiError("Price of product is smaller than required value to apply coupon",400)
-        }
-
-
-       let amountAfterApplyingCoupon = 0
-
-       let couponValue = 0
-
-       if(coupon.discountType === 'percentage'){
-           couponValue = totalPriceAfterDiscount * (coupon.discountValue/100)
-           amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
-       }
-       else{
-           couponValue = coupon.discountValue
-           amountAfterApplyingCoupon = totalPriceAfterDiscount - couponValue
-       }
-       
-       
-       sendResponse(res,200,{discountAfterApplyingCoupon:Math.floor(couponValue),amountAfterApplyingCoupon:Math.floor(amountAfterApplyingCoupon)},"Coupon applied successfully")
-
-})
 

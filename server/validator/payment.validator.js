@@ -5,6 +5,7 @@ export const checkoutPaymentQuerySchema = z.object({
     couponCode : z.string().optional(),
     quantity   : z.coerce.number().positive().optional(),
     productId  : z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid product ID format" }).optional(),
+    variationId: z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" }).optional(),
 });
 
 

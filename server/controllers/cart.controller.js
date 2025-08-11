@@ -94,47 +94,85 @@ export const updateCart = asyncHandler(async(req,res)=>{
 
 
 })
-
 export const getCart = asyncHandler(async (req, res) => {
   const userId = req.user.id;
+
+  const GST_RATE = 0.12;
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const addGST = (amt) => (amt == null ? null : round2(amt * (1 + GST_RATE)));
 
   const cart = await Cart.findOne({ userId }).populate({
     path: "products.productId",
     select: "productName variations thumbnailImage",
   });
 
-
-
   if (!cart) throw new ApiError("Cart not found", 400);
 
+  cart.products = cart.products.map((item) => {
+    const prod = item.productId;
+    const varId = item.variationId?.toString?.() || String(item.variationId);
+    const variation = prod?.variations?.find((v) => v._id.toString() === varId);
 
-cart.products.forEach((product) => {
-  const variation = product.productId.variations.find(
-    (v) => v._id.toString() === product.variationId.toString()
-  );
+    // Variation missing
+    if (!variation) {
+      return {
+        ...item.toObject?.() ?? item,
+        inStock: false,
+        unitPrice: 0,
+        price: 0,
+        availableQty: 0,
+      };
+    }
 
-  if (!variation) {
-    product.price = 0;
-    product.inStock = false;
-    return;
-  }
+    // Stock flag
+    const inStock = !!variation.inStock && (variation.quantity ?? 0) > 0;
 
-  if (!variation.inStock || variation.quantity <= 0) {
-    product.inStock = false;
-  } else {
-    product.inStock = true;
-  }
+    // Prices
+    const mrpWithGst = addGST(variation.price);                     // MRP + GST
+    const gstDiff = mrpWithGst - variation.price;                   // GST amount on MRP
+    const discountedWithGst = variation.discountPrice != null
+      ? round2(variation.discountPrice + gstDiff)                   // discounted + GST diff
+      : null;
 
-  const unitPrice = variation.discountPrice ?? variation.price;
-  product.price = unitPrice * product.quantity;
-  product.variationId = variation;
-});
+    const unitFinal = discountedWithGst ?? mrpWithGst;              // prefer discounted if present
+    const qty = item.quantity ?? 1;
 
+    // Update the matched variation pricing in the populated product for response
+    const clonedVariations = prod.variations.map((v) => {
+      if (v._id.toString() !== varId) return v;
+      const base = v.toObject?.() ?? v;
+      return {
+        ...base,
+        price: mrpWithGst,
+        discountPrice: discountedWithGst,
+      };
+    });
 
-  cart.totalPrice = cart.products.reduce((sum, p) => sum + p.price, 0);
+    // Build updated item
+    const updatedItem = {
+      ...item.toObject?.() ?? item,
+      inStock,
+      availableQty: variation.quantity ?? 0,
+      unitPrice: unitFinal,                           // per-unit final price shown to user
+      price: round2(unitFinal * qty),                 // line total
+      // keep variationId as ID
+      productId: {
+        ...(prod.toObject?.() ?? prod),
+        variations: clonedVariations,
+      },
+    };
+
+    return updatedItem;
+  });
+
+  cart.totalPrice = round2(cart.products.reduce((sum, p) => sum + (p.price || 0), 0));
+
+  console.log(cart)
 
   sendResponse(res, 200, cart, "Cart fetched successfully");
 });
+
+
 
 
  

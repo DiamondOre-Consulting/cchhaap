@@ -49,14 +49,18 @@ export const getCheckoutValues = asyncHandler(async (req, res) => {
 
     
     
+    
     checkoutValues.totalDiscountedPrice = checkoutValues.totalMRP - checkoutValues.totalPriceAfterDiscount;
+    
+    
+    const gst=  Math.round( checkoutValues.totalMRP* 1.12 )- checkoutValues.totalMRP
+    
+    checkoutValues.totalPriceAfterDiscount = Math.round(
+        checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost 
+    )+gst;
 
     
-
-    checkoutValues.totalPriceAfterDiscount = Math.round(
-  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost 
-);
-
+    checkoutValues.totalMRP = Math.round( checkoutValues.totalMRP* 1.12 );
     console.log(checkoutValues)
 
     sendResponse(res, 200, checkoutValues, "Checkout values fetched successfully");
@@ -68,46 +72,59 @@ export const buyNowCheckoutValues = asyncHandler(async (req, res) => {
   const { productId, variationId, quantity } = req.validatedData.params;
   const userId = req.user.id;
 
+  const SHIPPING = 177;
+  const GST_RATE = 0.12;
+  const round0 = (n) => Math.round(n);
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const addGST = (amt) => (amt == null ? null : round2(amt * (1 + GST_RATE)));
 
-  const existingProduct = await Product.findById(productId).select(
-    "-sku -discount -discountType -totalRatingSum -totalRatingsCount"
+  const qty = Math.max(1, parseInt(quantity, 10) || 1);
+
+  const product = await Product.findById(productId).select(
+    "-sku -totalRatingSum -totalRatingsCount -__v"
   );
+  if (!product) throw new ApiError("Product not found", 400);
 
-  if (!existingProduct) {
-    throw new ApiError("Product not found", 400);
-  }
+  const variationDoc = product.variations.id(variationId);
+  if (!variationDoc) throw new ApiError("Selected variation not found", 400);
 
-  const variation = existingProduct.variations.id(variationId);
-  if (!variation) {
-    throw new ApiError("Selected variation not found", 400);
-  }
-
-  if (variation.quantity < quantity || variation.quantity === 0) {
+  if (!variationDoc.inStock || variationDoc.quantity <= 0 || variationDoc.quantity < qty) {
     throw new ApiError("Product variation out of stock", 400);
   }
 
+  // Prices
+  const mrpWithGst = addGST(variationDoc.price);          // MRP + 12% GST
+  const gstDiff = mrpWithGst - variationDoc.price;        // GST amount on MRP
+  const unitFinal =
+    variationDoc.discountPrice != null
+      ? round2(variationDoc.discountPrice + gstDiff)       // discounted + GST diff
+      : mrpWithGst;
+
+  // Totals
+  const totalMRP = round0(mrpWithGst * qty);                              // GST-inclusive MRP total
+  const itemsTotalAfterDiscount = round0(unitFinal * qty);                // before shipping
+  const totalDiscountedPrice = round0(totalMRP - itemsTotalAfterDiscount);// savings vs MRP
+  const totalPriceAfterDiscount = round0(itemsTotalAfterDiscount + SHIPPING);
+
   const checkoutValues = {
-  totalMRP: variation.price * quantity,
-  totalPriceAfterDiscount: variation.discountPrice
-    ? variation.discountPrice * quantity
-    : variation.price * quantity,
-  totalDiscountedPrice: variation.discountPrice
-    ? variation.price * quantity - variation.discountPrice * quantity
-    : 0,
-  totalItems: 1,
-  shippingCost: 177,
-};
+    totalMRP,
+    totalPriceAfterDiscount,   // payable (items after discount + shipping)
+    totalDiscountedPrice,      // savings vs MRP (shipping not counted here)
+    totalItems: 1,
+    shippingCost: SHIPPING,
+  };
 
-
-
-checkoutValues.totalPriceAfterDiscount = Math.round(
-  checkoutValues.totalPriceAfterDiscount + checkoutValues.shippingCost 
-);
+  // Return variation with computed prices for UI
+  const variation = {
+    ...(variationDoc.toObject?.() ?? variationDoc),
+    price: mrpWithGst,
+    discountPrice: variationDoc.discountPrice != null ? round2(variationDoc.discountPrice + gstDiff) : null,
+  };
 
   sendResponse(
     res,
     200,
-    { checkoutValues, variation, quantity },
+    { checkoutValues, variation, quantity: qty },
     "Buy now checkout values fetched successfully"
   );
 });

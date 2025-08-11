@@ -21,9 +21,11 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
 
     let totalPriceAfterDiscount = 0;
     let totalAmount = 0;
-
+    
+    
     
     if (quantity && productId && variationId) {
+        console.log("enter")
         const product = await Product.findById(productId);
         if (!product) throw new ApiError("Product not found", 400);
 
@@ -38,9 +40,11 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
                 throw new ApiError("Not enough stock for selected variation", 400);
          }   
 
-        const price = selectedVariation.discountPrice ?? selectedVariation.price;
+          const gst=selectedVariation.price*0.12
+
+        const price = selectedVariation.discountPrice+gst ?? selectedVariation.price+gst;
         totalPriceAfterDiscount = price * quantity;
-        totalAmount = totalPriceAfterDiscount;
+        totalAmount = totalPriceAfterDiscount+177;
     } 
     
     
@@ -64,11 +68,15 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
                     throw new ApiError("Not enough stock for selected variation", 400);
                 }   
 
-            const price = matchedVariation.discountPrice ?? matchedVariation.price;
+                const gst=matchedVariation.price*0.12
+
+            const price = matchedVariation.discountPrice+gst ?? matchedVariation.price+gst;
+         
             totalPriceAfterDiscount += price * product.quantity;
         });
 
-        totalAmount = totalPriceAfterDiscount;
+        totalAmount = totalPriceAfterDiscount+177;
+        
     }
 
     
@@ -87,7 +95,7 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
             couponValue = coupon.discountValue;
         }
 
-        totalAmount = totalPriceAfterDiscount - couponValue;
+        totalAmount = totalPriceAfterDiscount+177 - couponValue;
     }
 
     totalAmount = Math.floor(totalAmount);

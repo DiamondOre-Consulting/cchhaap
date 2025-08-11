@@ -132,6 +132,8 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
     }
   }
 
+  const gst= selectedVariation.price*0.12
+
   const response = {
     _id: product._id,
     productName: product.productName,
@@ -147,8 +149,8 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
       _id: v._id,
       size: v.size,
       color: v.color,
-      price: v.price,
-      discountPrice: v.discountPrice,
+      price: v.price*1.12,
+      discountPrice: v.discountPrice+gst,
       quantity: v.quantity,
       inStock: v.inStock,
       attributes: v.attributes ? Object.fromEntries(v.attributes) : null,
@@ -160,8 +162,8 @@ export const getUserSingleProduct = asyncHandler(async (req, res) => {
       _id: selectedVariation._id,
       size: selectedVariation.size,
       color: selectedVariation.color,
-      price: selectedVariation.price,
-      discountPrice: selectedVariation.discountPrice,
+      price: selectedVariation.price*1.12,
+      discountPrice: selectedVariation.discountPrice+gst,
       quantity: selectedVariation.quantity,
       inStock: selectedVariation.inStock,
       attributes: selectedVariation.attributes ? Object.fromEntries(selectedVariation.attributes) : null,
@@ -191,34 +193,48 @@ export const getUserCategorizedProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.params.page) || 1;
   const skip = (page - 1) * limit;
 
-  console.log(userId)
+  const GST_RATE = 0.12;
+  const addGST = (amt) =>
+    amt == null ? null : Math.round(amt * (1 + GST_RATE) * 100) / 100;
 
-  // ✅ Get user's wishlist productIds
-  const wishlist = await Wishlist.findOne({ userId });
-  
-  const wishlistProductIds = wishlist
-    ? wishlist.products.map((p) => p.productId.toString())
-    : [];
+  // ✅ Get user's wishlist
+  const wishlist = await Wishlist.findOne({ userId }).lean();
+  const wishlistProductIds = wishlist?.products?.map((p) => p.productId.toString()) || [];
 
   // ✅ Get products by category (with pagination)
   const products = await Product.find({ category: categoryId })
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(limit)
-    .lean(); // lean for plain JS objects
+    .lean();
 
   if (!products.length) throw new ApiError("No products found", 400);
 
-  // ✅ Add isInWishlist flag manually
-  const updatedProducts = products.map((product) => ({
-    ...product,
-    isInWishlist: wishlistProductIds.includes(product._id.toString()),
-  }));
+  // ✅ Add GST + updated discountPrice + isInWishlist
+  const updatedProducts = products.map((product) => {
+    const variations = (product.variations || []).map((v) => {
+      const priceWithGst = addGST(v.price);
+      const gstDifference = priceWithGst - v.price;
+      return {
+        ...v,
+        price: priceWithGst, // MRP + GST
+        discountPrice:
+          v.discountPrice != null
+            ? Math.round((v.discountPrice + gstDifference) * 100) / 100
+            : null,
+      };
+    });
 
-  
+    return {
+      ...product,
+      variations,
+      isInWishlist: wishlistProductIds.includes(product._id.toString()),
+    };
+  });
 
   sendResponse(res, 200, updatedProducts, "Products fetched successfully");
 });
+
 
 // export const getSingleCategoryProducts = asyncHandler(async (req, res) => {
 //     const { categoryId } = req.validatedData.params;
@@ -257,43 +273,66 @@ export const getProductsByGender = asyncHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
+  const GST_RATE = 0.12;
+  const addGST = (amt) =>
+    amt == null ? null : Math.round(amt * (1 + GST_RATE) * 100) / 100;
+
   const matchStage = { "variations.gender": gender };
+
   const pipeline = [
     { $match: matchStage },
-    ...(userId ? [
-      {
-        $lookup: {
-          from: "wishlists",
-          let: { productId: "$_id" },
-          pipeline: [
-            { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-            { $unwind: "$products" },
-            {
-              $match: {
-                $expr: { $eq: ["$products.productId", "$$productId"] },
-              },
+    ...(userId
+      ? [
+          {
+            $lookup: {
+              from: "wishlists",
+              let: { productId: "$_id" },
+              pipeline: [
+                { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+                { $unwind: "$products" },
+                {
+                  $match: {
+                    $expr: { $eq: ["$products.productId", "$$productId"] },
+                  },
+                },
+              ],
+              as: "wishlist",
             },
-          ],
-          as: "wishlist",
-        },
-      },
-      {
-        $addFields: {
-          isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] },
-        },
-      },
-      { $project: { wishlist: 0 } },
-    ] : [
-      { $addFields: { isInWishlist: false } }
-    ]),
+          },
+          {
+            $addFields: {
+              isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] },
+            },
+          },
+          { $project: { wishlist: 0 } },
+        ]
+      : [{ $addFields: { isInWishlist: false } }]),
     { $sort: { createdAt: -1 } },
     { $skip: skip },
     { $limit: limit },
   ];
 
-  const products = await Product.aggregate(pipeline);
+  let products = await Product.aggregate(pipeline);
 
   if (!products.length) throw new ApiError("No products found for this gender", 400);
+
+  // ✅ Apply GST & updated discountPrice logic
+  products = products.map((p) => {
+    const variations = (p.variations || []).map((v) => {
+      const priceWithGst = addGST(v.price);
+      const gstDifference = priceWithGst - v.price;
+      return {
+        ...v,
+        price: priceWithGst,
+        discountPrice:
+          v.discountPrice != null
+            ? Math.round((v.discountPrice + gstDifference) * 100) / 100
+            : null,
+      };
+    });
+
+    return { ...p, variations };
+  });
 
   sendResponse(res, 200, products, "Gender products fetched successfully");
 });
@@ -301,37 +340,61 @@ export const getProductsByGender = asyncHandler(async (req, res) => {
 
 
 
+
 export const getFeaturedProducts = asyncHandler(async (req, res) => {
-    const { userId, page = 1, limit = 10 } = req.validatedData.query;
-    
-    const skip = (page - 1) * limit;
+  const { userId, page = 1, limit = 10 } = req.validatedData.query;
+  const skip = (page - 1) * limit;
 
-    const products = await Product.aggregate([
-        { $match: { featuredProduct: true, isActive: true } },
-        {
+  const GST_RATE = 0.12;
+  const addGST = (amt) =>
+    amt == null ? null : Math.round(amt * (1 + GST_RATE) * 100) / 100;
+
+  const pipeline = [
+    { $match: { featuredProduct: true, isActive: true } },
+    ...(userId
+      ? [
+          {
             $lookup: {
-                from: "wishlists",
-                let: { productId: "$_id" },
-                pipeline: [
-                    { $match: { userId: new mongoose.Types.ObjectId(userId) } },
-                    { $unwind: "$products" },
-                    { $match: { $expr: { $eq: ["$products.productId", "$$productId"] } } },
-                ],
-                as: "wishlist"
-            }
-        },
-        { $addFields: { 
-            isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] }
-        }},
-        { $project: { wishlist: 0 } },
-        { $sort: { createdAt: -1 } }, // Sorting by newest first
-        { $skip: skip },
-        { $limit: limit }
-    ]);
+              from: "wishlists",
+              let: { productId: "$_id" },
+              pipeline: [
+                { $match: { userId: new mongoose.Types.ObjectId(userId) } },
+                { $unwind: "$products" },
+                { $match: { $expr: { $eq: ["$products.productId", "$$productId"] } } },
+              ],
+              as: "wishlist",
+            },
+          },
+          { $addFields: { isInWishlist: { $gt: [{ $size: "$wishlist" }, 0] } } },
+          { $project: { wishlist: 0 } },
+        ]
+      : [{ $addFields: { isInWishlist: false } }]),
+    { $sort: { createdAt: -1 } },
+    { $skip: skip },
+    { $limit: limit },
+  ];
 
-    if (!products.length) throw new ApiError("No featured products found", 400);
+  let products = await Product.aggregate(pipeline);
+  if (!products.length) throw new ApiError("No featured products found", 400);
 
-    sendResponse(res, 200, products, "Featured products fetched successfully");
+  // Apply pricing transforms
+  products = products.map((p) => {
+    const variations = (p.variations || []).map((v) => {
+      const priceWithGst = addGST(v.price);               // MRP + GST
+      const gstDiff = priceWithGst - v.price;             // GST amount
+      return {
+        ...v,
+        price: priceWithGst,
+        discountPrice:
+          v.discountPrice != null
+            ? Math.round((v.discountPrice + gstDiff) * 100) / 100
+            : null,
+      };
+    });
+    return { ...p, variations };
+  });
+
+  sendResponse(res, 200, products, "Featured products fetched successfully");
 });
 
 
@@ -341,34 +404,57 @@ export const getUserAllProducts = asyncHandler(async (req, res) => {
   const page = parseInt(req.params.page) || 1;
   const skip = (page - 1) * limit;
 
-  const wishlist = await Wishlist.findOne({ userId });
-  const wishlistProductIds = wishlist
-    ? wishlist.products.map(p => p.productId.toString())
-    : [];
+  const GST_RATE = 0.12;
+  const addGST = (amt) =>
+    amt == null ? null : Math.round(amt * (1 + GST_RATE) * 100) / 100; // MRP + GST (rounded to 2dp)
 
-  const products = await Product.find({ isActive: true })
-    .select("productName brandName category featuredProduct variations")
-    .populate("category", "name")
-    .sort({ createdAt: -1 })
-    .skip(skip)
-    .limit(limit)
-    .lean();
+  const wishlist = await Wishlist.findOne({ userId }).lean();
+  const wishlistProductIds = wishlist?.products?.map(p => p.productId.toString()) || [];
+
+  const [products, totalCount] = await Promise.all([
+    Product.find({ isActive: true })
+      .select("productName brandName category featuredProduct variations createdAt")
+      .populate("category", "name")
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean(),
+    Product.countDocuments({ isActive: true }),
+  ]);
 
   if (!products.length) throw new ApiError("No products found", 404);
 
-  const updatedProducts = products.map(product => ({
-    ...product,
-    isInWishlist: wishlistProductIds.includes(product._id.toString())
-  }));
+  const updatedProducts = products.map(p => {
+    const variations = (p.variations || []).map(v => {
+      const priceWithGst = addGST(v.price); // new MRP with GST
+      const gstDifference = priceWithGst - v.price; // GST amount
+      return {
+        ...v,
+        price: priceWithGst,
+        discountPrice:
+          v.discountPrice != null
+            ? Math.round((v.discountPrice + gstDifference) * 100) / 100
+            : null,
+      };
+    });
 
-  const totalCount = await Product.countDocuments({ isActive: true });
+    return {
+      ...p,
+      variations,
+      isInWishlist: wishlistProductIds.includes(p._id.toString()),
+    };
+  });
 
   sendResponse(res, 200, {
     products: updatedProducts,
     currentPage: page,
-    totalPages: Math.ceil(totalCount / limit)
+    pageSize: limit,
+    totalPages: Math.ceil(totalCount / limit),
+    totalCount,
   }, "User products fetched successfully");
 });
+
+
 
 
 
