@@ -35,19 +35,19 @@ const ReturnRefundPolicy = () => {
         </div>
 
         <div className="grid md:grid-cols-1 gap-6 mb-8">
-          <div className="bg-blue-900 bg-opacity-30 rounded-lg p-6 border border-blue-800">
-            <h3 className="text-xl font-semibold text-blue-300 mb-3">
+          <div className="bg-white/20  backdrop-blur rounded-lg p-6 border border-red-600/20">
+            <h3 className="text-xl font-semibold text-gray-100 mb-3">
               Exchange Policy Details
             </h3>
-            <div className="space-y-3 text-gray-300">
+            <div className="space-y-3 text-gray-100">
               <p className="flex items-start">
-                <span className="bg-blue-800 text-blue-200 font-bold px-2 py-1 rounded mr-2">
+                <span className="bg-c1 text-blue-200 font-bold px-2 py-1 rounded mr-2">
                   7
                 </span>
                 <span>Days to request an exchange from delivery date</span>
               </p>
               <p className="flex items-start">
-                <span className="bg-blue-800 text-blue-200 font-bold px-2 py-1 rounded mr-2">
+                <span className="bg-c1 text-blue-200 font-bold px-2 py-1 rounded mr-2">
                   24
                 </span>
                 <span>
