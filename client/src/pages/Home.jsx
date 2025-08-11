@@ -1,27 +1,48 @@
-import AboutSection from "@/components/AboutSection";
-import Categories from "@/components/Categories";
-import FeaturedProducts from "@/components/FeaturedProducts";
-import FeaturesSection from "@/components/FeaturesSection";
-import Hero from "@/components/Hero";
-import ShopFor from "@/components/ShopFor";
-import Testimonial from "@/components/Testimonial";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, lazy, Suspense } from "react";
+import Hero from "@/components/Hero"; 
+
+
+const Categories = lazy(() => import("@/components/Categories"));
+const AboutSection = lazy(() => import("@/components/AboutSection"));
+const FeaturedProducts = lazy(() => import("@/components/FeaturedProducts"));
+const Testimonial = lazy(() => import("@/components/Testimonial"));
+const FeaturesSection = lazy(() => import("@/components/FeaturesSection"));
+
+
+const LoadingPlaceholder = () => (
+  <div className="min-h-[300px] flex items-center justify-center">
+    <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-c2"></div>
+  </div>
+);
 
 const Home = () => {
-   useEffect(() => {
-      window.scrollTo(0, 0);
-    }, []);
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
     
   return (
     <>
       <Hero />
-      <Categories/>
-      <AboutSection/>
-      {/* <ShopFor/> */}
-      <FeaturedProducts/>
-      <Testimonial/>
-      <FeaturesSection/>
       
+      <Suspense fallback={<LoadingPlaceholder />}>
+        <Categories />
+      </Suspense>
+      
+      <Suspense fallback={<LoadingPlaceholder />}>
+        <AboutSection />
+      </Suspense>
+      
+      <Suspense fallback={<LoadingPlaceholder />}>
+        <FeaturedProducts />
+      </Suspense>
+      
+      <Suspense fallback={<LoadingPlaceholder />}>
+        <Testimonial />
+      </Suspense>
+      
+      <Suspense fallback={<LoadingPlaceholder />}>
+        <FeaturesSection />
+      </Suspense>
     </>
   );
 };

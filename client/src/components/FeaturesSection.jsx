@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const FeatureCard = ({ icon, title, description }) => {
   return (
@@ -34,8 +35,36 @@ const FeaturesSection = () => {
     }
   ];
 
+    const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash === '#featured') {
+     
+      setTimeout(() => {
+        const element = document.getElementById('featured');
+        if (element) {
+          element.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          });
+          
+         
+          const offset = 100; 
+          const elementPosition = element.getBoundingClientRect().top;
+          const offsetPosition = elementPosition + window.pageYOffset - offset;
+
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 100);
+    }
+  }, [location]);
+
+
   return (
-    <section className="py-12">
+    <section className="py-12" id='featured'>
       <div className="container mx-auto px-4">
         <div className="grid w-full grid-cols-1  md:grid-cols-2 lg:grid-cols-4 gap-8">
           {features.map((feature, index) => (

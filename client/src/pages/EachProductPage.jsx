@@ -10,6 +10,7 @@ import {
   userUpdateCart,
 } from "@/Redux/Slices/cart";
 
+
 const ProductPreviews = ({ previews }) => {
   const [index, setIndex] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -227,7 +228,10 @@ const SizeVariant = ({
   );
 };
 
+
+
 const EachProductPage = () => {
+  
   const { id } = useParams();
   const { cartCount } = useSelector((state) => state.cart);
   console.log("cartCount", cartCount);

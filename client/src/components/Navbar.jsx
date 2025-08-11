@@ -32,7 +32,11 @@ import { useSelector } from "react-redux";
 // Navigation links array to be used in both desktop and mobile menus
 const navigationLinks = [
   { href: "/", label: "Home" },
-  { href: "#featured", label: "Featured Products" },
+  { 
+    href: "/#featured",
+    label: "Featured Products",
+    scroll: true 
+  },
   { href: "/all-products", label: "All Products" },
 
   //  { href: "#", label: "All Categories" },
@@ -105,6 +109,26 @@ const Navbar = ({ cartCount, wishlistCount }) => {
   const { user, isLoggedIn } = userState;
   console.log("user data", user, isLoggedIn);
 
+   const handleScrollToSection = (e, href) => {
+    // If we're on the home page, scroll to section
+    if (window.location.pathname === '/') {
+      e.preventDefault();
+      const sectionId = href.split('#')[1];
+      const section = document.getElementById(sectionId);
+      
+      if (section) {
+        section.scrollIntoView({
+          behavior: 'smooth',
+          block: 'start'
+        });
+        
+     
+        window.history.pushState(null, null, href);
+      }
+    }
+   
+  };
+
   return (
     <div>
       <div className="  flex bg-c2  text-white justify-center items-center py-2 w-full">
@@ -167,23 +191,23 @@ const Navbar = ({ cartCount, wishlistCount }) => {
                             <ul>
                               {link.items.map((item, itemIndex) => (
                                 <li key={itemIndex}>
-                                  <NavigationMenuLink
-                                    href={item.href}
+                                  <Link
+                                    to={item.href}
                                     className="py-1.5"
                                   >
                                     {item.label}
-                                  </NavigationMenuLink>
+                                  </Link>
                                 </li>
                               ))}
                             </ul>
                           </>
                         ) : (
-                          <NavigationMenuLink
-                            href={link.href}
+                          <Link
+                            to={link.href}
                             className="py-1.5"
                           >
                             {link.label}
-                          </NavigationMenuLink>
+                          </Link>
                         )}
                         {/* Add separator between different types of items */}
                         {index < navigationLinks.length - 1 &&
@@ -216,89 +240,31 @@ const Navbar = ({ cartCount, wishlistCount }) => {
             </Link>
           </div>
           <div className="flex items-center w-full justify-center  gap-6">
-            {/* Navigation menu */}
-            <NavigationMenu viewport={false} className="max-md:hidden w-full ">
-              <NavigationMenuList className="gap-2   text-gray-100 ">
-                {navigationLinks.map((link, index) => (
-                  <NavigationMenuItem key={index}>
-                    {link.submenu ? (
-                      <>
-                        <NavigationMenuTrigger className="text-muted-foreground bg-transparent text-gray-100  px-4 py-1.5  *:[svg]:-me-0.5 *:[svg]:size-3.5">
-                          {link.label}
-                        </NavigationMenuTrigger>
-                        <NavigationMenuContent className=" data-[motion=from-end]:slide-in-from-right-16! data-[motion=from-start]:slide-in-from-left-16! data-[motion=to-end]:slide-out-to-right-16! data-[motion=to-start]:slide-out-to-left-16! z-50 p-1">
-                          <ul
-                            className={cn(
-                              link.type === "description"
-                                ? "min-w-64"
-                                : "min-w-48"
-                            )}
-                          >
-                            {link.items.map((item, itemIndex) => (
-                              <li key={itemIndex}>
-                                <NavigationMenuLink
-                                  href={item.href}
-                                  className="py-1.5"
-                                >
-                                  {link.type === "icon" && "icon" in item && (
-                                    <div className="flex items-center gap-2">
-                                      {item.icon === "BookOpenIcon" && (
-                                        <BookOpenIcon
-                                          size={16}
-                                          className="text-foreground opacity-60"
-                                          aria-hidden="true"
-                                        />
-                                      )}
-                                      {item.icon === "LifeBuoyIcon" && (
-                                        <LifeBuoyIcon
-                                          size={16}
-                                          className="text-foreground opacity-60"
-                                          aria-hidden="true"
-                                        />
-                                      )}
-                                      {item.icon === "InfoIcon" && (
-                                        <InfoIcon
-                                          size={16}
-                                          className="text-foreground opacity-60"
-                                          aria-hidden="true"
-                                        />
-                                      )}
-                                      <span>{item.label}</span>
-                                    </div>
-                                  )}
-
-                                  {/* Display label with description if present */}
-                                  {link.type === "description" &&
-                                  "description" in item ? (
-                                    <div className="space-y-1">
-                                      <div className="">{item.label}</div>
-                                      <p className="text-muted-foreground line-clamp-2 text-xs">
-                                        {item.description}
-                                      </p>
-                                    </div>
-                                  ) : (
-                                    // Display simple label if not icon or description type
-                                    !link.type ||
-                                    (link.type !== "icon" &&
-                                      link.type !== "description" && (
-                                        <span>{item.label}</span>
-                                      ))
-                                  )}
-                                </NavigationMenuLink>
-                              </li>
-                            ))}
-                          </ul>
-                        </NavigationMenuContent>
-                      </>
-                    ) : (
-                      <Link to={link.href} className="py-1.5 px-4 font-medium">
-                        {link.label}
-                      </Link>
-                    )}
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
+          
+         <NavigationMenu className="hidden md:block">
+          <NavigationMenuList className="gap-2 text-gray-100">
+            {navigationLinks.map((link, index) => (
+              <NavigationMenuItem key={index}>
+                {link.scroll ? (
+                  <Link
+                    to={link.href}
+                    className="py-1.5 px-4 font-medium hover:text-white transition-colors"
+                    onClick={(e) => handleScrollToSection(e, link.href)}
+                  >
+                    {link.label}
+                  </Link>
+                ) : (
+                  <Link 
+                    to={link.href} 
+                    className="py-1.5 px-4 font-medium hover:text-white transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                )}
+              </NavigationMenuItem>
+            ))}
+          </NavigationMenuList>
+        </NavigationMenu>
           </div>
 
           <div className="flex cursor-pointer  justify-end space-x-6 text-[1.4rem]  font-bold  w-full text-white  gap-2">
