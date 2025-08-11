@@ -34,8 +34,8 @@ export const createOrder = asyncHandler(async (req, res) => {
       );
       if (!variation) throw new ApiError("Variation not found", 404);
       if (variation.quantity < quantity) throw new ApiError("Insufficient stock", 400);
-
-      const price = variation.discountPrice || variation.price;
+      const gst= variation.price*0.12
+      const price = variation.discountPrice+gst || variation.price+gst;
       productsToOrder.push({
         productId,
         variationId,
@@ -208,7 +208,7 @@ export const myOrders = asyncHandler(async (req, res) => {
           brandName: "",
           thumbnail: "",
           quantity: item.quantity,
-          linePriceStored: item.price,
+          linePrice: item.price,
           selectedVariation: null,
           allVariations: [],
         };
@@ -270,7 +270,7 @@ export const myOrders = asyncHandler(async (req, res) => {
           product.thumbnailImage?.secureUrl ||
           "",
         quantity: item.quantity,
-        linePriceStored: item.price, // price captured at order time
+        linePrice: item.price, // stored at order time
         selectedVariation: selected,
         allVariations,
       };
