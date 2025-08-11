@@ -20,7 +20,7 @@ export const userCheckoutPayment = createAsyncThunk('/check-out/payment' , async
         if (data?.couponName) queryParams.append("couponCode", data?.couponName);
         if (data?.totalItems) queryParams.append("quantity", data?.totalItems);
         if (data?.productId) queryParams.append("productId", data?.productId);
-           if (data?.variationId) queryParams.append("variationId", data?.variationId);
+        if (data?.variationId) queryParams.append("variationId", data?.variationId);
   
        
   

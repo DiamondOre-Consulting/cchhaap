@@ -20,7 +20,9 @@ const ProfilePage = () => {
   };
 
   const handleLogout = async () => {
+    console.log("logout trigger",1)
     const res = await dispatch(userSignOut());
+    console.log(res)
     dispatch(getNavbarCartWishlistCount());
     console.log(res);
     toast.success("Logged out successfully");

@@ -71,8 +71,8 @@ const Login = () => {
   }, []);
 
   return (
-    <div className="w-full">
-      <div className="w-full flex flex-col pb-20 mt-20 items-center">
+    <div className="w-full ">
+      <div className="w-fit mx-auto p-6 rounded-md  bg-white/20 backdrop-blur flex flex-col  mt-10 items-center">
         <h1 className="myfont text-center text-3xl">Account Sigin</h1>
 
         <div className="w-full px-4 sm:px-0 sm:w-96">

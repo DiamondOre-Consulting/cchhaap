@@ -1,20 +1,16 @@
-import React, { useEffect } from "react";
-
 const ReturnRefundPolicy = () => {
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
+  window.scrollTo(0, 0);
 
   return (
-    <div className="min-h-screen  text-gray-200">
+    <div className="min-h-screen text-gray-200">
       <div className="max-w-4xl mx-auto px-4 py-12">
         <h1 className="text-3xl font-bold text-white mb-8">
-          Return & Refund Policy
+           Return & Refund Policy
         </h1>
 
         <div className="bg-c1 shadow-lg rounded-lg p-6 mb-8 border border-gray-100">
           <h2 className="text-2xl font-semibold text-white mb-4">
-            General Return Conditions
+            Exchange Conditions
           </h2>
           <ul className="list-disc pl-6 space-y-2 text-gray-300">
             <li>
@@ -25,27 +21,30 @@ const ReturnRefundPolicy = () => {
             </li>
             <li>All original packaging and tags must be intact</li>
             <li>
-              Return items must include all original components (hangers,
+              Items must include all original components (hangers,
               polyester bags, tags, shoe boxes, etc.)
             </li>
             <li>
               Any items that have been damaged, soiled or altered will not be
               accepted
             </li>
+            <li className="font-medium text-white">
+              We do not offer returns or refunds - exchanges only for size/color
+            </li>
           </ul>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-1 gap-6 mb-8">
           <div className="bg-blue-900 bg-opacity-30 rounded-lg p-6 border border-blue-800">
             <h3 className="text-xl font-semibold text-blue-300 mb-3">
-              For Indian Customers (Online Purchases)
+              Exchange Policy Details
             </h3>
             <div className="space-y-3 text-gray-300">
               <p className="flex items-start">
                 <span className="bg-blue-800 text-blue-200 font-bold px-2 py-1 rounded mr-2">
                   7
                 </span>
-                <span>Days no questions asked return policy</span>
+                <span>Days to request an exchange from delivery date</span>
               </p>
               <p className="flex items-start">
                 <span className="bg-blue-800 text-blue-200 font-bold px-2 py-1 rounded mr-2">
@@ -53,23 +52,6 @@ const ReturnRefundPolicy = () => {
                 </span>
                 <span>
                   Hours to report defective/damaged products from delivery time
-                </span>
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-green-900 bg-opacity-30 rounded-lg p-6 border border-green-800">
-            <h3 className="text-xl font-semibold text-green-300 mb-3">
-              Order Cancellation
-            </h3>
-            <div className="space-y-3 text-gray-300">
-              <p className="flex items-start">
-                <span className="bg-green-800 text-green-200 font-bold px-2 py-1 rounded mr-2">
-                  24
-                </span>
-                <span>
-                  Hours to cancel your order for full refund to original payment
-                  method
                 </span>
               </p>
             </div>
@@ -98,7 +80,7 @@ const ReturnRefundPolicy = () => {
               </h3>
               <div className="mt-2 text-sm text-yellow-200">
                 <p>
-                  Non-compliant returns will be sent back to the customer with
+                  Non-compliant exchange requests will be sent back to the customer with
                   shipping charges applied.
                 </p>
               </div>
@@ -108,21 +90,22 @@ const ReturnRefundPolicy = () => {
 
         <div className="bg-c1 p-6 rounded-lg border border-gray-100">
           <h2 className="text-xl font-semibold text-white mb-3">
-            Return Process
+            Exchange Process
           </h2>
           <ol className="list-decimal pl-6 space-y-3 text-gray-300">
             <li>
-              Initiate return request through our website or customer service
-              within 7 days of delivery
+              Initiate exchange request through our website within 7 days of delivery
             </li>
             <li>
               Pack the item securely in its original packaging with all tags
               attached
             </li>
-            <li>Wait for return approval and shipping instructions</li>
+            <li>Wait for exchange approval and shipping instructions</li>
             <li>
-              Once received and verified, refund will be processed to original
-              payment method
+              Once received and verified, we will process your size/color exchange
+            </li>
+            <li>
+              Customer is responsible for shipping costs for the exchange
             </li>
           </ol>
         </div>

@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const FeatureCard = ({ icon, title, description }) => {
   return (
-    <div className="flex bg-white/70  mx-auto flex-col items-center rounded-md text-center p-6 max-w-xs">
+    <div data-aos = "fade-up" className="flex bg-white/70  mx-auto flex-col items-center rounded-md text-center p-6 max-w-xs">
       <img src={icon} className="mb-4 text-3xl "/>
       <h3 className="text-xl font-semibold mb-2 text-c1">{title}</h3>
       <p className="text-gray-800">{description}</p>

@@ -1,14 +1,34 @@
-import { userGetAllOrders, userGetSingleOrder } from "@/Redux/Slices/order.Slice";
+import {
+  userGetAllOrders,
+  userGetSingleOrder,
+} from "@/Redux/Slices/order.Slice";
 import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { ChevronUp, ChevronDown, X } from "lucide-react";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [exchangeOpen, setExchangeOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [exchangeType, setExchangeType] = useState("size");
+  const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
+  const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const dispatch = useDispatch();
+
+  const availableSizes = ["S", "M", "L", "XL"];
+  const availableColors = [
+    { name: "Red", hex: "#FF0000" },
+    { name: "Blue", hex: "#0000FF" },
+    { name: "Green", hex: "#00FF00" },
+    { name: "Black", hex: "#000000" },
+  ];
+
+  const exchangeCloseDate = new Date("2025-08-12");
 
   const handleGetAllOrders = async () => {
     try {
@@ -39,11 +59,46 @@ const Orders = () => {
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedOrder(null);
+    setExchangeOpen(false);
+    setSelectedProduct(null);
   };
-
   useEffect(() => {
     handleGetAllOrders();
   }, []);
+  const toggleExchange = (product) => {
+    setSelectedProduct(product);
+    setExchangeOpen(!exchangeOpen);
+    // Reset selections when opening exchange
+    if (!exchangeOpen) {
+      setSelectedSize(null);
+      setSelectedColor(null);
+    }
+  };
+
+  const handleExchangeTypeChange = (type) => {
+    setExchangeType(type);
+  };
+
+  const handleSizeSelect = (size) => {
+    setSelectedSize(size);
+  };
+
+  const handleColorSelect = (color) => {
+    setSelectedColor(color);
+  };
+
+  const handleExchangeSubmit = () => {
+    console.log("Exchange submitted:", {
+      product: selectedProduct,
+      type: exchangeType,
+      size: selectedSize,
+      color: selectedColor,
+    });
+    // Close the exchange section after submission
+    setExchangeOpen(false);
+  };
+
+  const isExchangeWindowClosed = new Date() > exchangeCloseDate;
 
   if (loading) {
     return (
@@ -52,10 +107,9 @@ const Orders = () => {
       </div>
     );
   }
-console.log("selected order",selectedOrder)
+  console.log("selected order", selectedOrder);
   return (
     <div className="p-4 md:p-6 w-full mx-auto min-h-screen">
-    
       <div className="flex items-center justify-center relative w-fit mx-auto mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-100">
           Your Orders
@@ -86,7 +140,8 @@ console.log("selected order",selectedOrder)
               No orders yet
             </h3>
             <p className="mt-2 text-gray-600">
-              You haven't placed any orders. Start shopping to see your orders here.
+              You haven't placed any orders. Start shopping to see your orders
+              here.
             </p>
             <div className="mt-6">
               <Link
@@ -103,7 +158,7 @@ console.log("selected order",selectedOrder)
           {orders.map((order) => (
             <div
               key={order._id}
-              className="bg-white relative border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
+              className="bg-white w-80 relative border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200"
             >
               <div className="p-4 border-b border-gray-100">
                 <div className="flex justify-between items-start">
@@ -199,13 +254,9 @@ console.log("selected order",selectedOrder)
         </div>
       )}
 
-   
       {isModalOpen && selectedOrder && (
         <div className="fixed inset-0 bg-black/40 z-50 overflow-y-auto">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-         
-            
-
             <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
               <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                 <div className="flex bg-white justify-between items-start">
@@ -249,19 +300,20 @@ console.log("selected order",selectedOrder)
                             ? "bg-blue-100 text-blue-800"
                             : "bg-green-100 text-green-800"
                         }`}
-                        
                       >
-
                         {selectedOrder?.orderStatus?.charAt(0)?.toUpperCase() +
                           selectedOrder?.orderStatus?.slice(1)}
                       </span>
                       <p className="text-gray-500 mt-1 text-sm">
                         Ordered on{" "}
-                        {new Date(selectedOrder.createdAt).toLocaleDateString("en-IN", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
+                        {new Date(selectedOrder.createdAt).toLocaleDateString(
+                          "en-IN",
+                          {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          }
+                        )}
                       </p>
                     </div>
                   </div>
@@ -270,40 +322,180 @@ console.log("selected order",selectedOrder)
                     <h4 className="text-lg font-semibold text-gray-800 mb-4">
                       Products
                     </h4>
-                    {selectedOrder.products.map((product, index) => (
-                      <div
-                        key={index}
-                        className="flex flex-col sm:flex-row border-b border-gray-100 pb-6 mb-6"
-                      >
-                        <div className="flex-shrink-0">
-                          <img
-                            src={product.thumbnail}
-                            alt={product.productName}
-                            className="w-28 h-28 object-contain rounded-lg border border-gray-200"
-                          />
-                        </div>
-                        <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
-                          <h3 className="text-sm font-medium text-gray-800">
-                            {product.productName}
-                          </h3>
-                          <div className="mt-1">
-                            <span className="text-lg font-semibold text-gray-900">
-                              {product.price.toLocaleString("en-IN", {
-                                style: "currency",
-                                currency: "INR",
-                                maximumFractionDigits: 0,
-                              })}
-                            </span>
+                    {selectedOrder.products.map((product, index) => {
+                      const isDelivered = selectedOrder.orderStatus === "delivered";
+                      const canExchange =
+                        isDelivered && !isExchangeWindowClosed;
+
+                      return (
+                        <div
+                          key={index}
+                          className="flex flex-col sm:flex-row border-b border-gray-100 pb-6 mb-6"
+                        >
+                          <div className="flex-shrink-0">
+                            <img
+                              src={product.thumbnail}
+                              alt={product.productName}
+                              className="w-28 h-28 object-contain rounded-lg border border-gray-200"
+                            />
                           </div>
-                          <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
-                            <div className="flex items-center">
-                              <span className="text-gray-500 mr-1">Qty:</span>
-                              <span className="font-medium">{product.quantity}</span>
+                          <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
+                            <h3 className="text-sm font-medium text-gray-800">
+                              {product.productName}
+                            </h3>
+                            <div className="mt-1">
+                              <span className="text-lg font-semibold text-gray-900">
+                                {product.price.toLocaleString("en-IN", {
+                                  style: "currency",
+                                  currency: "INR",
+                                  maximumFractionDigits: 0,
+                                })}
+                              </span>
                             </div>
+                            <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
+                              <div className="flex items-center">
+                                <span className="text-gray-500 mr-1">Qty:</span>
+                                <span className="font-medium">
+                                  {product.quantity}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div
+                              className={`text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer ${
+                                canExchange ? "" : ""
+                              }`}
+                              onClick={() =>
+                                canExchange && toggleExchange(product)
+                              }
+                            >
+                              <span>
+                                {isExchangeWindowClosed
+                                  ? "Exchange Window Closed"
+                                  : !isDelivered
+                                  ? ""
+                                  : "Exchange Available"}
+                              </span>
+                              {canExchange && (
+                                <span>
+                                  {exchangeOpen &&
+                                  selectedProduct?._id === product._id ? (
+                                    <ChevronDown />
+                                  ) : (
+                                    <ChevronUp />
+                                  )}
+                                </span>
+                              )}
+                            </div>
+
+                            {/* Exchange Section - Desktop */}
+                            {exchangeOpen &&
+                              selectedProduct?._id === product._id && (
+                                <div className=" mt-4 bg-gray-50  p-4 rounded-lg">
+                                  <div className="flex space-x-4 mb-4">
+                                    <button
+                                      onClick={() =>
+                                        handleExchangeTypeChange("size")
+                                      }
+                                      className={`px-4 py-2 rounded-md ${
+                                        exchangeType === "size"
+                                          ? "bg-c1 text-white"
+                                          : "bg-gray-200 text-gray-800"
+                                      }`}
+                                    >
+                                      Exchange Size
+                                    </button>
+                                    <button
+                                      onClick={() =>
+                                        handleExchangeTypeChange("color")
+                                      }
+                                      className={`px-4 py-2 rounded-md ${
+                                        exchangeType === "color"
+                                          ? "bg-c1 text-white"
+                                          : "bg-gray-200 text-gray-800"
+                                      }`}
+                                    >
+                                      Exchange Color
+                                    </button>
+                                  </div>
+
+                                  {exchangeType === "size" && (
+                                    <div>
+                                      <h4 className="font-medium mb-2">
+                                        Select Size
+                                      </h4>
+                                      <div className="flex flex-wrap gap-2">
+                                        {availableSizes.map((size) => (
+                                          <button
+                                            key={size}
+                                            onClick={() =>
+                                              handleSizeSelect(size)
+                                            }
+                                            className={`px-3 py-1 border rounded-md ${
+                                              selectedSize === size
+                                                ? "border-c1 bg-c1/10 text-c1"
+                                                : "border-gray-300"
+                                            }`}
+                                          >
+                                            {size}
+                                          </button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {exchangeType === "color" && (
+                                    <div>
+                                      <h4 className="font-medium mb-2">
+                                        Select Color
+                                      </h4>
+                                      <div className="flex flex-wrap gap-3">
+                                        {availableColors.map((color) => (
+                                          <button
+                                            key={color.name}
+                                            onClick={() =>
+                                              handleColorSelect(color)
+                                            }
+                                            className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
+                                              selectedColor?.name === color.name
+                                                ? "border-c1"
+                                                : "border-gray-300"
+                                            }`}
+                                            style={{
+                                              backgroundColor: color.hex,
+                                            }}
+                                            title={color.name}
+                                          ></button>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  <button
+                                    onClick={handleExchangeSubmit}
+                                    disabled={
+                                      (exchangeType === "size" &&
+                                        !selectedSize) ||
+                                      (exchangeType === "color" &&
+                                        !selectedColor)
+                                    }
+                                    className={`mt-4 px-4 py-2 rounded-md ${
+                                      (exchangeType === "size" &&
+                                        !selectedSize) ||
+                                      (exchangeType === "color" &&
+                                        !selectedColor)
+                                        ? "bg-gray-300 cursor-not-allowed"
+                                        : "bg-c1 text-white hover:bg-c1/90"
+                                    }`}
+                                  >
+                                    Request Exchange
+                                  </button>
+                                </div>
+                              )}
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
 
                   <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -314,10 +506,15 @@ console.log("selected order",selectedOrder)
                       <div className="text-gray-800">
                         <p>{selectedOrder.shippingAddress.fullName}</p>
                         <p>
-                          {selectedOrder.shippingAddress.street}, {selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} - {selectedOrder.shippingAddress.pinCode}
+                          {selectedOrder.shippingAddress.street},{" "}
+                          {selectedOrder.shippingAddress.city},{" "}
+                          {selectedOrder.shippingAddress.state} -{" "}
+                          {selectedOrder.shippingAddress.pinCode}
                         </p>
                         <p>{selectedOrder.shippingAddress.country}</p>
-                        <p className="mt-2">Phone: {selectedOrder.shippingAddress.phoneNumber}</p>
+                        <p className="mt-2">
+                          Phone: {selectedOrder.shippingAddress.phoneNumber}
+                        </p>
                       </div>
                     </div>
 
@@ -328,7 +525,9 @@ console.log("selected order",selectedOrder)
                       <div className="text-gray-600">
                         <p>
                           <span className="font-medium">Method:</span>{" "}
-                          {selectedOrder?.paymentMethod?.charAt(0)?.toUpperCase() +
+                          {selectedOrder?.paymentMethod
+                            ?.charAt(0)
+                            ?.toUpperCase() +
                             selectedOrder?.paymentMethod?.slice(1)}
                         </p>
                         <p className="mt-2">
@@ -344,7 +543,6 @@ console.log("selected order",selectedOrder)
                   </div>
                 </div>
               </div>
-            
             </div>
           </div>
         </div>

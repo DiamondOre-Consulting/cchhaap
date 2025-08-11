@@ -228,10 +228,7 @@ const SizeVariant = ({
   );
 };
 
-
-
 const EachProductPage = () => {
-  
   const { id } = useParams();
   const { cartCount } = useSelector((state) => state.cart);
   console.log("cartCount", cartCount);

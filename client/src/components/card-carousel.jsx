@@ -1,6 +1,7 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-
+import AOS from "aos";
+import "aos/dist/aos.css";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
@@ -54,9 +55,9 @@ export const CardCarousel = ({
       <style>{css}</style>
       <div className="mx-auto w-full w-full ">
         <div className="relative mx-auto flex w-full flex-col    p-2 shadow-sm md:items-start md:gap-8  md:p-2">
-          <h3 className="text-4xl py-10 text-center mx-auto flex justify-center items-center  uppercase tracking-tight">
+          <div data-aos="fade-up" className="text-4xl py-10 text-center mx-auto flex justify-center items-center  uppercase tracking-tight">
             Featured Products
-          </h3>
+          </div>
 
           <div className="flex flex-col justify-center pb-2 pl-4  md:items-center"></div>
 

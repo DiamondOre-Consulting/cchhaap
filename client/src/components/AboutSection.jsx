@@ -1,16 +1,20 @@
 import React from "react";
 import logo from "../assets/logo.png";
+import AOS from "aos";
+import "aos/dist/aos.css";
 
 const AboutSection = () => {
   return (
     <div className="grid grid-cols-1 px-2 md:px-0 md:grid-cols-2 md:gap-y-0 gap-y-4">
       <video
+    
         src="https://videos.pexels.com/video-files/853800/853800-hd_1920_1080_25fps.mp4
       "
+      muted
         autoPlay
       />
 
-      <div className="flex  flex-col max-w-md  mx-auto text-center justify-center items-center">
+      <div data-aos="fade-left" className="flex  flex-col max-w-md  mx-auto text-center justify-center items-center">
         <img src={logo} alt="" className="w-40 mb-4" />
         <p>
           At Chhaapp collection, we are dedicated to redefining elegance through

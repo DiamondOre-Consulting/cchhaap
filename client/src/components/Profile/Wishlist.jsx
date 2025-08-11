@@ -41,6 +41,8 @@ const Wishlist = () => {
     handleGetAllWishlistProducts();
   }, []);
 
+  console.log("wishlist" , wishlistData)
+
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
@@ -107,7 +109,7 @@ const Wishlist = () => {
                       })}
                     {firstVariation?.discountPrice > 0 && (
                       <span className="ml-2 text-sm text-red-400 line-through">
-                        ₹
+                     
                           {firstVariation?.price?.toLocaleString("en-US", {
                         style: "currency",
                         currency: "INR",
