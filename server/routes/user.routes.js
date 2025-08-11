@@ -7,7 +7,7 @@ import { addAddressBodySchema, deleteAddressParamsSchema, editAddressBodySchema,
 import { removeItemFromCartParamsSchema, updateCartParamsSchema } from "../validator/cart.validator.js"
 import { getCart, getNavbarCartAndWishlistCount, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
 import { createOrder, getSingleOrder, myOrders } from "../controllers/order.user.controller.js"
-import { createOrderBodySchema, createOrderQuerySchema, getSingleOrderParamsSchema, getSingleOrderQuerySchema, myOrdersParamsSchema } from "../validator/order.validator.js"
+import { createOrderBodySchema, createOrderQuerySchema, exchangeOrderParamsSchema, getSingleOrderParamsSchema, getSingleOrderQuerySchema, myOrdersParamsSchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
 import { deleteProductParamsSchema, getAdminAllProductsParamsSchema, getAdminAllProductsQuerySchema } from "../validator/admin.product.validator.js"
 import { getFeaturedProducts, getProductsByGender, getUserAllProducts, getUserCategorizedProducts, getUserSingleProduct } from "../controllers/user.product.controller.js"
@@ -24,6 +24,7 @@ import { buyNowCheckoutValuesParamsSchema } from "../validator/checkoutValues.va
 import { checkoutPayment, razorpayKey, verifyPayment } from "../controllers/payment.controller.js"
 import { checkoutPaymentQuerySchema, verifyPaymentBodySchema } from "../validator/payment.validator.js"
 import { searchProduct } from "../controllers/user.miscellaneous.controller.js"
+import { exchangeOrder } from "../controllers/order.admin.controller.js"
 
 
 
@@ -208,6 +209,11 @@ userRouter.get('/apply-coupon/:couponCode',userMiddleware,validate({
  userRouter.get('/get-single-order/:orderId',userMiddleware,validate({
     params:getSingleOrderParamsSchema,
  }),getSingleOrder)
+
+
+ userRouter.put('/exchange-order/:orderId/:variationId/:oldVariationId',userMiddleware,validate({
+    params:exchangeOrderParamsSchema
+ }),exchangeOrder)
 
 
  

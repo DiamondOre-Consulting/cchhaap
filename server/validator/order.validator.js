@@ -49,3 +49,10 @@ export const changeOrderStatusBodySchema = z.object({
     orderStatus:z.string().nonempty("Order status is required"),
     orderId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid order ID format" })
 })
+
+
+export const exchangeOrderParamsSchema = z.object({
+    orderId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid order ID format" }),
+    variationId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" }),
+    oldVariationId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" })
+})

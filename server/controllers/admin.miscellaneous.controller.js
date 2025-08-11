@@ -1,16 +1,9 @@
 import User from "../models/user.model.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
-
 import Order from "../models/order.model.js";
 import ApiError from "../utils/apiError.js";
 import sendResponse from "../utils/sendResponse.js";
 import Product from "../models/product.model.js";
-
-
-
-
-
-
 
 
 export const getUser = asyncHandler(async (req, res) => {
@@ -38,6 +31,7 @@ export const getUser = asyncHandler(async (req, res) => {
 
     sendResponse(res, 200, {existingUser,orderData}, "User fetched successfully");
 });
+
 export const getSalesData = asyncHandler(async (req, res) => {
   const ordersData = {};
 
@@ -137,10 +131,6 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
     "Users fetched successfully"
   );
 });
-
-
-
-
 
 export const searchProductForAdmin = asyncHandler(async (req, res) => {
   const { searchTerm } = req.validatedData.params;

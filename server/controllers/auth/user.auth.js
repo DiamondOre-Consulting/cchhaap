@@ -19,8 +19,10 @@ const otpStore = new Map()
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "None",
+  secure: true,           // prod
+  sameSite: "None",       // cross-site
+  path: "/",              // IMPORTANT: make it explicit
+  // domain: "your.domain.com", // ONLY if you also used this when setting
 };
 
 
@@ -53,7 +55,7 @@ export const signup= asyncHandler(async(req,res)=>{
         password: hashedPassword
       });
       
-      otpStore.delete("email");
+      otpStore.delete(email);
           
       const token = await user.generateAccessToken();
       const refreshAccessToken = await user.generateRefreshToken();
@@ -179,18 +181,21 @@ export const signin= asyncHandler(async(req,res)=>{
 
 })
 
-export const signout = asyncHandler(async(req, res)=>{
-    const cookieOptions = {
-        httpOnly: true,
-        secure: false,
-        sameSite: "Lax",
-        expires: new Date(0),
-      };
-      
-  
-    res.clearCookie("accessToken", cookieOptions);
-    res.clearCookie("refreshAccessToken", cookieOptions);
-    sendResponse(res, 200, null, "Signed out successfully");
+
+export const signout = asyncHandler(async (req, res) => {
+  // Use the same cookie options as when the cookies were set
+  const cookieOptionsForSignOut = {
+    httpOnly: true,
+    secure: true,
+    sameSite: "None",
+    path: "/",
+  };
+
+  // Use the identical options to clear the cookies.
+  res.clearCookie("accessToken", cookieOptionsForSignOut);
+  res.clearCookie("refreshAccessToken", cookieOptionsForSignOut);
+
+  sendResponse(res, 200, null, "Signed out successfully");
 });
 
 
