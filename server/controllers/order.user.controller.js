@@ -170,15 +170,10 @@ export const createOrder = asyncHandler(async (req, res) => {
   }
 });
 
-
 export const myOrders = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const { page, limit } = req.validatedData.params;
-  // const {orderType} = req.validatedData.query
   const skip = (page - 1) * limit;
-
-  //  const query = { userId };
-  // if (orderType) query.order_status = orderType;
 
   const orders = await Order.find({ userId })
     .sort({ createdAt: -1 })
@@ -186,29 +181,62 @@ export const myOrders = asyncHandler(async (req, res) => {
     .limit(limit)
     .populate({
       path: "products.productId",
-      select: "productName variations",
-    });
+      select: "productName brandName variations thumbnailImage",
+    })
+    .lean();
 
-   
- // console.log("orders",orders[0].products[0].productId.variations)
   if (!orders.length) {
     throw new ApiError("User has zero orders", 400);
   }
 
   const formattedOrders = orders.map((order) => {
-    const formattedProducts = order.products.map((item) => {
+    const formattedProducts = (order.products || []).map((item) => {
       const product = item.productId;
-      const variation = product?.variations?.find(
+      const variations = product?.variations || [];
+
+      const selectedVariation = variations.find(
         (v) => v._id.toString() === item.variationId.toString()
       );
+
+      // shape all variations (lightweight but complete)
+      const allVariations = variations.map((v) => ({
+        _id: v._id,
+        size: v.size,
+        color: v.color,
+        price: v.price,
+        discountPrice: v.discountPrice ?? null,
+        quantity: v.quantity,
+        inStock: v.inStock,
+        attributes: v.attributes ? Object.fromEntries(v.attributes) : null,
+        thumbnailImage: v.thumbnailImage,
+        images: v.images,
+      }));
+
       return {
+        productId: product?._id,
         productName: product?.productName || "",
-        variationId: item.variationId,
-        thumbnail: variation?.thumbnailImage?.secureUrl || "",
-        size: variation?.size || "",
-        color: variation?.color || {},
+        brandName: product?.brandName || "",
+        thumbnail: selectedVariation?.thumbnailImage?.secureUrl || product?.thumbnailImage?.secureUrl || "",
         quantity: item.quantity,
-        price: item.price,
+        linePrice: item.price, // as stored at order time
+
+        // selected variation details
+        selectedVariation: selectedVariation
+          ? {
+              _id: selectedVariation._id,
+              size: selectedVariation.size,
+              color: selectedVariation.color,
+              price: selectedVariation.price,
+              discountPrice: selectedVariation.discountPrice ?? null,
+              attributes: selectedVariation.attributes ? Object.fromEntries(selectedVariation.attributes) : null,
+              inStock: selectedVariation.inStock,
+              images: selectedVariation.images,
+              thumbnailImage: selectedVariation.thumbnailImage,
+            }
+          : null,
+
+        // all variations of this product
+        allVariations,
       };
     });
 
@@ -224,8 +252,6 @@ export const myOrders = asyncHandler(async (req, res) => {
   const totalOrders = await Order.countDocuments({ userId });
   const totalPages = Math.ceil(totalOrders / limit);
 
-  // console.log("formattedOrders",formattedOrders[0].products)
-
   sendResponse(
     res,
     200,
@@ -233,7 +259,6 @@ export const myOrders = asyncHandler(async (req, res) => {
     "Orders fetched successfully"
   );
 });
-
 
 
 
@@ -269,6 +294,9 @@ export const getSingleOrder = asyncHandler(async (req, res) => {
     paymentMethod: order.payment_method,
   }, "Order fetched successfully");
 });
+
+
+
 
 
 

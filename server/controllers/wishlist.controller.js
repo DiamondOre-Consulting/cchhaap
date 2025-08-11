@@ -54,27 +54,65 @@ export const removeFromWishlist = asyncHandler(async (req, res) => {
 
 
 export const getAllWishlistProducts = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
 
-    const userId = req.user.id; 
+  const page = Number(req.validatedData.page) || 1;
+  const limit = Number(req.validatedData.limit) || 10;
+  const skip = (page - 1) * limit;
 
-    const page = parseInt(req.validatedData.page) || 1; 
-    const limit = parseInt(req.validatedData.limit) || 10; 
-    const skip = (page - 1) * limit; 
+  const GST_RATE = 0.12;
+  const addGST = (n) => (n == null ? null : Math.round(n * (1 + GST_RATE) * 100) / 100);
 
-    const wishList = await Wishlist.find({ userId })  
-        .sort({createdAt:-1})
-        .populate("products.productId"," -soldCount -sku -totalRatingSum -totalRatingsCount") 
-        .limit(limit)
-        .skip(skip);
+  // One wishlist per user
+  const wishlist = await Wishlist.findOne({ userId })
+    .populate("products.productId", "productName brandName category featuredProduct variations thumbnailImage createdAt")
+    .lean();
+
+  if (!wishlist || !wishlist.products?.length) {
+    throw new ApiError("No products in wishlist", 400);
+  }
+
+  const totalCount = wishlist.products.length;
+  const slice = wishlist.products.slice(skip, skip + limit);
+
+  const products = slice
+    .map(({ productId: p }) => {
+      if (!p) return null;
+
+      const variations = (p.variations || []).map((v) => {
+        const priceWithGst = addGST(v.price);              // MRP + GST
+        const gstDiff = priceWithGst - v.price;            // GST amount
+        return {
+          ...v,
+          price: priceWithGst,
+          discountPrice:
+            v.discountPrice != null
+              ? Math.round((v.discountPrice + gstDiff) * 100) / 100
+              : null,
+        };
+      });
+
+      return {
+        _id: p._id,
+        productName: p.productName,
+        brandName: p.brandName,
+        category: p.category,
+        featuredProduct: p.featuredProduct,
+        thumbnailImage: p.thumbnailImage,
+        createdAt: p.createdAt,
+        variations,
+        isInWishlist: true,
+      };
+    })
+    .filter(Boolean);
 
 
-        
 
-    if (!wishList || wishList.length === 0) {
-        throw new ApiError("No products in wishlist", 400);
-    }
-
-    const totalPages = Math.ceil(await Wishlist.countDocuments({userId})/limit)
-
-    sendResponse(res, 200, {wishList, totalPages, activePage:page}, "Wishlist products fetched successfully");
+  sendResponse(res, 200, {
+    wishList:products,
+    totalPages: Math.ceil(totalCount / limit),
+    activePage: page,
+    pageSize: limit,
+    totalCount,
+  }, "Wishlist products fetched successfully");
 });
