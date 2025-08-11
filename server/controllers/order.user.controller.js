@@ -170,17 +170,19 @@ export const createOrder = asyncHandler(async (req, res) => {
   }
 });
 
-
 export const myOrders = asyncHandler(async (req, res) => {
   const userId = req.user.id;
   const page = parseInt(req.validatedData.params.page, 10) || 1;
   const limit = parseInt(req.validatedData.params.limit, 10) || 10;
   const skip = (page - 1) * limit;
 
+  const GST_RATE = 0.12;
+  const addGST = (n) => (n == null ? null : Math.round(n * (1 + GST_RATE) * 100) / 100);
+
   const toPlainAttributes = (attrs) => {
     if (!attrs) return null;
     if (attrs instanceof Map) return Object.fromEntries(attrs);
-    if (typeof attrs === "object" && !Array.isArray(attrs)) return attrs; // already plain object
+    if (typeof attrs === "object" && !Array.isArray(attrs)) return attrs;
     return null;
   };
 
@@ -206,7 +208,7 @@ export const myOrders = asyncHandler(async (req, res) => {
           brandName: "",
           thumbnail: "",
           quantity: item.quantity,
-          linePrice: item.price,
+          linePriceStored: item.price,
           selectedVariation: null,
           allVariations: [],
         };
@@ -217,18 +219,47 @@ export const myOrders = asyncHandler(async (req, res) => {
         (v) => v._id.toString() === item.variationId.toString()
       );
 
-      const allVariations = variations.map((v) => ({
-        _id: v._id,
-        size: v.size,
-        color: v.color,
-        price: v.price,
-        discountPrice: v.discountPrice ?? null,
-        quantity: v.quantity,
-        inStock: v.inStock,
-        attributes: toPlainAttributes(v.attributes),
-        thumbnailImage: v.thumbnailImage,
-        images: v.images,
-      }));
+      // All variations with GST-adjusted pricing
+      const allVariations = variations.map((v) => {
+        const priceWithGst = addGST(v.price);
+        const gstDiff = priceWithGst - v.price;
+        return {
+          _id: v._id,
+          size: v.size,
+          color: v.color,
+          price: priceWithGst, // MRP + GST
+          discountPrice:
+            v.discountPrice != null
+              ? Math.round((v.discountPrice + gstDiff) * 100) / 100
+              : null,
+          quantity: v.quantity,
+          inStock: v.inStock,
+          attributes: toPlainAttributes(v.attributes),
+          thumbnailImage: v.thumbnailImage,
+          images: v.images,
+        };
+      });
+
+      // Selected variation with GST-adjusted pricing
+      let selected = null;
+      if (selectedVariation) {
+        const selPriceWithGst = addGST(selectedVariation.price);
+        const selGstDiff = selPriceWithGst - selectedVariation.price;
+        selected = {
+          _id: selectedVariation._id,
+          size: selectedVariation.size,
+          color: selectedVariation.color,
+          price: selPriceWithGst,
+          discountPrice:
+            selectedVariation.discountPrice != null
+              ? Math.round((selectedVariation.discountPrice + selGstDiff) * 100) / 100
+              : null,
+          attributes: toPlainAttributes(selectedVariation.attributes),
+          inStock: selectedVariation.inStock,
+          images: selectedVariation.images,
+          thumbnailImage: selectedVariation.thumbnailImage,
+        };
+      }
 
       return {
         productId: product._id,
@@ -239,20 +270,8 @@ export const myOrders = asyncHandler(async (req, res) => {
           product.thumbnailImage?.secureUrl ||
           "",
         quantity: item.quantity,
-        linePrice: item.price,
-        selectedVariation: selectedVariation
-          ? {
-              _id: selectedVariation._id,
-              size: selectedVariation.size,
-              color: selectedVariation.color,
-              price: selectedVariation.price,
-              discountPrice: selectedVariation.discountPrice ?? null,
-              attributes: toPlainAttributes(selectedVariation.attributes),
-              inStock: selectedVariation.inStock,
-              images: selectedVariation.images,
-              thumbnailImage: selectedVariation.thumbnailImage,
-            }
-          : null,
+        linePriceStored: item.price, // price captured at order time
+        selectedVariation: selected,
         allVariations,
       };
     });
@@ -268,7 +287,7 @@ export const myOrders = asyncHandler(async (req, res) => {
 
   const totalOrders = await Order.countDocuments({ userId });
   const totalPages = Math.ceil(totalOrders / limit);
-   console.log("formattedOrders",formattedOrders[0].products[0].allVariations)
+
   sendResponse(
     res,
     200,
@@ -276,6 +295,7 @@ export const myOrders = asyncHandler(async (req, res) => {
     "Orders fetched successfully"
   );
 });
+
 
 
 
