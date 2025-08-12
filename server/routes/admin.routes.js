@@ -15,7 +15,7 @@ import { createProduct, deleteProduct, editProduct, getAdminAllProducts, getAdmi
 import { addBannerImage, editBannerImages, getAllBanners } from '../controllers/banner.controller.js';
 import { searchProduct } from '../controllers/user.miscellaneous.controller.js';
 import { searchProductParamsSchema } from '../validator/user.product.validator.js';
-import { changeOrderStatus, fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
+import { approveExchangeRequest, changeOrderStatus, fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
 import { approveExchangeRequestParamsSchema, changeOrderStatusBodySchema, fetchAllOrdersForAdminSchema, getSingleOrderQuerySchema } from '../validator/order.validator.js';
 import { fetchAllUsers, getSalesDashboardData, getSalesData, getUser, searchProductForAdmin } from '../controllers/admin.miscellaneous.controller.js';
 import { getLineChartSalesDataQuerySchema, getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
