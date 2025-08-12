@@ -19,10 +19,8 @@ const otpStore = new Map()
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,          // HTTPS only
-  sameSite: "None",      // cross-site
-  path: "/",             // IMPORTANT
-  domain: ".chhaapp.in", // IMPORTANT (covers www + admin)
+  secure: true,          
+  sameSite: "None",      
 };
 
 
@@ -171,8 +169,8 @@ export const signin= asyncHandler(async(req,res)=>{
     existingUser.refreshAccessToken = refreshAccessToken;
     await existingUser.save();
 
-    res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    // res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
+    // res.setHeader('Access-Control-Allow-Credentials', 'true');
 
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
@@ -193,7 +191,6 @@ export const signout = asyncHandler(async (req, res) => {
     httpOnly: true,
     secure: true,
     sameSite: "None",
-    path: "/",
   };
 
   // Use the identical options to clear the cookies.
