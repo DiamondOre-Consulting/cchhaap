@@ -3,6 +3,7 @@ import Product from "../models/product.model.js"
 import ApiError from "../utils/apiError.js"
 import { asyncHandler } from "../utils/asyncHandler.js"
 import sendResponse from "../utils/sendResponse.js"
+import mongoose from "mongoose"
 
 
 
@@ -131,7 +132,7 @@ export const exchangeOrder = asyncHandler(async (req, res) => {
 
     // swap variation (do NOT change quantity)
     item.variationId = newVarId;
-
+    item.exchange_applied = true;
     await product.save({ session });
     await order.save({ session });
   });

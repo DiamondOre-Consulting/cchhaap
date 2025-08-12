@@ -23,10 +23,14 @@ const ordersSchema = new mongoose.Schema({
                 type: Number ,
                  required: true 
                 },
-            price :{
+            price:{
                 type: Number, 
-                required: true
-            }
+                required:true
+            },
+            exchange_applied:{
+                type:Boolean,
+                default:false
+            },
         }]
     },
     totalAmount :{
@@ -46,6 +50,7 @@ const ordersSchema = new mongoose.Schema({
         type:Number,
         required:true
     },
+   
     order_status:{ 
         type: String, 
         enum: ["pending", "shipped", "delivered", "cancelled","exchanged"], 
