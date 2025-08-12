@@ -6,7 +6,7 @@ import { userMiddleware } from "../middlewares/user.middleware.js"
 import { addAddressBodySchema, deleteAddressParamsSchema, editAddressBodySchema, editAddressParamsSchema } from "../validator/address.validator.js"
 import { removeItemFromCartParamsSchema, updateCartParamsSchema } from "../validator/cart.validator.js"
 import { getCart, getNavbarCartAndWishlistCount, removeItemFromCart, updateCart } from "../controllers/cart.controller.js"
-import { createOrder, getSingleOrder, myOrders } from "../controllers/order.user.controller.js"
+import { createOrder, exchangeOrder, getSingleOrder, myOrders } from "../controllers/order.user.controller.js"
 import { createOrderBodySchema, createOrderQuerySchema, exchangeOrderParamsSchema, getSingleOrderParamsSchema, getSingleOrderQuerySchema, myOrdersParamsSchema } from "../validator/order.validator.js"
 import { getAdminAllProducts, getAdminSingleProduct } from "../controllers/admin.product.controller.js"
 import { deleteProductParamsSchema, getAdminAllProductsParamsSchema, getAdminAllProductsQuerySchema } from "../validator/admin.product.validator.js"
@@ -24,7 +24,7 @@ import { buyNowCheckoutValuesParamsSchema } from "../validator/checkoutValues.va
 import { checkoutPayment, razorpayKey, verifyPayment } from "../controllers/payment.controller.js"
 import { checkoutPaymentQuerySchema, verifyPaymentBodySchema } from "../validator/payment.validator.js"
 import { searchProduct } from "../controllers/user.miscellaneous.controller.js"
-import { exchangeOrder } from "../controllers/order.admin.controller.js"
+
 
 
 
