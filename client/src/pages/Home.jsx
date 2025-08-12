@@ -22,8 +22,9 @@ const Home = () => {
     
   return (
     <>
+      <Suspense fallback={<LoadingPlaceholder />}>
       <Hero />
-      
+      </Suspense>
       <Suspense fallback={<LoadingPlaceholder />}>
         <Categories />
       </Suspense>

@@ -29,13 +29,26 @@ const Login = () => {
     e.preventDefault();
     setLoader(true);
     try {
+
+if (!formData?.email || !formData?.password) {
+  toast.error("All fields are required");
+  return;
+}
+
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(formData.email)) {
+    toast.error("Please enter a valid email address");
+    return;
+  }
+
       if (!formData?.password || formData.password.length < 6) {
         toast.error("Password must contain at least 6 characters");
       }
       const response = await dispatch(userSignin(formData));
       console.log(response);
       if (response?.payload?.statusCode === 200) {
-        toast.success("user logged in successfully")
+        // toast.success("user logged in successfully")
         dispatch(getNavbarCartWishlistCount())
         navigate("/");
       }

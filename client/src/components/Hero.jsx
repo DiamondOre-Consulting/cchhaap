@@ -1,19 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
-import "swiper/css/pagination";
 import "swiper/css/effect-fade";
-import { Autoplay, EffectFade, Pagination } from "swiper/modules";
+import { Autoplay, EffectFade } from "swiper/modules";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { GetAllBannerImages } from "../Redux/Slices/authSlice";
 
 const Hero = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
   const dispatch = useDispatch();
-  const [swiper, setSwiper] = useState(null);
   const [images, setImages] = useState([]);
-  const [isMobile, setIsMobile] = useState(false);
 
   const handleGetAllImage = async () => {
     try {
@@ -26,43 +22,19 @@ const Hero = () => {
 
   useEffect(() => {
     handleGetAllImage();
-    
-    // Handle mobile detection safely
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    
-    return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
-
-  useEffect(() => {
-    if (swiper && images.length > 0) {
-      swiper.autoplay.start();
-      swiper.changeDirection(isMobile ? "horizontal" : "vertical");
-    }
-  }, [swiper, images, isMobile]);
 
   return (
     <div className="relative h-[60vh] md:h-screen">
       <Swiper
-        modules={[Autoplay, EffectFade, Pagination]}
-        onSwiper={setSwiper}
+        modules={[Autoplay, EffectFade]}
         autoplay={{
           delay: 4000,
           disableOnInteraction: false,
         }}
-        direction={isMobile ? "horizontal" : "vertical"}
-        pagination={{
-          clickable: true,
-          dynamicBullets: true,
-          horizontalClass: isMobile ? "swiper-pagination-horizontal" : "",
-        }}
+        effect="fade"
         loop={true}
         className="w-full h-full"
-        onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
       >
         {images.map((slide, index) => (
           <SwiperSlide key={index}>
@@ -95,32 +67,6 @@ const Hero = () => {
           </Link>
         </div>
       </div>
-
-      <style jsx>{`
-        .swiper-pagination {
-          ${isMobile ? `
-            bottom: 10px !important;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: center;
-          ` : `
-            right: 10px !important;
-            top: 50% !important;
-            transform: translateY(-50%);
-            flex-direction: column;
-          `}
-        }
-        .swiper-pagination-bullet {
-          background: white;
-          opacity: 0.6;
-          margin: ${isMobile ? "0 4px" : "6px 0"};
-        }
-        .swiper-pagination-bullet-active {
-          background: #000000;
-          opacity: 1;
-        }
-      `}</style>
     </div>
   );
 };

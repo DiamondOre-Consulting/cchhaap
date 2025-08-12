@@ -25,7 +25,7 @@ const App = () => {
     <Routes>
       <Route path="/" element={<Login />} />
       {/* <Route element={<HomeLayout />}> */}
-       {/* <Route element={<ProtectedRoute />}> */}
+       <Route element={<ProtectedRoute />}>
         <Route path="/admin-dashboard" element={<Home />} />
         <Route path="/manage-category" element={<Category />} />
         <Route path="/manage-coupons" element={<Coupons />} />
@@ -34,7 +34,7 @@ const App = () => {
         <Route path="/manage-variations" element={<Variations />} />
         <Route path="/manage-banner" element={<ManageBanners/>}/>
         <Route path="/customers" element={<Customers/>}/>
-        {/* </Route> */}
+        </Route>
           <Route path="/reset-password/:token/:email/:expiry" element={<ResetPassword/>}/> 
       {/* </Route> */}
     </Routes>

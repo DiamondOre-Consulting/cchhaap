@@ -7,12 +7,14 @@ import { Navigate, Outlet, useLocation } from 'react-router-dom';
 const ProtectedRoute = () => {
     const dispatch = useDispatch();
     const [isLoggedIn, setIsLoggedIn] = useState();
-    const location = useLocation();
+    const location = useLocation()
+    console.log(location)
 
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await dispatch(adminData());
+                console.log("adminData",res)
                 if (res?.payload?.success) {
                     setIsLoggedIn(true);
                 }

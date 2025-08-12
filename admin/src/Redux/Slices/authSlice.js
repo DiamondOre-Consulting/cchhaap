@@ -75,10 +75,10 @@ export const changePassword = createAsyncThunk(
 );
 
 export const adminData = createAsyncThunk(
-  "/admin/get-user-profile",
+  "/admin/get-profile",
   async () => {
     try {
-      const response = await adminAxiosInstance.get("/get-user-profile");
+      const response = await adminAxiosInstance.get("/get-admin");
       return response?.data;
     } catch (error) {
       console.log(error);
