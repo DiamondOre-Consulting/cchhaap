@@ -50,6 +50,8 @@ export const fetchAllOrdersForAdmin = asyncHandler(async (req, res) => {
         variationId: item.variationId,
         size: variation?.size || "",
         color: variation?.color || {},
+        exchanged:item.exchanged,
+        exchangeApplied: item.exchange_applied || false,
         thumbnail: variation?.thumbnailImage?.secureUrl || "",
         quantity: item.quantity,
         price: item.price,
