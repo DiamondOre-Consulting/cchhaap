@@ -22,6 +22,7 @@ const cookieOptions = {
     secure: true,
     sameSite: "None",
     path: "/",
+    domain:".chhaapp.in"
 };
 
 
