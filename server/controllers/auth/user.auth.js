@@ -18,10 +18,13 @@ import Address from "../../models/address.model.js";
 const otpStore = new Map()
 
 const cookieOptions = {
-   httpOnly: true,
-    secure: true,
-    sameSite: "None",
+  httpOnly: true,
+  secure: true,          // HTTPS only
+  sameSite: "None",      // cross-site
+  path: "/",             // IMPORTANT
+  domain: ".chhaapp.in", // IMPORTANT (covers www + admin)
 };
+
 
 
 
@@ -167,7 +170,7 @@ export const signin= asyncHandler(async(req,res)=>{
     const refreshAccessToken = await existingUser.generateRefreshToken();
     existingUser.refreshAccessToken = refreshAccessToken;
     await existingUser.save();
-    
+
     res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
 

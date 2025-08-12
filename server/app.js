@@ -12,6 +12,7 @@ import cors from 'cors'
 // import paymentRouter from "./routes/payment.route.js"
 const app= express()
 config()
+app.set("trust proxy", 1);
 
 // app.use(rateLimiter)
 app.use(express.json())
