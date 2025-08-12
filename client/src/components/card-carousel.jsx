@@ -1,12 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import AOS from "aos";
-import "aos/dist/aos.css";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
-
 import {
   Autoplay,
   EffectCoverflow,
@@ -14,15 +11,21 @@ import {
   Pagination,
 } from "swiper/modules";
 
-import { SparklesIcon } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
-
 export const CardCarousel = ({
   images,
   autoplayDelay = 1000,
   showPagination = true,
   showNavigation = true,
 }) => {
+  const [swiperReady, setSwiperReady] = useState(false);
+
+  useEffect(() => {
+    // This will ensure Swiper is properly initialized when images change
+    setSwiperReady(false);
+    const timer = setTimeout(() => setSwiperReady(true), 100);
+    return () => clearTimeout(timer);
+  }, [images]);
+
   const css = `
     .card-carousel .swiper {
       width: 100%;
@@ -50,24 +53,29 @@ export const CardCarousel = ({
     }
   `;
 
+  if (!swiperReady) return null;
+
   return (
     <section className="card-carousel w-full py-10">
       <style>{css}</style>
-      <div className="mx-auto w-full w-full ">
-        <div className="relative mx-auto flex w-full flex-col    p-2 shadow-sm md:items-start md:gap-8  md:p-2">
-          <div data-aos="fade-up" className="text-4xl py-10 text-center mx-auto flex justify-center items-center  uppercase tracking-tight">
+      <div className="mx-auto w-full">
+        <div className="relative mx-auto flex w-full flex-col p-2 shadow-sm md:items-start md:gap-8 md:p-2">
+          <div 
+            data-aos="fade-up" 
+            className="text-4xl py-10 text-center mx-auto flex justify-center items-center uppercase tracking-tight"
+          >
             Featured Products
           </div>
-
-          <div className="flex flex-col justify-center pb-2 pl-4  md:items-center"></div>
 
           <div className="flex w-full items-center justify-center gap-4">
             <div className="w-full">
               <Swiper
+                key={images.length} // This forces re-render when images change
                 spaceBetween={50}
                 autoplay={{
                   delay: autoplayDelay,
                   disableOnInteraction: false,
+                  pauseOnMouseEnter: true,
                 }}
                 effect="coverflow"
                 grabCursor={true}
@@ -80,43 +88,27 @@ export const CardCarousel = ({
                   depth: 100,
                   modifier: 2.5,
                 }}
-                pagination={showPagination}
+                pagination={showPagination ? { clickable: true } : false}
                 navigation={
                   showNavigation
                     ? {
                         nextEl: ".swiper-button-next",
                         prevEl: ".swiper-button-prev",
                       }
-                    : undefined
+                    : false
                 }
                 modules={[EffectCoverflow, Autoplay, Pagination, Navigation]}
+                onInit={() => setSwiperReady(true)}
               >
                 {images.map((image, index) => (
-                  <SwiperSlide key={`slide-1-${index}`} >
+                  <SwiperSlide key={`slide-${index}`}>
                     <div onClick={image.onClick} className="size-full relative">
                       <img
                         src={image.src}
-                        className="size-full"
-                        alt={image.alt}
+                        className="size-full object-cover"
+                        alt={image.alt || image.title}
+                        loading="lazy"
                       />
-                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit text-black text-md text-center flex justify-center items-center bg-white px-4 py-2">
-                        {image.title}
-                      </div>
-                    </div>
-                  </SwiperSlide>
-                ))}
-
-                {images.map((image, index) => (
-                  <SwiperSlide key={`slide-2-${index}`}>
-                    <div onClick={image.onClick} className="size-full relative">
-                      <img
-                        src={image.src}
-                        width={200}
-                        height={200}
-                        className="size-full "
-                        alt={image.alt}
-                      />
-
                       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 w-fit text-black text-md text-center flex justify-center items-center bg-white px-4 py-2">
                         {image.title}
                       </div>

@@ -64,7 +64,38 @@ const Testimonial = () => {
   };
 
   return (
-    <section className="py-12 ">
+    <section className="py-12 relative"> {/* Added relative positioning */}
+      <style jsx>{`
+        .swiper-button-next,
+        .swiper-button-prev {
+          color: #ffffff; /* Change this to your desired color (white in this case) */
+          background: rgba(0, 0, 0, 0.5); /* Optional: adds background */
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          transition: all 0.3s ease;
+        }
+        
+        .swiper-button-next:hover,
+        .swiper-button-prev:hover {
+          background: rgba(0, 0, 0, 0.8); /* Darker on hover */
+        }
+        
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+          font-size: 20px; /* Adjust arrow size */
+          font-weight: bold;
+        }
+        
+        .swiper-pagination-bullet {
+          background: #ffffff; /* Change pagination bullet color */
+        }
+        
+        .swiper-pagination-bullet-active {
+          background: #ffffff; /* Change active bullet color */
+        }
+      `}</style>
+
       <div className="container mx-auto px-4">
         <h2 className="text-3xl font-bold text-center text-gray-100 mb-2">What Our Customers Say</h2>
         <p className="text-center text-gray-200 mb-12 max-w-2xl mx-auto">
@@ -75,27 +106,25 @@ const Testimonial = () => {
           modules={[Pagination, Navigation]}
           spaceBetween={30}
           slidesPerView={1}
-          pagination={{ clickable: true }}
-          navigation
+          pagination={{ 
+            clickable: true,
+            dynamicBullets: true 
+          }}
+          navigation={{
+            nextEl: '.swiper-button-next',
+            prevEl: '.swiper-button-prev',
+          }}
           breakpoints={{
-            640: {
-              slidesPerView: 1,
-            },
-            768: {
-              slidesPerView: 2,
-            },
-            1024: {
-              slidesPerView: 3,
-            },
+            640: { slidesPerView: 1 },
+            768: { slidesPerView: 2 },
+            1024: { slidesPerView: 3 },
           }}
           className="pb-12"
         >
           {testimonials.map((testimonial) => (
             <SwiperSlide key={testimonial.id}>
               <div className="bg-c2 p-6 rounded-lg shadow-md h-full flex flex-col">
-                <div className="mb-4">
-                  {renderStars(testimonial.rating)}
-                </div>
+                <div className="mb-4">{renderStars(testimonial.rating)}</div>
                 <p className="text-c1 mb-6 flex-grow">"{testimonial.comment}"</p>
                 <div className="mt-auto">
                   <h4 className="font-semibold text-gray-800">{testimonial.name}</h4>
@@ -103,6 +132,10 @@ const Testimonial = () => {
               </div>
             </SwiperSlide>
           ))}
+          
+          {/* Custom navigation buttons */}
+          <div className="swiper-button-next"></div>
+          <div className="swiper-button-prev"></div>
         </Swiper>
       </div>
     </section>

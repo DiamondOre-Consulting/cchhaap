@@ -15,17 +15,6 @@ const Hero = () => {
   const [images, setImages] = useState([]);
   const [isMobile, setIsMobile] = useState(false);
 
-  useEffect(() => {
-    // Check if mobile device
-    const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkIfMobile();
-    window.addEventListener('resize', checkIfMobile);
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
-
   const handleGetAllImage = async () => {
     try {
       const res = await dispatch(GetAllBannerImages());
@@ -37,24 +26,22 @@ const Hero = () => {
 
   useEffect(() => {
     handleGetAllImage();
+    
+    // Handle mobile detection safely
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
-  // Fix for autoplay on mobile
   useEffect(() => {
     if (swiper && images.length > 0) {
-      // For mobile devices, we need to manually start autoplay after user interaction
-      const handleFirstInteraction = () => {
-        swiper.autoplay.start();
-        document.removeEventListener('click', handleFirstInteraction);
-        document.removeEventListener('touchstart', handleFirstInteraction);
-      };
-
-      if (isMobile) {
-        document.addEventListener('click', handleFirstInteraction);
-        document.addEventListener('touchstart', handleFirstInteraction);
-      } else {
-        swiper.autoplay.start();
-      }
+      swiper.autoplay.start();
+      swiper.changeDirection(isMobile ? "horizontal" : "vertical");
     }
   }, [swiper, images, isMobile]);
 
@@ -66,18 +53,14 @@ const Hero = () => {
         autoplay={{
           delay: 4000,
           disableOnInteraction: false,
-          pauseOnMouseEnter: false,
-          waitForTransition: true,
         }}
         direction={isMobile ? "horizontal" : "vertical"}
-        pagination={{ 
+        pagination={{
           clickable: true,
           dynamicBullets: true,
-          dynamicMainBullets: 3
+          horizontalClass: isMobile ? "swiper-pagination-horizontal" : "",
         }}
         loop={true}
-        // effect="fade"
-        // fadeEffect={{ crossFade: true }}
         className="w-full h-full"
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
       >
@@ -88,7 +71,7 @@ const Hero = () => {
                 src={slide.secureUrl}
                 className="w-full h-full object-cover"
                 alt={`Slide ${index + 1}`}
-                loading="eager"
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black/20" />
             </div>
@@ -102,9 +85,6 @@ const Hero = () => {
           <Link
             to="/all-products"
             className="group relative inline-flex h-12 items-center justify-center overflow-hidden font-medium"
-            onClick={() => {
-              if (swiper) swiper.autoplay.stop();
-            }}
           >
             <div className="inline-flex border border-neutral-200 h-12 translate-x-0 items-center justify-center uppercase px-6 text-neutral-100 transition group-hover:-translate-x-[150%]">
               Explore Products
@@ -118,27 +98,27 @@ const Hero = () => {
 
       <style jsx>{`
         .swiper-pagination {
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
-          display: flex;
-          flex-direction: ${isMobile ? "row" : "column"};
-          align-items: center;
-          justify-content: center;
-          gap: 6px;
+          ${isMobile ? `
+            bottom: 10px !important;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+          ` : `
+            right: 10px !important;
+            top: 50% !important;
+            transform: translateY(-50%);
+            flex-direction: column;
+          `}
         }
         .swiper-pagination-bullet {
           background: white;
           opacity: 0.6;
-          width: ${isMobile ? "8px" : "6px"};
-          height: ${isMobile ? "8px" : "6px"};
-          transition: all 0.3s ease;
+          margin: ${isMobile ? "0 4px" : "6px 0"};
         }
         .swiper-pagination-bullet-active {
           background: #000000;
           opacity: 1;
-          width: ${isMobile ? "12px" : "8px"};
-          height: ${isMobile ? "12px" : "8px"};
         }
       `}</style>
     </div>
