@@ -266,12 +266,12 @@ export const editProfile = asyncHandler(async(req,res)=>{
     const {phoneNumber}= req.validatedData.body
    
 
-    if (req.validatedData.body.userAddresses) {
-        const defaultCount = req.validatedData.body.userAddresses.filter(addr => addr.isDefault).length;
-        if (defaultCount > 1) {
-            throw new ApiError("Only one address can be marked as default", 400);
-        }
-    }
+    // if (req.validatedData.body.userAddresses) {
+    //     const defaultCount = req.validatedData.body.userAddresses.filter(addr => addr.isDefault).length;
+    //     if (defaultCount > 1) {
+    //         throw new ApiError("Only one address can be marked as default", 400);
+    //     }
+    // }
 
     const sameUserWithSamePhoneNumber = await User.findOne({
       phoneNumber,
@@ -285,22 +285,8 @@ export const editProfile = asyncHandler(async(req,res)=>{
 
     Object.assign(existingUser, req.validatedData.body);
 
-    const address= await Address.findOne({userId})
 
-    console.log(address)
-   
-    if (!address) {
-        const newAddress=await Address.create({ userId, addresses: req.validatedData.body.userAddresses });
-        existingUser.address=newAddress._id
-    } else {
-     
-        address.addresses = req.validatedData.body.userAddresses;        
-        await address.save();
-    }
-    
     await existingUser.save()
-
-    console.log(existingUser)
     
     sendResponse(res,200,null,"user updated successfully") 
 

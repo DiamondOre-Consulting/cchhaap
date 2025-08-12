@@ -34,3 +34,9 @@ export const forgotPasswordBodySchema = z.object({
 export const resetPasswordParamsSchema = z.object({
     resetToken : z.string().trim()
 })
+
+
+export const editProfileBodySchema = z.object({
+    fullName: z.string().optional(),
+    phoneNumber: z.string().regex(/^\d{10}$/).transform(val => (val === "" ? null : val)).optional(),
+  });

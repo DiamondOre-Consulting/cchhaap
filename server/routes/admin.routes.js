@@ -161,7 +161,7 @@ adminRouter.post('/forgot-password', validate({body:forgotPasswordBodySchema}),f
 adminRouter.get('/get-line-chart-sales-data',validate({query:getLineChartSalesDataQuerySchema}),adminMiddleware,getSalesDashboardData)
 
 
-adminRouter.get('get-admin',adminMiddleware,getAdmin)
+adminRouter.get('/get-admin',adminMiddleware,getAdmin)
 
 
 adminRouter.put('/approve-exchange-request/:orderId/:variationId',adminMiddleware,validate({
