@@ -101,3 +101,22 @@ export const changeOrderStatus = asyncHandler(async (req, res) => {
 
 
 
+export const approveExchangeRequest = asyncHandler(async (req, res) => {
+  const { orderId, variationId } = req.validatedData.params;
+  const order = await Order.findById(orderId);
+  if (!order) {
+    throw new ApiError("Order not found", 400);
+  }
+  const item = order.products.find((i) => i.variationId.toString() === variationId.toString());
+  if (!item) {
+    throw new ApiError("Item not found in order", 400);
+  }
+  item.exchanged = true;
+  await order.save();
+  sendResponse(res, 200, {
+    message: "Exchange request approved successfully",
+  });
+});
+
+
+

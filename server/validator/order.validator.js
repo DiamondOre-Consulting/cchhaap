@@ -56,3 +56,10 @@ export const exchangeOrderParamsSchema = z.object({
     variationId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" }),
     oldVariationId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" })
 })
+
+
+
+export const approveExchangeRequestParamsSchema = z.object({
+    orderId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid order ID format" }),
+    variationId:z.string().regex(/^[0-9a-fA-F]{24}$/, { message: "Invalid variation ID format" })
+})

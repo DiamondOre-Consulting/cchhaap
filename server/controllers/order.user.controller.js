@@ -434,8 +434,14 @@ export const exchangeOrder = asyncHandler(async (req, res) => {
       throw new ApiError("Order is not eligible for exchange", 400);
     }
 
+
+
     const item = order.products.find(i => i.variationId.toString() === oldVariationId.toString());
     if (!item) throw new ApiError("Item not found in order", 400);
+
+    if (item.exchange_applied) {
+      throw new ApiError("Item has already been exchanged", 400);
+    }
 
     const product = await Product.findById(item.productId).session(session);
     if (!product) throw new ApiError("Product not found", 404);

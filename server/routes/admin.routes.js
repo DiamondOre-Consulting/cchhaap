@@ -164,6 +164,11 @@ adminRouter.get('/get-line-chart-sales-data',validate({query:getLineChartSalesDa
 adminRouter.get('get-admin',adminMiddleware,getAdmin)
 
 
+adminRouter.put('/approve-exchange-request/:orderId/:variationId',adminMiddleware,validate({
+    params:approveExchangeRequestParamsSchema
+}),approveExchangeRequest)
+
+
 
 
 
