@@ -353,9 +353,7 @@ const Orders = () => {
                             </button>
                           </td>
 
-                          {order?.products?.map((pro) => (
-                            <div className="size-2 top-3 bg-red-400 absolute left-2 rounded-full aniamte-pulse"></div>
-                          ))}
+                     
                         </tr>
                       ))
                     ) : (
