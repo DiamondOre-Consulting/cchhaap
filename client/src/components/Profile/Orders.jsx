@@ -433,6 +433,8 @@ const Orders = () => {
                           key={index}
                           className="flex flex-col  border-b border-gray-100 pb-6 mb-6"
                         >
+
+                          <div className="flex ">
                           <div className="flex-shrink-0">
                             <img
                               src={product.thumbnail}
@@ -440,7 +442,7 @@ const Orders = () => {
                               className="w-28 h-28 object-contain rounded-lg border border-gray-200"
                             />
                           </div>
-                          <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
+                          <div className="mt-4  sm:mt-0 sm:ml-6 flex-1">
                             <h3 className="text-sm font-medium text-gray-800">
                               {product.productName}
                             </h3>
@@ -460,6 +462,8 @@ const Orders = () => {
                                   {product.quantity}
                                 </span>
                               </div>
+
+                            
                             </div>
 
                             {canExchange  && !product.exchangeApplied && (
@@ -626,6 +630,7 @@ const Orders = () => {
                                   </button>
                                 </div>
                               )}
+                          </div>
                           </div>
 
                             {product.exchangeApplied && (
