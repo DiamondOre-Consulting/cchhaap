@@ -229,3 +229,20 @@ export const forgotPassword = asyncHandler(async(req, res)=>{
     await sendMail(email, "Reset Password", emailTemplate);
     sendResponse(res, 200, null, "Password reset email sent successfully");
 });
+
+
+
+
+export const getAdmin = asyncHandler(async (req, res) => {
+  const userId = req.user.id;
+
+  const admin = await Admin.findById(userId)
+    .select("-password -resetPasswordToken -resetPasswordTokenExpires")
+    .lean();
+
+  if (!admin) {
+    throw new ApiError("Admin not found", 404);
+  }
+
+  sendResponse(res, 200, admin, "Admin fetched successfully");
+});

@@ -3,7 +3,7 @@ import { createCategory, createSubCategory, deleteCategory, deleteSubCategory, e
 import { multipleImageUpload, singleImageUpload } from '../middlewares/multer.middleware.js';
 import validate from '../middlewares/zod.validator.js';
 import { createCategoryBodySchema, createSubCategoryBodySchema, createSubCategoryParamsSchema, deleteCategoryParamsSchema, deleteSubCategoryBodySchema, deleteSubCategoryParamsSchema, editCategoryBodySchema, editCategoryParamsSchema, editSubCategoryBodySchema, editSubCategoryParamsSchema } from '../validator/category.validator.js';
-import { forgotPassword, resetPassword, signin, signout, signup } from '../controllers/auth/admin.auth.js';
+import { forgotPassword, getAdmin, resetPassword, signin, signout, signup } from '../controllers/auth/admin.auth.js';
 import { signinSchema, signupSchema } from '../validator/admin.auth.validator.js';
 import { adminMiddleware } from '../middlewares/admin.middleware.js';
 import { createCoupon, deleteCoupon, editCoupon, getAllCoupons } from '../controllers/coupon.controller.js';
@@ -159,6 +159,9 @@ adminRouter.post('/forgot-password', validate({body:forgotPasswordBodySchema}),f
 
 
 adminRouter.get('/get-line-chart-sales-data',validate({query:getLineChartSalesDataQuerySchema}),adminMiddleware,getSalesDashboardData)
+
+
+adminRouter.get('get-admin',adminMiddleware,getAdmin)
 
 
 
