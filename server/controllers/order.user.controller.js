@@ -35,7 +35,9 @@ export const createOrder = asyncHandler(async (req, res) => {
       if (!variation) throw new ApiError("Variation not found", 404);
       if (variation.quantity < quantity) throw new ApiError("Insufficient stock", 400);
       const gst= variation.price*0.12
+      console.log("gst",gst)
       const price = variation.discountPrice+gst+177 || variation.price+gst+177;
+      console.log("price",price)
       productsToOrder.push({
         productId,
         variationId,
@@ -56,8 +58,8 @@ export const createOrder = asyncHandler(async (req, res) => {
         );
         if (!variation) continue;
         if (variation.quantity < item.quantity) throw new ApiError("Insufficient stock", 400);
-
-        const price = variation.discountPrice || variation.price;
+        const gst= variation.price*0.12
+        const price = variation.discountPrice+gst+177 || variation.price+gst+177;
         productsToOrder.push({
           productId: product._id,
           variationId: item.variationId,
@@ -161,6 +163,8 @@ export const createOrder = asyncHandler(async (req, res) => {
       `New Order #${orderIdShort} Received – Chhaap`,
       `<h3>New order received from ${user.fullName || address.fullName}</h3>${emailHTML}`
     );
+
+    console.log(newOrder[0])
 
     sendResponse(res, 200, newOrder[0], "Order created successfully");
   } catch (err){
