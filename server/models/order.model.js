@@ -31,6 +31,11 @@ const ordersSchema = new mongoose.Schema({
                 type:Boolean,
                 default:false
             },
+            order_status:{ 
+                type: String, 
+                enum: ["pending", "shipped", "delivered", "cancelled","exchanged"], 
+                default: "pending" 
+            },
         }]
     },
     totalAmount :{
@@ -49,12 +54,6 @@ const ordersSchema = new mongoose.Schema({
     totalPriceAfterDiscount:{
         type:Number,
         required:true
-    },
-   
-    order_status:{ 
-        type: String, 
-        enum: ["pending", "shipped", "delivered", "cancelled","exchanged"], 
-        default: "pending" 
     },
     delivery_date: { type: Date, default: null },
     payment_status: { 
