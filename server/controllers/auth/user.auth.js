@@ -21,8 +21,6 @@ const cookieOptions = {
    httpOnly: true,
     secure: true,
     sameSite: "None",
-    path: "/",
-    domain:".chhaapp.in"
 };
 
 
