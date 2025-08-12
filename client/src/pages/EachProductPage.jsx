@@ -10,6 +10,100 @@ import {
   userUpdateCart,
 } from "@/Redux/Slices/cart";
 
+const ProductPageSkeleton = () => {
+  return (
+    <div className="animate-pulse">
+      <section className="py-14 md:py-10 relative overflow-hidden z-10">
+        <div className="container px-6 md:px-20 mx-auto">
+          <div className="grid grid-cols-5 gap-6">
+            <div className="col-span-5 lg:col-span-3">
+              <div className="lg:mr-6">
+                <div className="text-center flex md:flex-row flex-col-reverse gap-8 overflow-hidden m-2">
+
+                  <ul className="flex flex-nowrap gap-3 flex-row md:flex-col">
+                    {[...Array(4)].map((_, i) => (
+                      <li key={i} className="rounded overflow-hidden p-1">
+                        <div className="w-20 h-20 bg-gray-200/20 rounded"></div>
+                      </li>
+                    ))}
+                  </ul>
+                  
+                  {/* Main image */}
+                  <div className="max-w-[650px] w-full">
+                    <div className="h-[500px] bg-gray-200/20 rounded"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side - product details */}
+            <div className="col-span-5 lg:col-span-2">
+              <div className="mb-4">
+                <div className="h-8 bg-gray-200/20 rounded w-3/4 mb-4"></div>
+                <div className="h-4 bg-gray-200/20 rounded w-1/2 mb-6"></div>
+                
+                {/* Price */}
+                <div className="h-6 bg-gray-200/20 rounded w-1/3 mb-2"></div>
+                <div className="h-4 bg-gray-200/20 rounded w-1/4"></div>
+                
+                <div className="w-full bg-gray-200/20 mt-10 h-[1px]"></div>
+                <div className="h-4 bg-gray-200/20 rounded w-1/3 py-2"></div>
+              </div>
+
+              {/* Color variants */}
+              <div className="mb-6">
+                <div className="h-5 bg-gray-200/20 rounded w-1/3 mb-2"></div>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="w-20 h-20 bg-gray-200/20"></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Size variants */}
+              <div className="mb-6">
+                <div className="h-5 bg-gray-200/20 rounded w-1/3 mb-2"></div>
+                <div className="flex gap-2 mb-2 flex-wrap">
+                  {['XS', 'S', 'M', 'L', 'XL'].map((size) => (
+                    <div key={size} className="px-4 py-2 bg-gray-200 rounded w-12"></div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Attributes */}
+              <div className="space-y-6">
+                {[...Array(2)].map((_, i) => (
+                  <div key={i}>
+                    <div className="h-5 bg-gray-200 rounded w-1/4 mb-2"></div>
+                    <div className="flex gap-2">
+                      {[...Array(3)].map((_, j) => (
+                        <div key={j} className="h-10 bg-gray-200/20 rounded flex-1"></div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 items-center my-7">
+                <div className="border border-gray-200 bg-gray-200/20 text-gray-200 cursor-pointer text-sm uppercase px-6 py-4 md:px-12 md:min-w-[202px]"></div>
+                <div className="bg-gray-200 border cursor-pointer text-gray-200 text-sm uppercase px-10 py-4 md:px-12 md:min-w-[202px]"></div>
+              </div>
+
+              {/* Description */}
+              <div className="mt-10 space-y-2">
+                <div className="h-4 bg-gray-200/20 rounded w-full"></div>
+                <div className="h-4 bg-gray-200/20 rounded w-5/6"></div>
+                <div className="h-4 bg-gray-200/20 rounded w-4/6"></div>
+                <div className="h-4 bg-gray-200/20 rounded w-3/4"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
 
 const ProductPreviews = ({ previews }) => {
   const [index, setIndex] = useState(0);
@@ -170,10 +264,8 @@ const SizeVariant = ({
   colorSizeMap,
   groupedByColor,
 }) => {
-  // All possible sizes to display
   const allSizes = ["XS", "S", "M", "L", "XL", "XXL", "Free Size"];
 
-  // Get available sizes for the currently selected color
   const availableSizesForColor =
     colorSizeMap[selectedVariation?.color?.name] || [];
 
@@ -194,7 +286,6 @@ const SizeVariant = ({
               type="button"
               onClick={() => {
                 if (isAvailable) {
-                  // Find the variation with this size and current color
                   const colorGroup =
                     groupedByColor[selectedVariation.color.name];
                   const variation = colorGroup.variations.find(
@@ -231,7 +322,6 @@ const SizeVariant = ({
 const EachProductPage = () => {
   const { id } = useParams();
   const { cartCount } = useSelector((state) => state.cart);
-  console.log("cartCount", cartCount);
   const dispatch = useDispatch();
   const [singleData, setSingleData] = useState();
   const [selectedVariation, setSelectedVariation] = useState(null);
@@ -240,10 +330,8 @@ const EachProductPage = () => {
   const [isWish, setIsWish] = useState(false);
   const navigate = useNavigate();
   const [isUpdatingCart, setIsUpdatingCart] = useState(false);
-
   const [selectedAttributes, setSelectedAttributes] = useState({});
-
-  // const [selectedAttributes , setSelectedAttribute] = useState(null)
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     if (cartCount !== undefined) {
@@ -251,8 +339,8 @@ const EachProductPage = () => {
     }
   }, [cartCount]);
 
-  console.log("injsx", selectedAttributes);
   const handleGetSingleProduct = async () => {
+    setLoading(true);
     try {
       const payload = {
         id,
@@ -268,17 +356,14 @@ const EachProductPage = () => {
       setSingleData(productData);
 
       if (productData?.variations?.length > 0) {
-        // Find the variation that matches our current selection
         let matchingVariation;
 
-        // First try to find by variationId if we have one
         if (selectedVariation?._id) {
           matchingVariation = productData.variations.find(
             (v) => v._id === selectedVariation._id
           );
         }
 
-        // If not found by ID, try to match by attributes
         if (!matchingVariation) {
           matchingVariation = productData.variations.find((v) => {
             return (
@@ -291,13 +376,10 @@ const EachProductPage = () => {
           });
         }
 
-        // Fallback to first variation if no match found
         matchingVariation = matchingVariation || productData.variations[0];
-
         setSelectedVariation(matchingVariation);
         setSelectedSize(matchingVariation.size);
 
-        // Update selected attributes to match the found variation
         const newSelectedAttributes = { ...selectedAttributes };
         Object.entries(matchingVariation.attributes).forEach(([key, value]) => {
           newSelectedAttributes[key] = value;
@@ -306,6 +388,8 @@ const EachProductPage = () => {
       }
     } catch (error) {
       console.log(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -400,7 +484,6 @@ const EachProductPage = () => {
     };
     setSelectedAttributes(newAttributes);
 
-    // Find variation that matches all current selections
     if (singleData?.variations) {
       const matchingVariation = singleData.variations.find((v) => {
         return (
@@ -435,7 +518,7 @@ const EachProductPage = () => {
                     <button
                       key={option}
                       type="button"
-                      className={` w-full text-sm py-2 border ${
+                      className={`w-full text-sm py-2 border ${
                         selectedAttributes[attributeName] === option
                           ? "bg-c2 text-c1"
                           : "border-white"
@@ -466,14 +549,9 @@ const EachProductPage = () => {
     }
   }, [selectedSize, selectedVariation?.color?.name]);
 
-  //   const handleAttributeClick = (attributeName, option) => {
-  //   setSelectedAttributes(prev => ({
-  //     ...prev,
-  //     [attributeName]: option
-  //   }));
-  // };
-
-  console.log("selectedAttributeis", selectedAttributes);
+  if (loading) {
+    return <ProductPageSkeleton />;
+  }
 
   return (
     <div>
@@ -501,10 +579,7 @@ const EachProductPage = () => {
                       })}
                       {selectedVariation?.discountPrice > 0 && (
                         <span className="ml-2 text-sm line-through text-gray-200">
-                          {(
-                          
-                            selectedVariation.price
-                          ).toLocaleString("en-US", {
+                          {selectedVariation.price.toLocaleString("en-US", {
                             style: "currency",
                             currency: "INR",
                           })}
@@ -593,10 +668,8 @@ const EachProductPage = () => {
                       }
 
                       try {
-                   
                         const quantityToBuy = singleData?.cartQuantity || 1;
 
-                       
                         if (!singleData?.cartQuantity) {
                           await dispatch(
                             userUpdateCart({
