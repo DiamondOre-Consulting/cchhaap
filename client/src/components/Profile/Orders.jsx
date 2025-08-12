@@ -8,14 +8,15 @@ import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { ChevronUp, ChevronDown, X } from "lucide-react";
 
-
 const ExchangeRequestCard = ({ product }) => {
   return (
     <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
-        <h3 className="text-lg font-medium text-gray-800">Exchange Request Submitted</h3>
+        <h3 className="text-lg font-medium text-gray-800">
+          {product?.exchanged ? "Exchanged" : "Exchange Request Submitted"}{" "}
+        </h3>
         <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
-          Processing
+          {product?.exchanged ? "Exchanged" : " Processing"}
         </span>
       </div>
 
@@ -26,58 +27,78 @@ const ExchangeRequestCard = ({ product }) => {
           className="w-16 h-16 object-contain rounded border border-gray-200 mr-3"
         />
         <div>
-          <h4 className="text-sm font-medium text-gray-800">{product.productName}</h4>
+          <h4 className="text-sm font-medium text-gray-800">
+            {product.productName}
+          </h4>
           <p className="text-sm text-gray-600">
-            Size: <span className="font-medium">{product.selectedVariation.size}</span>
+            Size:{" "}
+            <span className="font-medium">
+              {product.selectedVariation.size}
+            </span>
           </p>
           <p className="text-sm text-gray-600">
-            Color: <span className="font-medium">{product.selectedVariation.color.name}</span>
+            Color:{" "}
+            <span className="font-medium">
+              {product.selectedVariation.color.name}
+            </span>
           </p>
         </div>
       </div>
 
-      <div className="bg-c1 backdrop-blur border-l-4 border-[#edb141] p-4 mb-4">
-        <div className="flex">
-          <div className="flex-shrink-0">
-            <svg
-              className="h-5 w-5 text-c2"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-            >
-              <path
-                fillRule="evenodd"
-                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <div className="ml-3">
-            <h3 className="text-sm font-medium text-c2">Next Steps</h3>
-            <div className="mt-2 text-sm text-c2">
-              <ul className="list-disc pl-5 space-y-1">
-                <li>Repack the item with original packaging and the original brand tags</li>
-                <li>Hand over the package to the delivery agent and collect the new package</li>
-              </ul>
+      {!product?.exchanged && (
+        <div className="bg-c1 backdrop-blur border-l-4 border-[#edb141] p-4 mb-4">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg
+                className="h-5 w-5 text-c2"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fillRule="evenodd"
+                  d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <h3 className="text-sm font-medium text-c2">Next Steps</h3>
+              <div className="mt-2 text-sm text-c2">
+                <ul className="list-disc pl-5 space-y-1">
+                  <li>
+                    Repack the item with original packaging and the original
+                    brand tags
+                  </li>
+                  <li>
+                    Hand over the package to the delivery agent and collect the
+                    new package
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className="text-xs text-gray-500">
-        <p>Our delivery partner will contact you within 24 hours to schedule pickup.</p>
-      </div>
+      {!product?.exchanged && (
+        <div className="text-xs text-gray-500">
+          <p>
+            Our delivery partner will contact you within 24 hours to schedule
+            pickup.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
-
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [exchangeOpen, setExchangeOpen] = useState(false);
+const [openExchangeId, setOpenExchangeId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [exchangeType, setExchangeType] = useState("size");
   const [selectedSize, setSelectedSize] = useState(null);
@@ -114,25 +135,24 @@ const Orders = () => {
     }
   };
 
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setSelectedOrder(null);
-    setExchangeOpen(false);
-    setSelectedProduct(null);
-  };
+const closeModal = () => {
+  setIsModalOpen(false);
+  setSelectedOrder(null);
+  setOpenExchangeId(null);
+  setSelectedProduct(null);
+};
   useEffect(() => {
     handleGetAllOrders();
   }, []);
-  const toggleExchange = (product) => {
-    setSelectedProduct(product);
-    setExchangeOpen(!exchangeOpen);
-
-    if (!exchangeOpen) {
-      setSelectedSize(null);
-      setSelectedColor(null);
-    }
-  };
-
+const toggleExchange = (product) => {
+  setSelectedProduct(product);
+  setOpenExchangeId(openExchangeId === product.productId ? null : product.productId);
+  
+  if (openExchangeId !== product.productId) {
+    setSelectedSize(null);
+    setSelectedColor(null);
+  }
+};
   const handleExchangeTypeChange = (type) => {
     setExchangeType(type);
   };
@@ -189,6 +209,7 @@ const Orders = () => {
 
       if (response?.payload?.success) {
         closeModal();
+          setOpenExchangeId(null);
         // Optionally show success notification
       }
     } catch (error) {
@@ -203,7 +224,7 @@ const Orders = () => {
     const deliveryDate = new Date(order.deliveryDate);
     const today = new Date();
     const exchangeEndDate = new Date(deliveryDate);
-    exchangeEndDate.setDate(deliveryDate.getDate() + 7); // Add 7 days to delivery date
+    exchangeEndDate.setDate(deliveryDate.getDate() + 7); 
 
     return today <= exchangeEndDate;
   };
@@ -390,6 +411,23 @@ const Orders = () => {
                       <p className="text-gray-500 text-sm">
                         Order #: {selectedOrder._id}
                       </p>
+
+                      {selectedOrder.orderStatus === "delivered" && (
+                        <p className="flex text-sm gap-x-2 border-t border-gray-500">
+                          <p>Delivered on </p>
+
+                          <p className="text-gray-500">
+                            {" "}
+                            {new Date(
+                              selectedOrder.deliveryDate
+                            ).toLocaleDateString("en-IN", {
+                              day: "numeric",
+                              month: "long",
+                              year: "numeric",
+                            })}
+                          </p>
+                        </p>
+                      )}
                     </div>
                     <div className="mt-2 md:mt-0">
                       <span
@@ -433,179 +471,180 @@ const Orders = () => {
                           key={index}
                           className="flex flex-col  border-b border-gray-100 pb-6 mb-6"
                         >
-
                           <div className="flex ">
-                          <div className="flex-shrink-0">
-                            <img
-                              src={product.thumbnail}
-                              alt={product.productName}
-                              className="w-28 h-28 object-contain rounded-lg border border-gray-200"
-                            />
-                          </div>
-                          <div className="mt-4  sm:mt-0 sm:ml-6 flex-1">
-                            <h3 className="text-sm font-medium text-gray-800">
-                              {product.productName}
-                            </h3>
-                            <div className="mt-1">
-                              <span className="text-lg font-semibold text-gray-900">
-                                {product.price?.toLocaleString("en-IN", {
-                                  style: "currency",
-                                  currency: "INR",
-                                  maximumFractionDigits: 0,
-                                })}
-                              </span>
+                            <div className="flex-shrink-0">
+                              <img
+                                src={product.thumbnail}
+                                alt={product.productName}
+                                className="w-28 h-28 object-contain rounded-lg border border-gray-200"
+                              />
                             </div>
-                            <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
-                              <div className="flex items-center">
-                                <span className="text-gray-500 mr-1">Qty:</span>
-                                <span className="font-medium">
-                                  {product.quantity}
+                            <div className="mt-4  sm:mt-0 sm:ml-6 flex-1">
+                              <h3 className="text-sm font-medium text-gray-800">
+                                {product.productName}
+                              </h3>
+                              <div className="mt-1">
+                                <span className="text-lg font-semibold text-gray-900">
+                                  {product.price?.toLocaleString("en-IN", {
+                                    style: "currency",
+                                    currency: "INR",
+                                    maximumFractionDigits: 0,
+                                  })}
                                 </span>
                               </div>
-
-                            
-                            </div>
-
-                            {canExchange  && !product.exchangeApplied && (
-                              <div
-                                className="text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer"
-                                onClick={() => toggleExchange(product)}
-                              >
-                                <span>Exchange Available</span>
-                                {exchangeOpen &&
-                                selectedProduct?._id === product._id ? (
-                                  <ChevronDown />
-                                ) : (
-                                  <ChevronUp />
-                                )}
+                              <div className="mt-2 flex flex-wrap gap-4 text-sm text-gray-600">
+                                <div className="flex items-center">
+                                  <span className="text-gray-500 mr-1">
+                                    Qty:
+                                  </span>
+                                  <span className="font-medium">
+                                    {product.quantity}
+                                  </span>
+                                </div>
                               </div>
-                            )}
 
-                            {exchangeOpen &&
-                              selectedProduct?._id === product._id &&
-                              canExchange && (
-                                <div className="mt-4 bg-gray-50 p-4 rounded-lg">
-                                  <div className="flex space-x-4 mb-4">
-                                    <button
-                                      onClick={() =>
-                                        handleExchangeTypeChange("size")
-                                      }
-                                      className={`px-4 py-2 rounded-md ${
-                                        exchangeType === "size"
-                                          ? "bg-c1 text-white"
-                                          : "bg-gray-200 text-gray-800"
-                                      }`}
-                                    >
-                                      Exchange Size
-                                    </button>
-                                    <button
-                                      onClick={() =>
-                                        handleExchangeTypeChange("color")
-                                      }
-                                      className={`px-4 py-2 rounded-md ${
-                                        exchangeType === "color"
-                                          ? "bg-c1 text-white"
-                                          : "bg-gray-200 text-gray-800"
-                                      }`}
-                                    >
-                                      Exchange Color
-                                    </button>
-                                  </div>
-
-                                  {exchangeType === "size" && (
-                                    <div>
-                                      <h4 className="font-medium text-gray-700 mb-2">
-                                        Select Size
-                                      </h4>
-                                      <div className="flex flex-wrap text-gray-700 cursor-pointer gap-2">
-                                        {product.allVariations
-                                          .filter(
-                                            (variation) =>
-                                              variation.color.name ===
-                                                product.selectedVariation.color
-                                                  .name &&
-                                              variation.size !==
-                                                product.selectedVariation
-                                                  .size &&
-                                              variation.discountPrice ===
-                                                product.selectedVariation
-                                                  .discountPrice
-                                          )
-                                          .map((variation) => (
-                                            <button
-                                              key={variation.size}
-                                              onClick={() =>
-                                                handleSizeSelect(variation.size)
-                                              }
-                                              className={`px-3 py-1 border rounded-md ${
-                                                selectedSize === variation.size
-                                                  ? "border-c1 bg-c1/10 text-c1"
-                                                  : "border-gray-300"
-                                              }`}
-                                            >
-                                              {variation.size}
-                                            </button>
-                                          ))}
-                                      </div>
+                            {canExchange && !product.exchangeApplied && (
+  <div
+    className="text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer"
+    onClick={() => toggleExchange(product)}
+  >
+    <span>Exchange Available</span>
+    {openExchangeId === product.productId ? (
+      <ChevronDown />
+    ) : (
+      <ChevronUp />
+    )}
+  </div>
+)}
+                              {openExchangeId === product.productId && canExchange && (
+                                  <div className="mt-4 bg-gray-50 p-4 rounded-lg">
+                                    <div className="flex space-x-4 mb-4">
+                                      <button
+                                        onClick={() =>
+                                          handleExchangeTypeChange("size")
+                                        }
+                                        className={`px-4 py-2 rounded-md ${
+                                          exchangeType === "size"
+                                            ? "bg-c1 text-white"
+                                            : "bg-gray-200 text-gray-800"
+                                        }`}
+                                      >
+                                        Exchange Size
+                                      </button>
+                                      <button
+                                        onClick={() =>
+                                          handleExchangeTypeChange("color")
+                                        }
+                                        className={`px-4 py-2 rounded-md ${
+                                          exchangeType === "color"
+                                            ? "bg-c1 text-white"
+                                            : "bg-gray-200 text-gray-800"
+                                        }`}
+                                      >
+                                        Exchange Color
+                                      </button>
                                     </div>
-                                  )}
 
-                                  {exchangeType === "color" && (
-                                    <div>
-                                      <h4 className="font-medium mb-2">
-                                        Select Color
-                                      </h4>
-                                      <div className="flex flex-wrap gap-3">
-                                        {product.allVariations
-                                          .filter(
-                                            (variation) =>
-                                              variation.size ===
-                                                product.selectedVariation
-                                                  .size &&
-                                              variation.color.name !==
-                                                product.selectedVariation.color
-                                                  .name &&
-                                              variation.discountPrice ===
-                                                product.selectedVariation
-                                                  .discountPrice
-                                          )
-                                          .reduce((uniqueColors, variation) => {
-                                            if (
-                                              !uniqueColors.some(
-                                                (color) =>
-                                                  color.name ===
-                                                  variation.color.name
-                                              )
-                                            ) {
-                                              uniqueColors.push(
-                                                variation.color
-                                              );
-                                            }
-                                            return uniqueColors;
-                                          }, [])
-                                          .map((color) => (
-                                            <button
-                                              key={color.name}
-                                              onClick={() =>
-                                                handleColorSelect(color)
-                                              }
-                                              className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
-                                                selectedColor?.name ===
-                                                color.name
-                                                  ? "border-c1"
-                                                  : "border-gray-300"
-                                              }`}
-                                              style={{
-                                                backgroundColor: color.hex,
-                                              }}
-                                              title={color.name}
-                                            ></button>
-                                          ))}
+                                    {exchangeType === "size" && (
+                                      <div>
+                                        <h4 className="font-medium text-gray-700 mb-2">
+                                          Select Size
+                                        </h4>
+                                        <div className="flex flex-wrap text-gray-700 cursor-pointer gap-2">
+                                          {product.allVariations
+                                            .filter(
+                                              (variation) =>
+                                                variation.color.name ===
+                                                  product.selectedVariation
+                                                    .color.name &&
+                                                variation.size !==
+                                                  product.selectedVariation
+                                                    .size &&
+                                                variation.discountPrice ===
+                                                  product.selectedVariation
+                                                    .discountPrice
+                                            )
+                                            .map((variation) => (
+                                              <button
+                                                key={variation.size}
+                                                onClick={() =>
+                                                  handleSizeSelect(
+                                                    variation.size
+                                                  )
+                                                }
+                                                className={`px-3 py-1 border rounded-md ${
+                                                  selectedSize ===
+                                                  variation.size
+                                                    ? "border-c1 bg-c1/10 text-c1"
+                                                    : "border-gray-300"
+                                                }`}
+                                              >
+                                                {variation.size}
+                                              </button>
+                                            ))}
+                                        </div>
                                       </div>
-                                    </div>
-                                  )}
+                                    )}
 
-                                  {/* {(selectedSize || selectedColor) && (
+                                    {exchangeType === "color" && (
+                                      <div>
+                                        <h4 className="font-medium mb-2">
+                                          Select Color
+                                        </h4>
+                                        <div className="flex flex-wrap gap-3">
+                                          {product.allVariations
+                                            .filter(
+                                              (variation) =>
+                                                variation.size ===
+                                                  product.selectedVariation
+                                                    .size &&
+                                                variation.color.name !==
+                                                  product.selectedVariation
+                                                    .color.name &&
+                                                variation.discountPrice ===
+                                                  product.selectedVariation
+                                                    .discountPrice
+                                            )
+                                            .reduce(
+                                              (uniqueColors, variation) => {
+                                                if (
+                                                  !uniqueColors.some(
+                                                    (color) =>
+                                                      color.name ===
+                                                      variation.color.name
+                                                  )
+                                                ) {
+                                                  uniqueColors.push(
+                                                    variation.color
+                                                  );
+                                                }
+                                                return uniqueColors;
+                                              },
+                                              []
+                                            )
+                                            .map((color) => (
+                                              <button
+                                                key={color.name}
+                                                onClick={() =>
+                                                  handleColorSelect(color)
+                                                }
+                                                className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
+                                                  selectedColor?.name ===
+                                                  color.name
+                                                    ? "border-c1"
+                                                    : "border-gray-300"
+                                                }`}
+                                                style={{
+                                                  backgroundColor: color.hex,
+                                                }}
+                                                title={color.name}
+                                              ></button>
+                                            ))}
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {/* {(selectedSize || selectedColor) && (
                                     <div className="mt-4 p-3 bg-gray-100 rounded-md">
                                       <p className="text-sm text-gray-700">
                                         Shipping charges: ₹177 will be added for
@@ -614,30 +653,30 @@ const Orders = () => {
                                     </div>
                                   )} */}
 
-                                  <button
-                                    onClick={() =>
-                                      handleExchangeSubmit(product)
-                                    }
-                                    disabled={
-                                      (exchangeType === "size" &&
-                                        !selectedSize) ||
-                                      (exchangeType === "color" &&
-                                        !selectedColor)
-                                    }
-                                    className={`... bg-c1 p-2 mt-2  text-white`}
-                                  >
-                                    Request Exchange
-                                  </button>
-                                </div>
-                              )}
-                          </div>
+                                    <button
+                                      onClick={() =>
+                                        handleExchangeSubmit(product)
+                                      }
+                                      disabled={
+                                        (exchangeType === "size" &&
+                                          !selectedSize) ||
+                                        (exchangeType === "color" &&
+                                          !selectedColor)
+                                      }
+                                      className={`... bg-c1 p-2 mt-2  text-white`}
+                                    >
+                                      Request Exchange
+                                    </button>
+                                  </div>
+                                )}
+                            </div>
                           </div>
 
-                            {product.exchangeApplied && (
-        <div className="mt-4 w-full">
-          <ExchangeRequestCard product={product} />
-        </div>
-      )}
+                          {product.exchangeApplied && (
+                            <div className="mt-4 w-full">
+                              <ExchangeRequestCard product={product} />
+                            </div>
+                          )}
                         </div>
                       );
                     })}
