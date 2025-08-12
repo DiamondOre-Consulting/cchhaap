@@ -8,6 +8,70 @@ import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { ChevronUp, ChevronDown, X } from "lucide-react";
 
+
+const ExchangeRequestCard = ({ product }) => {
+  return (
+    <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-medium text-gray-800">Exchange Request Submitted</h3>
+        <span className="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded">
+          Processing
+        </span>
+      </div>
+
+      <div className="flex items-start mb-4">
+        <img
+          src={product.thumbnail}
+          alt={product.productName}
+          className="w-16 h-16 object-contain rounded border border-gray-200 mr-3"
+        />
+        <div>
+          <h4 className="text-sm font-medium text-gray-800">{product.productName}</h4>
+          <p className="text-sm text-gray-600">
+            Size: <span className="font-medium">{product.selectedVariation.size}</span>
+          </p>
+          <p className="text-sm text-gray-600">
+            Color: <span className="font-medium">{product.selectedVariation.color.name}</span>
+          </p>
+        </div>
+      </div>
+
+      <div className="bg-c1 backdrop-blur border-l-4 border-[#edb141] p-4 mb-4">
+        <div className="flex">
+          <div className="flex-shrink-0">
+            <svg
+              className="h-5 w-5 text-c2"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fillRule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z"
+                clipRule="evenodd"
+              />
+            </svg>
+          </div>
+          <div className="ml-3">
+            <h3 className="text-sm font-medium text-c2">Next Steps</h3>
+            <div className="mt-2 text-sm text-c2">
+              <ul className="list-disc pl-5 space-y-1">
+                <li>Repack the item with original packaging and the original brand tags</li>
+                <li>Hand over the package to the delivery agent and collect the new package</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="text-xs text-gray-500">
+        <p>Our delivery partner will contact you within 24 hours to schedule pickup.</p>
+      </div>
+    </div>
+  );
+};
+
+
 const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -232,8 +296,8 @@ const Orders = () => {
                         : "bg-green-100 text-green-800"
                     }`}
                   >
-                    {order.status.charAt(0).toUpperCase() +
-                      order.status.slice(1)}
+                    {order?.status?.charAt(0)?.toUpperCase() +
+                      order?.status?.slice(1)}
                   </span>
                   <span className="text-xs text-gray-500">
                     {order.products.length} item
@@ -367,7 +431,7 @@ const Orders = () => {
                       return (
                         <div
                           key={index}
-                          className="flex flex-col sm:flex-row border-b border-gray-100 pb-6 mb-6"
+                          className="flex flex-col  border-b border-gray-100 pb-6 mb-6"
                         >
                           <div className="flex-shrink-0">
                             <img
@@ -398,7 +462,7 @@ const Orders = () => {
                               </div>
                             </div>
 
-                            {canExchange && (
+                            {canExchange  && !product.exchangeApplied && (
                               <div
                                 className="text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer"
                                 onClick={() => toggleExchange(product)}
@@ -563,6 +627,12 @@ const Orders = () => {
                                 </div>
                               )}
                           </div>
+
+                            {product.exchangeApplied && (
+        <div className="mt-4 w-full">
+          <ExchangeRequestCard product={product} />
+        </div>
+      )}
                         </div>
                       );
                     })}

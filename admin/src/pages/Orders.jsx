@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import {
   adminChangeStatus,
   adminFetchAllOrders,
+  approveExchange,
 } from "@/Redux/Slices/orderSlice";
 
 const Orders = () => {
@@ -135,6 +136,15 @@ const Orders = () => {
     
     return visiblePages;
   };
+
+  const handleApproveApproveOrder = async(orderId , variationId)=>{
+    try {
+      const response = await dispatch(approveExchange({orderId , variationId}));
+      console.log(response);
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   return (
     <HomeLayout>
