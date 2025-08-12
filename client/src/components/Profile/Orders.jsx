@@ -1,4 +1,5 @@
 import {
+  ExchangeOrder,
   userGetAllOrders,
   userGetSingleOrder,
 } from "@/Redux/Slices/order.Slice";
@@ -20,20 +21,13 @@ const Orders = () => {
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const dispatch = useDispatch();
 
-  const availableSizes = ["S", "M", "L", "XL"];
-  const availableColors = [
-    { name: "Red", hex: "#FF0000" },
-    { name: "Blue", hex: "#0000FF" },
-    { name: "Green", hex: "#00FF00" },
-    { name: "Black", hex: "#000000" },
-  ];
-
   const exchangeCloseDate = new Date("2025-08-12");
 
   const handleGetAllOrders = async () => {
     try {
       setLoading(true);
       const response = await dispatch(userGetAllOrders());
+      console.log("allorders", response);
       if (response?.payload?.success) {
         setOrders(response.payload.data.orders || []);
       }
@@ -68,7 +62,7 @@ const Orders = () => {
   const toggleExchange = (product) => {
     setSelectedProduct(product);
     setExchangeOpen(!exchangeOpen);
-    // Reset selections when opening exchange
+
     if (!exchangeOpen) {
       setSelectedSize(null);
       setSelectedColor(null);
@@ -87,17 +81,6 @@ const Orders = () => {
     setSelectedColor(color);
   };
 
-  const handleExchangeSubmit = () => {
-    console.log("Exchange submitted:", {
-      product: selectedProduct,
-      type: exchangeType,
-      size: selectedSize,
-      color: selectedColor,
-    });
-    // Close the exchange section after submission
-    setExchangeOpen(false);
-  };
-
   const isExchangeWindowClosed = new Date() > exchangeCloseDate;
 
   if (loading) {
@@ -108,6 +91,59 @@ const Orders = () => {
     );
   }
   console.log("selected order", selectedOrder);
+
+  const handleExchangeSubmit = async (product) => {
+    try {
+      let selectedVariation;
+
+      if (exchangeType === "size") {
+        selectedVariation = product.allVariations.find(
+          (v) =>
+            v.size === selectedSize &&
+            v.color.name === product.selectedVariation.color.name
+        );
+      } else {
+        selectedVariation = product.allVariations.find(
+          (v) =>
+            v.color.name === selectedColor?.name &&
+            v.size === product.selectedVariation.size
+        );
+      }
+
+      if (!selectedVariation) {
+        console.error("No matching variation found");
+        return;
+      }
+
+      const response = await dispatch(
+        ExchangeOrder({
+          orderId: selectedOrder._id,
+          variationId: selectedVariation._id,
+          oldVariationId: product.selectedVariation._id,
+        })
+      );
+
+      if (response?.payload?.success) {
+        closeModal();
+        // Optionally show success notification
+      }
+    } catch (error) {
+      console.error("Exchange error:", error);
+      // Optionally show error notification
+    }
+  };
+
+  const isExchangeAvailable = (order) => {
+    if (order.orderStatus !== "delivered") return false;
+
+    const deliveryDate = new Date(order.deliveryDate);
+    const today = new Date();
+    const exchangeEndDate = new Date(deliveryDate);
+    exchangeEndDate.setDate(deliveryDate.getDate() + 7); // Add 7 days to delivery date
+
+    return today <= exchangeEndDate;
+  };
+
   return (
     <div className="p-4 md:p-6 w-full mx-auto min-h-screen">
       <div className="flex items-center justify-center relative w-fit mx-auto mb-8">
@@ -136,17 +172,17 @@ const Orders = () => {
                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"
               />
             </svg>
-            <h3 className="mt-4 text-lg font-medium text-gray-800">
+            <h3 className="mt-4 text-lg font-medium text-gray-100">
               No orders yet
             </h3>
-            <p className="mt-2 text-gray-600">
+            <p className="mt-2 text-gray-200">
               You haven't placed any orders. Start shopping to see your orders
               here.
             </p>
             <div className="mt-6">
               <Link
                 to="/all-products"
-                className="inline-flex items-center px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium text-white bg-c2 hover:bg-c2/90 transition-colors duration-200"
+                className="inline-flex items-center text-c1 px-6 py-3 border border-transparent rounded-md shadow-sm text-base font-medium  bg-c2 hover:bg-c2/90 transition-colors duration-200"
               >
                 Start Shopping
               </Link>
@@ -165,7 +201,7 @@ const Orders = () => {
                   <div>
                     <p className="text-xs text-gray-500">ORDER PLACED</p>
                     <p className="text-sm font-medium text-gray-700 mt-1">
-                      {new Date(order.createdAt).toLocaleDateString("en-IN", {
+                      {new Date(order.createdAt)?.toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "short",
                         year: "numeric",
@@ -175,7 +211,7 @@ const Orders = () => {
                   <div>
                     <p className="text-xs text-gray-500">TOTAL</p>
                     <p className="text-sm font-bold text-gray-900 mt-1">
-                      {order.totalAmount.toLocaleString("en-IN", {
+                      {order.totalAmount?.toLocaleString("en-IN", {
                         style: "currency",
                         currency: "INR",
                         maximumFractionDigits: 0,
@@ -225,7 +261,7 @@ const Orders = () => {
                         <span>Qty: {product.quantity}</span>
                       </div>
                       <div className="mt-1 text-sm text-c1 font-semibold">
-                        {product.price.toLocaleString("en-IN", {
+                        {product.price?.toLocaleString("en-IN", {
                           style: "currency",
                           currency: "INR",
                           maximumFractionDigits: 0,
@@ -323,9 +359,10 @@ const Orders = () => {
                       Products
                     </h4>
                     {selectedOrder.products.map((product, index) => {
-                      const isDelivered = selectedOrder.orderStatus === "delivered";
-                      const canExchange =
-                        isDelivered && !isExchangeWindowClosed;
+                      const isDelivered =
+                        selectedOrder.orderStatus === "delivered";
+
+                      const canExchange = isExchangeAvailable(selectedOrder);
 
                       return (
                         <div
@@ -345,7 +382,7 @@ const Orders = () => {
                             </h3>
                             <div className="mt-1">
                               <span className="text-lg font-semibold text-gray-900">
-                                {product.price.toLocaleString("en-IN", {
+                                {product.price?.toLocaleString("en-IN", {
                                   style: "currency",
                                   currency: "INR",
                                   maximumFractionDigits: 0,
@@ -361,37 +398,25 @@ const Orders = () => {
                               </div>
                             </div>
 
-                            <div
-                              className={`text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer ${
-                                canExchange ? "" : ""
-                              }`}
-                              onClick={() =>
-                                canExchange && toggleExchange(product)
-                              }
-                            >
-                              <span>
-                                {isExchangeWindowClosed
-                                  ? "Exchange Window Closed"
-                                  : !isDelivered
-                                  ? ""
-                                  : "Exchange Available"}
-                              </span>
-                              {canExchange && (
-                                <span>
-                                  {exchangeOpen &&
-                                  selectedProduct?._id === product._id ? (
-                                    <ChevronDown />
-                                  ) : (
-                                    <ChevronUp />
-                                  )}
-                                </span>
-                              )}
-                            </div>
+                            {canExchange && (
+                              <div
+                                className="text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer"
+                                onClick={() => toggleExchange(product)}
+                              >
+                                <span>Exchange Available</span>
+                                {exchangeOpen &&
+                                selectedProduct?._id === product._id ? (
+                                  <ChevronDown />
+                                ) : (
+                                  <ChevronUp />
+                                )}
+                              </div>
+                            )}
 
-                            {/* Exchange Section - Desktop */}
                             {exchangeOpen &&
-                              selectedProduct?._id === product._id && (
-                                <div className=" mt-4 bg-gray-50  p-4 rounded-lg">
+                              selectedProduct?._id === product._id &&
+                              canExchange && (
+                                <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                                   <div className="flex space-x-4 mb-4">
                                     <button
                                       onClick={() =>
@@ -421,25 +446,38 @@ const Orders = () => {
 
                                   {exchangeType === "size" && (
                                     <div>
-                                      <h4 className="font-medium mb-2">
+                                      <h4 className="font-medium text-gray-700 mb-2">
                                         Select Size
                                       </h4>
-                                      <div className="flex flex-wrap gap-2">
-                                        {availableSizes.map((size) => (
-                                          <button
-                                            key={size}
-                                            onClick={() =>
-                                              handleSizeSelect(size)
-                                            }
-                                            className={`px-3 py-1 border rounded-md ${
-                                              selectedSize === size
-                                                ? "border-c1 bg-c1/10 text-c1"
-                                                : "border-gray-300"
-                                            }`}
-                                          >
-                                            {size}
-                                          </button>
-                                        ))}
+                                      <div className="flex flex-wrap text-gray-700 cursor-pointer gap-2">
+                                        {product.allVariations
+                                          .filter(
+                                            (variation) =>
+                                              variation.color.name ===
+                                                product.selectedVariation.color
+                                                  .name &&
+                                              variation.size !==
+                                                product.selectedVariation
+                                                  .size &&
+                                              variation.discountPrice ===
+                                                product.selectedVariation
+                                                  .discountPrice
+                                          )
+                                          .map((variation) => (
+                                            <button
+                                              key={variation.size}
+                                              onClick={() =>
+                                                handleSizeSelect(variation.size)
+                                              }
+                                              className={`px-3 py-1 border rounded-md ${
+                                                selectedSize === variation.size
+                                                  ? "border-c1 bg-c1/10 text-c1"
+                                                  : "border-gray-300"
+                                              }`}
+                                            >
+                                              {variation.size}
+                                            </button>
+                                          ))}
                                       </div>
                                     </div>
                                   )}
@@ -450,43 +488,75 @@ const Orders = () => {
                                         Select Color
                                       </h4>
                                       <div className="flex flex-wrap gap-3">
-                                        {availableColors.map((color) => (
-                                          <button
-                                            key={color.name}
-                                            onClick={() =>
-                                              handleColorSelect(color)
+                                        {product.allVariations
+                                          .filter(
+                                            (variation) =>
+                                              variation.size ===
+                                                product.selectedVariation
+                                                  .size &&
+                                              variation.color.name !==
+                                                product.selectedVariation.color
+                                                  .name &&
+                                              variation.discountPrice ===
+                                                product.selectedVariation
+                                                  .discountPrice
+                                          )
+                                          .reduce((uniqueColors, variation) => {
+                                            if (
+                                              !uniqueColors.some(
+                                                (color) =>
+                                                  color.name ===
+                                                  variation.color.name
+                                              )
+                                            ) {
+                                              uniqueColors.push(
+                                                variation.color
+                                              );
                                             }
-                                            className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
-                                              selectedColor?.name === color.name
-                                                ? "border-c1"
-                                                : "border-gray-300"
-                                            }`}
-                                            style={{
-                                              backgroundColor: color.hex,
-                                            }}
-                                            title={color.name}
-                                          ></button>
-                                        ))}
+                                            return uniqueColors;
+                                          }, [])
+                                          .map((color) => (
+                                            <button
+                                              key={color.name}
+                                              onClick={() =>
+                                                handleColorSelect(color)
+                                              }
+                                              className={`w-10 h-10 rounded-full border-2 flex items-center justify-center ${
+                                                selectedColor?.name ===
+                                                color.name
+                                                  ? "border-c1"
+                                                  : "border-gray-300"
+                                              }`}
+                                              style={{
+                                                backgroundColor: color.hex,
+                                              }}
+                                              title={color.name}
+                                            ></button>
+                                          ))}
                                       </div>
                                     </div>
                                   )}
 
+                                  {/* {(selectedSize || selectedColor) && (
+                                    <div className="mt-4 p-3 bg-gray-100 rounded-md">
+                                      <p className="text-sm text-gray-700">
+                                        Shipping charges: ₹177 will be added for
+                                        this exchange
+                                      </p>
+                                    </div>
+                                  )} */}
+
                                   <button
-                                    onClick={handleExchangeSubmit}
+                                    onClick={() =>
+                                      handleExchangeSubmit(product)
+                                    }
                                     disabled={
                                       (exchangeType === "size" &&
                                         !selectedSize) ||
                                       (exchangeType === "color" &&
                                         !selectedColor)
                                     }
-                                    className={`mt-4 px-4 py-2 rounded-md ${
-                                      (exchangeType === "size" &&
-                                        !selectedSize) ||
-                                      (exchangeType === "color" &&
-                                        !selectedColor)
-                                        ? "bg-gray-300 cursor-not-allowed"
-                                        : "bg-c1 text-white hover:bg-c1/90"
-                                    }`}
+                                    className={`... bg-c1 p-2 mt-2  text-white`}
                                   >
                                     Request Exchange
                                   </button>
@@ -532,7 +602,7 @@ const Orders = () => {
                         </p>
                         <p className="mt-2">
                           <span className="font-medium">Total:</span>{" "}
-                          {selectedOrder.totalAmount.toLocaleString("en-IN", {
+                          {selectedOrder.totalAmount?.toLocaleString("en-IN", {
                             style: "currency",
                             currency: "INR",
                             maximumFractionDigits: 0,

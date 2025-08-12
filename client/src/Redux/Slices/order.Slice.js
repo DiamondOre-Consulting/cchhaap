@@ -49,6 +49,16 @@ export const userGetSingleOrder = createAsyncThunk('/user/get-single-order' , as
     }
 })
 
+export const ExchangeOrder = createAsyncThunk('/user/exchange-order' , async({orderId , variationId ,oldVariationId})=>{
+    try {
+        const response = await userAxiosInstance.put(`/exchange-order/${orderId}/${variationId}/${oldVariationId}`)
+        console.log(response);
+        toast.success(response?.data?.message);
+        return response?.data
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 const orderSlice = createSlice({
     name : "order",
