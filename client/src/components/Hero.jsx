@@ -73,10 +73,10 @@ const Hero = () => {
             className="group relative inline-flex h-12 items-center justify-center overflow-hidden font-medium"
           >
             <div className="inline-flex border border-neutral-200 h-12 translate-x-0 items-center justify-center uppercase px-6 text-neutral-100 transition group-hover:-translate-x-[150%]">
-              Explore Project
+              Explore Products
             </div>
             <div className="absolute border border-[#6d0c04] inline-flex h-12 w-full translate-x-[100%] items-center justify-center bg-[#6d0c04]/60 px-6 text-neutral-50 transition duration-300 group-hover:translate-x-0">
-              Explore Project
+               Explore Products
             </div>
           </Link>
         </div>

@@ -35,6 +35,21 @@ export const adminChangeStatus = createAsyncThunk('/admin/change-status' , async
   }
 })
 
+
+export const approveExchange = createAsyncThunk('/admin/approve-status' , async({orderId, variationId})=>{
+  try {
+    const response = await adminAxiosInstance.post(`/approve-exchange-request/${orderId}/${variationId}`);
+    console.log(response);
+    toast.success(response?.data?.message);
+    return response?.data
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+
+
 const OrderSlice = createSlice({
   name: "order",
   initialState: null,
