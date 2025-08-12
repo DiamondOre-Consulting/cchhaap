@@ -21,14 +21,6 @@ const Orders = () => {
   const [showMobileDrawer, setShowMobileDrawer] = useState(false);
   const dispatch = useDispatch();
 
-  const availableSizes = ["S", "M", "L", "XL"];
-  const availableColors = [
-    { name: "Red", hex: "#FF0000" },
-    { name: "Blue", hex: "#0000FF" },
-    { name: "Green", hex: "#00FF00" },
-    { name: "Black", hex: "#000000" },
-  ];
-
   const exchangeCloseDate = new Date("2025-08-12");
 
   const handleGetAllOrders = async () => {
@@ -100,22 +92,58 @@ const Orders = () => {
   }
   console.log("selected order", selectedOrder);
 
-  const handleExchangeSubmit = async (
-    e,
-    orderId,
-    variationId,
-    oldVariationId
-  ) => {
-    console.log("object", orderId, variationId, oldVariationId);
+  const handleExchangeSubmit = async (product) => {
     try {
+      let selectedVariation;
+
+      if (exchangeType === "size") {
+        selectedVariation = product.allVariations.find(
+          (v) =>
+            v.size === selectedSize &&
+            v.color.name === product.selectedVariation.color.name
+        );
+      } else {
+        selectedVariation = product.allVariations.find(
+          (v) =>
+            v.color.name === selectedColor?.name &&
+            v.size === product.selectedVariation.size
+        );
+      }
+
+      if (!selectedVariation) {
+        console.error("No matching variation found");
+        return;
+      }
+
       const response = await dispatch(
-        ExchangeOrder({ orderId, variationId, oldVariationId })
+        ExchangeOrder({
+          orderId: selectedOrder._id,
+          variationId: selectedVariation._id,
+          oldVariationId: product.selectedVariation._id,
+        })
       );
-      console.log(response);
+
+      if (response?.payload?.success) {
+        closeModal();
+        // Optionally show success notification
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Exchange error:", error);
+      // Optionally show error notification
     }
   };
+
+  const isExchangeAvailable = (order) => {
+    if (order.orderStatus !== "delivered") return false;
+
+    const deliveryDate = new Date(order.deliveryDate);
+    const today = new Date();
+    const exchangeEndDate = new Date(deliveryDate);
+    exchangeEndDate.setDate(deliveryDate.getDate() + 7); // Add 7 days to delivery date
+
+    return today <= exchangeEndDate;
+  };
+
   return (
     <div className="p-4 md:p-6 w-full mx-auto min-h-screen">
       <div className="flex items-center justify-center relative w-fit mx-auto mb-8">
@@ -333,8 +361,8 @@ const Orders = () => {
                     {selectedOrder.products.map((product, index) => {
                       const isDelivered =
                         selectedOrder.orderStatus === "delivered";
-                      const canExchange =
-                        isDelivered && !isExchangeWindowClosed;
+
+                      const canExchange = isExchangeAvailable(selectedOrder);
 
                       return (
                         <div
@@ -370,35 +398,24 @@ const Orders = () => {
                               </div>
                             </div>
 
-                            <div
-                              className={`text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer ${
-                                canExchange ? "" : ""
-                              }`}
-                              onClick={() =>
-                                canExchange && toggleExchange(product)
-                              }
-                            >
-                              <span>
-                                {isExchangeWindowClosed
-                                  ? "Exchange Window Closed"
-                                  : !isDelivered
-                                  ? ""
-                                  : "Exchange Available"}
-                              </span>
-                              {canExchange && (
-                                <span>
-                                  {exchangeOpen &&
-                                  selectedProduct?._id === product._id ? (
-                                    <ChevronDown />
-                                  ) : (
-                                    <ChevronUp />
-                                  )}
-                                </span>
-                              )}
-                            </div>
+                            {canExchange && (
+                              <div
+                                className="text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer"
+                                onClick={() => toggleExchange(product)}
+                              >
+                                <span>Exchange Available</span>
+                                {exchangeOpen &&
+                                selectedProduct?._id === product._id ? (
+                                  <ChevronDown />
+                                ) : (
+                                  <ChevronUp />
+                                )}
+                              </div>
+                            )}
 
                             {exchangeOpen &&
-                              selectedProduct?._id === product._id && (
+                              selectedProduct?._id === product._id &&
+                              canExchange && (
                                 <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                                   <div className="flex space-x-4 mb-4">
                                     <button
@@ -530,50 +547,16 @@ const Orders = () => {
                                   )} */}
 
                                   <button
-                                    onClick={() => {
-                                      let selectedVariation;
-                                      if (exchangeType === "size") {
-                                        selectedVariation =
-                                          product.allVariations.find(
-                                            (v) =>
-                                              v.size === selectedSize &&
-                                              v.color.name ===
-                                                product.selectedVariation.color
-                                                  .name
-                                          );
-                                      } else {
-                                        selectedVariation =
-                                          product.allVariations.find(
-                                            (v) =>
-                                              v.color.name ===
-                                                selectedColor?.name &&
-                                              v.size ===
-                                                product.selectedVariation.size
-                                          );
-                                      }
-
-                                      if (selectedVariation) {
-                                        handleExchangeSubmit(
-                                          selectedOrder._id,
-                                          selectedVariation._id,
-                                          product?.selected
-                                        );
-                                      }
-                                    }}
+                                    onClick={() =>
+                                      handleExchangeSubmit(product)
+                                    }
                                     disabled={
                                       (exchangeType === "size" &&
                                         !selectedSize) ||
                                       (exchangeType === "color" &&
                                         !selectedColor)
                                     }
-                                    className={`mt-4 px-4 py-2 rounded-md ${
-                                      (exchangeType === "size" &&
-                                        !selectedSize) ||
-                                      (exchangeType === "color" &&
-                                        !selectedColor)
-                                        ? "bg-gray-300 cursor-not-allowed"
-                                        : "bg-c1 text-white hover:bg-c1/90"
-                                    }`}
+                                    className={`... bg-c1 p-2 mt-2  text-white`}
                                   >
                                     Request Exchange
                                   </button>
