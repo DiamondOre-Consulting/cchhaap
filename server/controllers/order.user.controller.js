@@ -270,6 +270,7 @@ export const myOrders = asyncHandler(async (req, res) => {
           product.thumbnailImage?.secureUrl ||
           "",
         quantity: item.quantity,
+        exchangeApplied: item.exchangeApplied || false,
         linePrice: item.price, // stored at order time
         selectedVariation: selected,
         allVariations,
@@ -393,6 +394,7 @@ export const getSingleOrder = asyncHandler(async (req, res) => {
         product.thumbnailImage?.secureUrl ||
         "",
       quantity: item.quantity,
+      exchangeApplied: item.exchangeApplied || false, 
       linePrice: item.price, // stored at order time
       selectedVariation: selected,
       allVariations,
