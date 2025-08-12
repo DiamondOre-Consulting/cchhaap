@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css"; // Make sure this is uncommented
+import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/effect-fade";
 import { Autoplay, EffectFade, Pagination } from "swiper/modules";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { GetAllBannerImages } from "../Redux/Slices/authSlice";
@@ -14,6 +13,7 @@ const Hero = () => {
   const dispatch = useDispatch();
   const [swiper, setSwiper] = useState(null);
   const [images, setImages] = useState([]);
+  const [isMobile, setIsMobile] = useState(false);
 
   const handleGetAllImage = async () => {
     try {
@@ -26,13 +26,24 @@ const Hero = () => {
 
   useEffect(() => {
     handleGetAllImage();
+    
+    // Handle mobile detection safely
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+    
+    return () => window.removeEventListener('resize', checkIfMobile);
   }, []);
 
   useEffect(() => {
     if (swiper && images.length > 0) {
       swiper.autoplay.start();
+      swiper.changeDirection(isMobile ? "horizontal" : "vertical");
     }
-  }, [swiper, images]);
+  }, [swiper, images, isMobile]);
 
   return (
     <div className="relative h-[60vh] md:h-screen">
@@ -41,11 +52,14 @@ const Hero = () => {
         onSwiper={setSwiper}
         autoplay={{
           delay: 4000,
-          // disableOnInteraction: false,
-          // pauseOnMouseEnter: false,
+          disableOnInteraction: false,
         }}
-        direction={window.innerWidth < 768 ? "horizontal" : "vertical"}
-        pagination={{ clickable: true }}
+        direction={isMobile ? "horizontal" : "vertical"}
+        pagination={{
+          clickable: true,
+          dynamicBullets: true,
+          horizontalClass: isMobile ? "swiper-pagination-horizontal" : "",
+        }}
         loop={true}
         className="w-full h-full"
         onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
@@ -57,6 +71,7 @@ const Hero = () => {
                 src={slide.secureUrl}
                 className="w-full h-full object-cover"
                 alt={`Slide ${index + 1}`}
+                loading="lazy"
               />
               <div className="absolute inset-0 bg-black/20" />
             </div>
@@ -64,7 +79,7 @@ const Hero = () => {
         ))}
       </Swiper>
 
-      {/* Centered Button (positioned absolutely over the Swiper) */}
+      {/* Centered Button */}
       <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
         <div className="pointer-events-auto">
           <Link
@@ -75,22 +90,31 @@ const Hero = () => {
               Explore Products
             </div>
             <div className="absolute border border-[#6d0c04] inline-flex h-12 w-full translate-x-[100%] items-center justify-center bg-[#6d0c04]/60 px-6 text-neutral-50 transition duration-300 group-hover:translate-x-0">
-               Explore Products
+              Explore Products
             </div>
           </Link>
         </div>
       </div>
 
-      <style>{`
-        .swiper-pagination-bullets {
-          right: 10px;
-          top: 50%;
-          transform: translateY(-50%);
+      <style jsx>{`
+        .swiper-pagination {
+          ${isMobile ? `
+            bottom: 10px !important;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: center;
+          ` : `
+            right: 10px !important;
+            top: 50% !important;
+            transform: translateY(-50%);
+            flex-direction: column;
+          `}
         }
         .swiper-pagination-bullet {
           background: white;
           opacity: 0.6;
-          margin: 6px 0;
+          margin: ${isMobile ? "0 4px" : "6px 0"};
         }
         .swiper-pagination-bullet-active {
           background: #000000;
