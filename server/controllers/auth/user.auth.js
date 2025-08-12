@@ -18,11 +18,9 @@ import Address from "../../models/address.model.js";
 const otpStore = new Map()
 
 const cookieOptions = {
-  httpOnly: true,
-  secure: true,           // prod
-  sameSite: "None",       // cross-site
-  path: "/",              // IMPORTANT: make it explicit
-  // domain: "your.domain.com", // ONLY if you also used this when setting
+   httpOnly: true,
+  secure: true,
+  sameSite: "None",
 };
 
 
