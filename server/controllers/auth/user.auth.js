@@ -19,8 +19,9 @@ const otpStore = new Map()
 
 const cookieOptions = {
    httpOnly: true,
-  secure: true,
-  sameSite: "None",
+    secure: true,
+    sameSite: "None",
+    path: "/",
 };
 
 
