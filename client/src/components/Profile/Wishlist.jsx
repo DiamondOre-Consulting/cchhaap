@@ -17,8 +17,8 @@ const Wishlist = () => {
       const response = await dispatch(allWislist());
             
       
-      console.log(response)
-      setWishlistData(response?.payload?.data?.wishList?.[0]?.products || []);
+      console.log("allwishliast",response)
+      setWishlistData(response?.payload?.data?.wishList || []);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
     } finally {
@@ -68,8 +68,8 @@ const Wishlist = () => {
   ) : (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 px-10 gap-8">
       {wishlistData.map((item) => {
-        const product = item?.productId;
-        const firstVariation = product?.variations?.[0];
+      
+        const firstVariation = item?.variations?.[0];
         const thumbnail =
           firstVariation?.thumbnailImage?.secureUrl ||
           firstVariation?.images?.[0]?.secureUrl;
@@ -80,10 +80,10 @@ const Wishlist = () => {
             className="relative bg-white/5 border border-white/10 w-full  mx-auto rounded-xl overflow-hidden hover:shadow-lg hover:scale-[1.02] transition duration-300"
           >
             {thumbnail && (
-              <Link to={`/each-product/${product?._id}`}>
+              <Link to={`/each-product/${item?._id}`}>
                 <img
                   src={thumbnail}
-                  alt={product?.productName}
+                  alt={item?.productName}
                   className="h-80 w-full object-cover"
                   loading="lazy"
                 />
@@ -91,12 +91,12 @@ const Wishlist = () => {
             )}
 
             <div className="p-4">
-              <Link to={`/each-product/${product?._id}`}>
+              <Link to={`/each-product/${item?._id}`}>
                 <h3 className="text-lg font-semibold text-white mb-1 line-clamp-1">
-                  {product?.productName}
+                  {item?.productName}
                 </h3>
                 <p className="text-sm text-gray-400 mb-2">
-                  {product?.brandName}
+                  {item?.brandName}
                 </p>
               </Link>
 
@@ -118,7 +118,7 @@ const Wishlist = () => {
                     )}
                   </p>
 
-                  <Link  to={`/each-product/${product?._id}`}  className="w-full text-center bg-c2 text-c1 mt-3 py-2 rounded-md font-medium hover:bg-c2/90 transition">
+                  <Link  to={`/each-product/${item?._id}`}  className="w-full text-center bg-c2 text-c1 mt-3 py-2 rounded-md font-medium hover:bg-c2/90 transition">
                     View Product
                   </Link>
                 </div>
