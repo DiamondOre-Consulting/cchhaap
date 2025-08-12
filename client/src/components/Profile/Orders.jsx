@@ -98,7 +98,7 @@ const Orders = () => {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-const [openExchangeId, setOpenExchangeId] = useState(null);
+  const [openExchangeId, setOpenExchangeId] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [exchangeType, setExchangeType] = useState("size");
   const [selectedSize, setSelectedSize] = useState(null);
@@ -135,24 +135,26 @@ const [openExchangeId, setOpenExchangeId] = useState(null);
     }
   };
 
-const closeModal = () => {
-  setIsModalOpen(false);
-  setSelectedOrder(null);
-  setOpenExchangeId(null);
-  setSelectedProduct(null);
-};
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setSelectedOrder(null);
+    setOpenExchangeId(null);
+    setSelectedProduct(null);
+  };
   useEffect(() => {
     handleGetAllOrders();
   }, []);
-const toggleExchange = (product) => {
-  setSelectedProduct(product);
-  setOpenExchangeId(openExchangeId === product.productId ? null : product.productId);
-  
-  if (openExchangeId !== product.productId) {
-    setSelectedSize(null);
-    setSelectedColor(null);
-  }
-};
+  const toggleExchange = (product) => {
+    setSelectedProduct(product);
+    setOpenExchangeId(
+      openExchangeId === product.productId ? null : product.productId
+    );
+
+    if (openExchangeId !== product.productId) {
+      setSelectedSize(null);
+      setSelectedColor(null);
+    }
+  };
   const handleExchangeTypeChange = (type) => {
     setExchangeType(type);
   };
@@ -209,7 +211,7 @@ const toggleExchange = (product) => {
 
       if (response?.payload?.success) {
         closeModal();
-          setOpenExchangeId(null);
+        setOpenExchangeId(null);
         // Optionally show success notification
       }
     } catch (error) {
@@ -224,7 +226,7 @@ const toggleExchange = (product) => {
     const deliveryDate = new Date(order.deliveryDate);
     const today = new Date();
     const exchangeEndDate = new Date(deliveryDate);
-    exchangeEndDate.setDate(deliveryDate.getDate() + 7); 
+    exchangeEndDate.setDate(deliveryDate.getDate() + 7);
 
     return today <= exchangeEndDate;
   };
@@ -503,20 +505,21 @@ const toggleExchange = (product) => {
                                 </div>
                               </div>
 
-                            {canExchange && !product.exchangeApplied && (
-  <div
-    className="text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer"
-    onClick={() => toggleExchange(product)}
-  >
-    <span>Exchange Available</span>
-    {openExchangeId === product.productId ? (
-      <ChevronDown />
-    ) : (
-      <ChevronUp />
-    )}
-  </div>
-)}
-                              {openExchangeId === product.productId && canExchange && (
+                              {canExchange && !product.exchangeApplied && (
+                                <div
+                                  className="text-c1 flex items-center justify-between bg-gray-50 p-2 w-full mt-2 cursor-pointer"
+                                  onClick={() => toggleExchange(product)}
+                                >
+                                  <span>Exchange Available</span>
+                                  {openExchangeId === product.productId ? (
+                                    <ChevronDown />
+                                  ) : (
+                                    <ChevronUp />
+                                  )}
+                                </div>
+                              )}
+                              {openExchangeId === product.productId &&
+                                canExchange && (
                                   <div className="mt-4 bg-gray-50 p-4 rounded-lg">
                                     <div className="flex space-x-4 mb-4">
                                       <button
