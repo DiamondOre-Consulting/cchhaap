@@ -67,7 +67,7 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
 
             
 
-             if(matchedVariation.quantity<product.quantity||matchedVariation.quantity==0||matchedVariation.quantity-product.quantity<=0){
+             if(matchedVariation.quantity<product.quantity||matchedVariation.quantity==0||matchedVariation.quantity-product.quantity<0){
                     throw new ApiError("Not enough stock for selected variation", 400);
                 }   
 
