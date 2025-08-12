@@ -22,6 +22,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     if (!user) throw new ApiError("User not found", 404);
 
     let productsToOrder = [];
+    let productDetails = []; // Store product details for email
     let totalMRPPrice = 0;
     let totalPriceAfterDiscount = 0;
 
@@ -34,16 +35,26 @@ export const createOrder = asyncHandler(async (req, res) => {
       );
       if (!variation) throw new ApiError("Variation not found", 404);
       if (variation.quantity < quantity) throw new ApiError("Insufficient stock", 400);
-      const gst= variation.price*0.12
-      console.log("gst",gst)
-      const price = variation.discountPrice+gst+177 || variation.price+gst+177;
-      console.log("price",price)
+      
+      const gst = variation.price * 0.12;
+      console.log("gst", gst);
+      const price = variation.discountPrice + gst + 177 || variation.price + gst + 177;
+      console.log("price", price);
+      
       productsToOrder.push({
         productId,
         variationId,
         quantity,
         price: (price * quantity),
       });
+
+      productDetails.push({
+        name: product.name,
+        price: price * quantity,
+        quantity,
+        variation: variation.name || 'Default'
+      });
+
       totalPriceAfterDiscount = price * quantity;
       totalMRPPrice = variation.price * quantity;
     } else {
@@ -58,14 +69,24 @@ export const createOrder = asyncHandler(async (req, res) => {
         );
         if (!variation) continue;
         if (variation.quantity < item.quantity) throw new ApiError("Insufficient stock", 400);
-        const gst= variation.price*0.12
-        const price = variation.discountPrice+gst+177 || variation.price+gst+177;
+        
+        const gst = variation.price * 0.12;
+        const price = variation.discountPrice + gst + 177 || variation.price + gst + 177;
+        
         productsToOrder.push({
           productId: product._id,
           variationId: item.variationId,
           quantity: item.quantity,
           price: price * item.quantity,
         });
+
+        productDetails.push({
+          name: product.productName,
+          price: price * item.quantity,
+          quantity: item.quantity,
+          variation: variation.name || 'Default'
+        });
+
         totalPriceAfterDiscount += price * item.quantity;
         totalMRPPrice += variation.price * item.quantity;
       }
@@ -130,44 +151,130 @@ export const createOrder = asyncHandler(async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
-    const orderIdShort = newOrder[0]._id.toString().slice(0, 6);
-    const productRows = productsToOrder.map((p) => `
-      <tr>
-        <td>${p.productId}</td>
-        <td>${p.quantity}</td>
-        <td>₹${p.price}</td>
-      </tr>
-    `).join("");
+    const orderId = newOrder[0]._id.toString().slice(-6).toUpperCase();
+    const orderDate = new Date().toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
 
-    const emailHTML = `
-      <h2>Order #${orderIdShort} placed successfully!</h2>
-      <p>Thank you for shopping with <strong>Chhaap</strong> – your favorite fashion wear brand.</p>
-      <table border="1" cellpadding="8" cellspacing="0">
-        <thead>
-          <tr><th>Product</th><th>Qty</th><th>Price</th></tr>
-        </thead>
-        <tbody>${productRows}</tbody>
-      </table>
-      <p><strong>Total: ₹${totalAmount}</strong></p>
-      <p>Payment Method: ${paymentMethod}</p>
+    // User Email Template
+    const userEmailHTML = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0;">
+        <h2 style="color: #2c3e50;">Order Confirmation #${orderId}</h2>
+        <p>Hello ${user.fullName || address.fullName},</p>
+        <p>Thank you for shopping with <strong>Chhaap</strong>!</p>
+        
+        <h3 style="margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Order Details</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <thead>
+            <tr style="background-color: #f5f5f5;">
+              <th style="padding: 10px; text-align: left;">Product</th>
+              <th style="padding: 10px; text-align: center;">Qty</th>
+              <th style="padding: 10px; text-align: right;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productDetails.map(p => `
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">${p.name}<br></td>
+                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${p.quantity}</td>
+                <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">₹${p.price.toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            ${couponDiscount > 0 ? `
+              <tr>
+                <td colspan="2" style="padding: 10px; text-align: right;">Coupon Discount:</td>
+                <td style="padding: 10px; text-align: right;">-₹${couponDiscount.toFixed(2)}</td>
+              </tr>
+            ` : ''}
+            <tr>
+              <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Total:</td>
+              <td style="padding: 10px; text-align: right; font-weight: bold;">₹${totalAmount.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+        
+        <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px;">
+          <h3 style="margin-top: 0;">Shipping Information</h3>
+          <p>
+            ${address.fullName}<br>
+            ${address.street}
+            ${address.city}, ${address.state} - ${address.pinCode}<br>
+            ${address.country}<br>
+            Phone: ${address.phoneNumber}
+          </p>
+        </div>
+        
+        <p style="margin-top: 20px;">We'll notify you when your order ships.</p>
+        <p style="text-align: center; margin-top: 30px;">
+          <a href="https://chhaapp.in" style="display: inline-block; padding: 10px 20px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px;">View Your Order</a>
+        </p>
+      </div>
     `;
+
+    // Admin Email Template
+    const adminEmailHTML = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0;">
+        <h2 style="color: #d32f2f;">New Order Notification #${orderId}</h2>
+        <h3>Customer: ${user.fullName || address.fullName}</h3>
+        <p>Email: ${user.email}</p>
+        <p>Phone: ${address.phoneNumber}</p>
+        <p>Order Date: ${orderDate}</p>
+        <p>Payment Method: ${paymentMethod}</p>
+        <p>Payment Status: ${paymentStatus}</p>
+        
+        <h3 style="margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Order Summary</h3>
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+          <thead>
+            <tr style="background-color: #f5f5f5;">
+              <th style="padding: 10px; text-align: left;">Product</th>
+              <th style="padding: 10px; text-align: center;">Qty</th>
+              <th style="padding: 10px; text-align: right;">Price</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${productDetails.map(p => `
+              <tr>
+                <td style="padding: 10px; border-bottom: 1px solid #eee;">${p.name}<br></td>
+                <td style="padding: 10px; text-align: center; border-bottom: 1px solid #eee;">${p.quantity}</td>
+                <td style="padding: 10px; text-align: right; border-bottom: 1px solid #eee;">₹${p.price.toFixed(2)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="2" style="padding: 10px; text-align: right; font-weight: bold;">Total:</td>
+              <td style="padding: 10px; text-align: right; font-weight: bold;">₹${totalAmount.toFixed(2)}</td>
+            </tr>
+          </tfoot>
+        </table>
+        
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="https://admin.chhaapp.in" style="display: inline-block; padding: 10px 20px; background-color: #d32f2f; color: white; text-decoration: none; border-radius: 4px;">Process Order</a>
+        </div>
+      </div>
+    `;
+
+    console.log("us",user.email)
 
     await sendMail(
       user.email,
-      `Chhaap - Order #${orderIdShort} Confirmation`,
-      emailHTML
+      `Your Chhaap Order #${orderId} Confirmation`,
+      userEmailHTML
     );
 
     await sendMail(
       "yashjadon@diamondore.in",
-      `New Order #${orderIdShort} Received – Chhaap`,
-      `<h3>New order received from ${user.fullName || address.fullName}</h3>${emailHTML}`
+      `[Action Required] New Order #${orderId} - ₹${totalAmount.toFixed(2)}`,
+      adminEmailHTML
     );
 
-    console.log(newOrder[0])
-
+    console.log(newOrder[0]);
     sendResponse(res, 200, newOrder[0], "Order created successfully");
-  } catch (err){
+  } catch (err) {
     await session.abortTransaction();
     session.endSession();
     throw err;
@@ -426,7 +533,6 @@ export const getSingleOrder = asyncHandler(async (req, res) => {
 });
 
 
-
 export const exchangeOrder = asyncHandler(async (req, res) => {
   const { orderId, variationId: newVarId, oldVariationId } = req.validatedData.params;
   const userId = req.user.id;
@@ -434,14 +540,16 @@ export const exchangeOrder = asyncHandler(async (req, res) => {
 
   const session = await mongoose.startSession();
   await session.withTransaction(async () => {
-    const order = await Order.findOne({ _id: orderId, userId }).session(session);
+    const order = await Order.findOne({ _id: orderId, userId })
+      .populate('products.productId')
+      .session(session);
+    
     if (!order) throw new ApiError("Order not found", 404);
+    
     if (order.order_status !== "delivered" || !order.delivery_date ||
         (Date.now() - order.delivery_date.getTime()) > WINDOW_MS) {
       throw new ApiError("Order is not eligible for exchange", 400);
     }
-
-
 
     const item = order.products.find(i => i.variationId.toString() === oldVariationId.toString());
     if (!item) throw new ApiError("Item not found in order", 400);
@@ -460,16 +568,137 @@ export const exchangeOrder = asyncHandler(async (req, res) => {
       throw new ApiError("New variation out of stock", 400);
     }
 
-    // move stock: return old, take new
+    // Get product details for email before making changes
+    const oldVariationDetails = {
+      name: product.productName,
+      color:oldVar.color.name,
+      size:oldVar.size,
+      quantity: item.quantity,
+      price: item.price / item.quantity
+    };
+
+    const newVariationDetails = {
+      name: product.productName,
+      color:newVar.color.name,
+      size:newVar.size,
+      quantity: item.quantity,
+      price: item.price / item.quantity
+    };
+
+    // Update stock and exchange status
     if (oldVar) oldVar.quantity += item.quantity;
     newVar.quantity -= item.quantity;
 
-    // swap variation (do NOT change quantity)
     item.variationId = newVarId;
     item.exchange_applied = true;
+    
     await product.save({ session });
     await order.save({ session });
+
+    // Get user details
+    const user = await User.findById(userId).lean();
+    if (!user) throw new ApiError("User not found", 404);
+
+    // Prepare email data
+    const exchangeId = order._id.toString().slice(-6).toUpperCase();
+    const exchangeDate = new Date().toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
+    });
+
+    // User Email Template
+    const userEmailHTML = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0;">
+        <h2 style="color: #2c3e50;">Exchange Request #${exchangeId}</h2>
+        <p>Hello ${user.fullName || 'Customer'},</p>
+        <p>Your exchange request has been processed successfully.</p>
+        
+        <h3 style="margin-top: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">Exchange Details</h3>
+        
+        <div style="display: flex; margin-bottom: 20px;">
+          <div style="flex: 1; padding: 15px; background-color: #f9f9f9; border-radius: 5px; margin-right: 10px;">
+            <h4 style="margin-top: 0; color: #d32f2f;">Original Item</h4>
+            <p><strong>Product:</strong> ${oldVariationDetails.name}</p>
+            <p><strong>Size:</strong> ${oldVariationDetails.size}</p>
+            <p><strong>Color:</strong> ${oldVariationDetails.color}</p>
+            <p><strong>Qty:</strong> ${oldVariationDetails.quantity}</p>
+          </div>
+          
+          <div style="flex: 1; padding: 15px; background-color: #f9f9f9; border-radius: 5px;">
+            <h4 style="margin-top: 0; color: #388e3c;">New Item</h4>
+            <p><strong>Product:</strong> ${newVariationDetails.name}</p>
+           <p><strong>Size:</strong> ${newVariationDetails.size}</p>
+           <p><strong>Color:</strong> ${newVariationDetails.color}</p>
+            <p><strong>Qty:</strong> ${newVariationDetails.quantity}</p>
+          </div>
+        </div>
+        
+        <div style="background-color: #f5f5f5; padding: 15px; border-radius: 5px;">
+          <p><strong>Order ID:</strong> ${order._id.toString().slice(-6).toUpperCase()}</p>
+          <p><strong>Exchange Date:</strong> ${exchangeDate}</p>
+        </div>
+        
+        <p style="margin-top: 20px;">If you have any questions about your exchange, please contact our support team.</p>
+      </div>
+    `;
+
+    // Admin Email Template
+    const adminEmailHTML = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0;">
+        <h2 style="color: #d32f2f;">New Exchange Request #${exchangeId}</h2>
+        
+        <div style="margin-bottom: 20px;">
+          <h3 style="margin-top: 0;">Customer Information</h3>
+          <p><strong>Name:</strong> ${user.fullName || 'Customer'}</p>
+          <p><strong>Email:</strong> ${user.email}</p>
+          <p><strong>Order ID:</strong> ${order._id.toString().slice(-6).toUpperCase()}</p>
+          <p><strong>Exchange Date:</strong> ${exchangeDate}</p>
+        </div>
+        
+        <h3 style="border-bottom: 1px solid #eee; padding-bottom: 10px;">Exchange Details</h3>
+        
+        <div style="display: flex; margin-bottom: 20px;">
+          <div style="flex: 1; padding: 15px; background-color: #f9f9f9; border-radius: 5px; margin-right: 10px;">
+            <h4 style="margin-top: 0; color: #d32f2f;">Original Item</h4>
+            <p><strong>Product:</strong> ${oldVariationDetails.name}</p>
+            <p><strong>Variant:</strong> ${oldVariationDetails.variation}</p>
+            <p><strong>Qty:</strong> ${oldVariationDetails.quantity}</p>
+            <p><strong>Price:</strong> ₹${oldVariationDetails.price.toFixed(2)}</p>
+          </div>
+          
+          <div style="flex: 1; padding: 15px; background-color: #f9f9f9; border-radius: 5px;">
+            <h4 style="margin-top: 0; color: #388e3c;">New Item</h4>
+            <p><strong>Product:</strong> ${newVariationDetails.name}</p>
+            <p><strong>Variant:</strong> ${newVariationDetails.variation}</p>
+            <p><strong>Qty:</strong> ${newVariationDetails.quantity}</p>
+            <p><strong>Price:</strong> ₹${newVariationDetails.price.toFixed(2)}</p>
+          </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 20px;">
+          <a href="https://admin.yourwebsite.com/exchanges/${order._id}" 
+             style="display: inline-block; padding: 10px 20px; background-color: #d32f2f; color: white; text-decoration: none; border-radius: 4px;">
+            View Exchange
+          </a>
+        </div>
+      </div>
+    `;
+
+    // Send emails
+    await sendMail(
+      user.email,
+      `Your Exchange Request #${exchangeId} - Confirmation`,
+      userEmailHTML
+    );
+
+    await sendMail(
+      "anantasinghal28@gmail.com",
+      `[Exchange] New Exchange Request #${exchangeId}`,
+      adminEmailHTML
+    );
   });
+  
   session.endSession();
   sendResponse(res, 200, null, "Exchange successful");
 });
