@@ -16,7 +16,7 @@ import { addBannerImage, editBannerImages, getAllBanners } from '../controllers/
 import { searchProduct } from '../controllers/user.miscellaneous.controller.js';
 import { searchProductParamsSchema } from '../validator/user.product.validator.js';
 import { changeOrderStatus, fetchAllOrdersForAdmin } from '../controllers/order.admin.controller.js';
-import { changeOrderStatusBodySchema, fetchAllOrdersForAdminSchema, getSingleOrderQuerySchema } from '../validator/order.validator.js';
+import { approveExchangeRequestParamsSchema, changeOrderStatusBodySchema, fetchAllOrdersForAdminSchema, getSingleOrderQuerySchema } from '../validator/order.validator.js';
 import { fetchAllUsers, getSalesDashboardData, getSalesData, getUser, searchProductForAdmin } from '../controllers/admin.miscellaneous.controller.js';
 import { getLineChartSalesDataQuerySchema, getSalesDataParamsData, getSalesDataQuerySchema, getSingleUserForAdminParamsSchema } from '../validator/admin.miscellaneous.js';
 import { forgotPasswordBodySchema, resetPasswordBodySchema, resetPasswordParamsSchema, userSendOtpBodySchema } from '../validator/user.auth.validator.js';
