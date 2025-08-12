@@ -81,7 +81,6 @@ export const fetchAllOrdersForAdmin = asyncHandler(async (req, res) => {
   });
 });
 
-
 export const changeOrderStatus = asyncHandler(async (req, res) => {
   const { orderId, orderStatus } = req.validatedData.body;
   const order = await Order.findById(orderId);
@@ -102,7 +101,7 @@ export const changeOrderStatus = asyncHandler(async (req, res) => {
 export const exchangeOrder = asyncHandler(async (req, res) => {
   const { orderId, variationId: newVarId, oldVariationId } = req.validatedData.params;
   const userId = req.user.id;
-  const WINDOW_MS = 10 * 24 * 60 * 60 * 1000;
+  const WINDOW_MS = 7 * 24 * 60 * 60 * 1000;
 
   const session = await mongoose.startSession();
   await session.withTransaction(async () => {
