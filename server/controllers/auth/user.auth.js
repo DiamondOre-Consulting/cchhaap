@@ -167,6 +167,9 @@ export const signin= asyncHandler(async(req,res)=>{
     const refreshAccessToken = await existingUser.generateRefreshToken();
     existingUser.refreshAccessToken = refreshAccessToken;
     await existingUser.save();
+    
+    res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
 
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
