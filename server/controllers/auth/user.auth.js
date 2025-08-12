@@ -148,40 +148,65 @@ export const sendOtp = asyncHandler(async(req,res)=>{
 
 })
 
-export const signin= asyncHandler(async(req,res)=>{
+export const signin = asyncHandler(async (req, res) => {
+  const { email, password } = req.validatedData.body;
 
-    const {email,password} = req.validatedData.body
+  // Find user with password
+  const existingUser = await User.findOne({ email }).select('+password');
+  if (!existingUser) {
+    throw new ApiError("User not found", 422);
+  }
 
-    const existingUser = await User.findOne({email}).select('+password')
-    
-    if (!existingUser) {
-        throw new ApiError("User not found", 422);
+  // Verify password
+  const passwordCheck = await existingUser.comparePassword(password);
+  if (!passwordCheck) {
+    throw new ApiError("Password is incorrect", 409);
+  }
+
+  // Generate tokens
+  const accessToken = await existingUser.generateAccessToken();
+  const refreshAccessToken = await existingUser.generateRefreshToken();
+  
+  // Update user with refresh token
+  existingUser.refreshAccessToken = refreshAccessToken;
+  await existingUser.save();
+
+  // Configure cookies for cross-device compatibility
+  const cookieOptions = {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
+    sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+    path: '/',
+    domain: process.env.NODE_ENV === 'production' ? '.chhaapp.in' : undefined,
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    partitioned: true // For Chrome's Privacy Sandbox
+  };
+
+  // Set CORS headers for mobile compatibility
+  res.header('Access-Control-Allow-Credentials', 'true');
+  res.header('Access-Control-Allow-Origin', process.env.FRONTEND_URL || 'https://chhaapp.in');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+  // Set cookies
+  res.cookie("accessToken", accessToken, cookieOptions);
+  res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
+
+  // Sanitize user object
+  existingUser.password = undefined;
+  existingUser.refreshAccessToken = undefined;
+  existingUser.resetPasswordToken = undefined;
+  existingUser.resetPasswordTokenExpires = undefined;
+
+  // Return both user data AND tokens (as fallback for mobile)
+  sendResponse(res, 200, {
+    existingUser,
+    tokens: {
+      accessToken,
+      refreshToken: refreshAccessToken
     }
-
-    const passwordCheck = await existingUser.comparePassword(password);
-
-    if (!passwordCheck) {
-        throw new ApiError("Password is incorrect", 409);
-    }
-
-
-    const accessToken = await existingUser.generateAccessToken();
-    const refreshAccessToken = await existingUser.generateRefreshToken();
-    existingUser.refreshAccessToken = refreshAccessToken;
-    await existingUser.save();
-
-    res.cookie("accessToken", accessToken, cookieOptions);
-    res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
-    existingUser.password = undefined;
-    existingUser.refreshAccessToken = undefined;
-    existingUser.resetPasswordToken = undefined;
-    existingUser.resetPasswordTokenExpires = undefined;
-
-    sendResponse(res, 200, existingUser, "User logged in successfully");
-
-
-})
-
+  }, "User logged in successfully");
+});
 
 export const signout = asyncHandler(async (req, res) => {
   // Use the same cookie options as when the cookies were set
