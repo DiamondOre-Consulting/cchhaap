@@ -12,9 +12,11 @@ export const sendMail = async(email,subject,message)=>{
             pass: process.env.SMTP_PASSWORD
         }
     });
+    
+    
 
     transporter.sendMail({
-        from : `Authentication <${process.env.SMTP_FROM_EMAIL}>`,
+        from : `Chhaapp <${process.env.SMTP_FROM_EMAIL}>`,
         to: email,
         subject: subject,
         html: message

@@ -84,6 +84,7 @@ export const sendOtp = asyncHandler(async(req,res)=>{
 
     const {email} = req.validatedData.body
 
+   
     const existingUser = await User.findOne({email})
 
     if(existingUser){
@@ -138,9 +139,9 @@ export const sendOtp = asyncHandler(async(req,res)=>{
     </div>
 `;
 
-   sendMail(email, "OTP for signup", emailTemplate);
+   await sendMail(email, "OTP for signup", emailTemplate);
 
-   console.log(otp)
+   
 
    sendResponse(res,200,null,"Otp sent successfully")
 

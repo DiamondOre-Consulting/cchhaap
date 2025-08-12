@@ -24,6 +24,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     let productsToOrder = [];
     let totalMRPPrice = 0;
     let totalPriceAfterDiscount = 0;
+    let productDetails = []; // To store detailed product info for emails
 
     if (productId && variationId && quantity) {
       const product = await Product.findById(productId).lean();
@@ -34,14 +35,24 @@ export const createOrder = asyncHandler(async (req, res) => {
       );
       if (!variation) throw new ApiError("Variation not found", 404);
       if (variation.quantity < quantity) throw new ApiError("Insufficient stock", 400);
-      const gst= variation.price*0.12
-      const price = variation.discountPrice+gst+177 || variation.price+gst+177;
+      const gst = variation.price * 0.12;
+      const price = variation.discountPrice + gst + 177 || variation.price + gst + 177;
+      
       productsToOrder.push({
         productId,
         variationId,
         quantity,
         price: (price * quantity),
       });
+      
+      productDetails.push({
+        name: product.name,
+        variation: variation.name || 'Default',
+        quantity,
+        price: price * quantity,
+        image: product.images[0] || ''
+      });
+      
       totalPriceAfterDiscount = price * quantity;
       totalMRPPrice = variation.price * quantity;
     } else {
@@ -64,6 +75,15 @@ export const createOrder = asyncHandler(async (req, res) => {
           quantity: item.quantity,
           price: price * item.quantity,
         });
+        
+        productDetails.push({
+          name: product.name,
+          variation: variation.name || 'Default',
+          quantity: item.quantity,
+          price: price * item.quantity,
+          image: product.images[0] || ''
+        });
+        
         totalPriceAfterDiscount += price * item.quantity;
         totalMRPPrice += variation.price * item.quantity;
       }
@@ -71,6 +91,8 @@ export const createOrder = asyncHandler(async (req, res) => {
 
     let couponDiscount = 0;
     let totalAmount = totalPriceAfterDiscount;
+    let couponDetails = null;
+    
     if (couponCode) {
       const coupon = await Coupon.findOne({ couponCode }).session(session);
       if (!coupon) throw new ApiError("Coupon not found", 400);
@@ -87,6 +109,12 @@ export const createOrder = asyncHandler(async (req, res) => {
         ? totalPriceAfterDiscount * (coupon.discountValue / 100)
         : coupon.discountValue;
       totalAmount = Math.max(0, totalPriceAfterDiscount - couponDiscount);
+      
+      couponDetails = {
+        code: coupon.couponCode,
+        discount: couponDiscount,
+        type: coupon.discountType
+      };
     }
 
     const newOrder = await Order.create([
@@ -128,42 +156,192 @@ export const createOrder = asyncHandler(async (req, res) => {
     await session.commitTransaction();
     session.endSession();
 
-    const orderIdShort = newOrder[0]._id.toString().slice(0, 6);
-    const productRows = productsToOrder.map((p) => `
-      <tr>
-        <td>${p.productId}</td>
-        <td>${p.quantity}</td>
-        <td>₹${p.price}</td>
+    const orderId = newOrder[0]._id.toString();
+    const orderDate = new Date().toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric'
+    });
+    
+    // Format address for display
+    const formattedAddress = `
+      ${address.fullName}<br>
+      ${address.addressLine1}<br>
+      ${address.addressLine2 ? address.addressLine2 + '<br>' : ''}
+      ${address.city}, ${address.state} - ${address.pincode}<br>
+      ${address.country}<br>
+      Phone: ${address.phoneNumber}
+    `;
+
+    // Generate product rows for email
+    const productRows = productDetails.map((p) => `
+      <tr style="border-bottom: 1px solid #e0e0e0;">
+        <td style="padding: 12px 15px; text-align: left;">
+          <div style="display: flex; align-items: center;">
+            ${p.image ? `<img src="${p.image}" alt="${p.name}" style="width: 60px; height: 60px; object-fit: cover; margin-right: 15px; border: 1px solid #f0f0f0;">` : ''}
+            <div>
+              <strong>${p.name}</strong><br>
+              <small style="color: #666;">Variant: ${p.variation}</small>
+            </div>
+          </div>
+        </td>
+        <td style="padding: 12px 15px; text-align: center;">${p.quantity}</td>
+        <td style="padding: 12px 15px; text-align: right;">₹${p.price.toFixed(2)}</td>
       </tr>
     `).join("");
 
-    const emailHTML = `
-      <h2>Order #${orderIdShort} placed successfully!</h2>
-      <p>Thank you for shopping with <strong>Chhaap</strong> – your favorite fashion wear brand.</p>
-      <table border="1" cellpadding="8" cellspacing="0">
-        <thead>
-          <tr><th>Product</th><th>Qty</th><th>Price</th></tr>
-        </thead>
-        <tbody>${productRows}</tbody>
-      </table>
-      <p><strong>Total: ₹${totalAmount}</strong></p>
-      <p>Payment Method: ${paymentMethod}</p>
+    // User Email Template
+    const userEmailHTML = `
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <div style="background-color: #f8f8f8; padding: 20px; text-align: center; border-bottom: 1px solid #e0e0e0;">
+          <h1 style="margin: 0; color: #2c3e50;">Thank You For Your Order!</h1>
+          <p style="margin: 5px 0 0; color: #7f8c8d;">Order #${orderId.slice(-8).toUpperCase()}</p>
+        </div>
+        
+        <div style="padding: 20px;">
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #2c3e50;">Order Summary</h3>
+            <p><strong>Order Date:</strong> ${orderDate}</p>
+            <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+            <p><strong>Status:</strong> ${paymentStatus === 'paid' ? 'Payment Received' : 'Payment Pending'}</p>
+          </div>
+          
+          <h3 style="color: #2c3e50; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px;">Order Details</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr style="background-color: #f2f2f2;">
+                <th style="padding: 12px 15px; text-align: left;">Product</th>
+                <th style="padding: 12px 15px; text-align: center;">Qty</th>
+                <th style="padding: 12px 15px; text-align: right;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${productRows}
+            </tbody>
+            <tfoot>
+              ${couponDetails ? `
+                <tr>
+                  <td colspan="2" style="padding: 12px 15px; text-align: right; border-top: 1px solid #e0e0e0;"><strong>Subtotal:</strong></td>
+                  <td style="padding: 12px 15px; text-align: right; border-top: 1px solid #e0e0e0;">₹${totalPriceAfterDiscount.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding: 12px 15px; text-align: right;"><strong>Coupon (${couponDetails.code}):</strong></td>
+                  <td style="padding: 12px 15px; text-align: right;">-₹${couponDetails.discount.toFixed(2)}</td>
+                </tr>
+              ` : ''}
+              <tr>
+                <td colspan="2" style="padding: 12px 15px; text-align: right; font-weight: bold; border-top: 1px solid #e0e0e0;">Total:</td>
+                <td style="padding: 12px 15px; text-align: right; font-weight: bold; border-top: 1px solid #e0e0e0;">₹${totalAmount.toFixed(2)}</td>
+              </tr>
+            </tfoot>
+          </table>
+          
+          <div style="display: flex; margin-bottom: 20px;">
+            <div style="flex: 1; padding: 15px; background-color: #f9f9f9; border-radius: 5px; margin-right: 10px;">
+              <h3 style="margin-top: 0; color: #2c3e50;">Shipping Address</h3>
+              ${formattedAddress}
+            </div>
+          </div>
+          
+          <p style="text-align: center; color: #7f8c8d; font-size: 14px;">
+            We've received your order and we're getting it ready. You'll receive a notification when it's shipped.
+          </p>
+          
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="https://yourwebsite.com/orders" style="display: inline-block; padding: 12px 25px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">View Your Order</a>
+          </div>
+        </div>
+        
+        <div style="background-color: #f8f8f8; padding: 20px; text-align: center; border-top: 1px solid #e0e0e0; font-size: 14px; color: #7f8c8d;">
+          <p>If you have any questions, please contact us at <a href="mailto:support@chhaap.com" style="color: #3498db;">support@chhaap.com</a></p>
+          <p>© ${new Date().getFullYear()} Chhaap. All rights reserved.</p>
+        </div>
+      </div>
     `;
 
+    // Admin Email Template
+    const adminEmailHTML = `
+      <div style="font-family: 'Helvetica Neue', Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+        <div style="background-color: #f8f8f8; padding: 20px; text-align: center; border-bottom: 1px solid #e0e0e0;">
+          <h1 style="margin: 0; color: #2c3e50;">New Order Received</h1>
+          <p style="margin: 5px 0 0; color: #7f8c8d;">Order #${orderId.slice(-8).toUpperCase()}</p>
+        </div>
+        
+        <div style="padding: 20px;">
+          <div style="background-color: #f9f9f9; padding: 15px; border-radius: 5px; margin-bottom: 20px;">
+            <h3 style="margin-top: 0; color: #2c3e50;">Customer Information</h3>
+            <p><strong>Name:</strong> ${user.fullName || address.fullName}</p>
+            <p><strong>Email:</strong> ${user.email}</p>
+            <p><strong>Phone:</strong> ${address.phoneNumber}</p>
+            <p><strong>Order Date:</strong> ${orderDate}</p>
+            <p><strong>Payment Method:</strong> ${paymentMethod}</p>
+            <p><strong>Payment Status:</strong> ${paymentStatus === 'paid' ? 'Paid' : 'Pending'}</p>
+          </div>
+          
+          <h3 style="color: #2c3e50; border-bottom: 1px solid #e0e0e0; padding-bottom: 10px;">Order Details</h3>
+          <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
+            <thead>
+              <tr style="background-color: #f2f2f2;">
+                <th style="padding: 12px 15px; text-align: left;">Product</th>
+                <th style="padding: 12px 15px; text-align: center;">Qty</th>
+                <th style="padding: 12px 15px; text-align: right;">Price</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${productRows}
+            </tbody>
+            <tfoot>
+              ${couponDetails ? `
+                <tr>
+                  <td colspan="2" style="padding: 12px 15px; text-align: right; border-top: 1px solid #e0e0e0;"><strong>Subtotal:</strong></td>
+                  <td style="padding: 12px 15px; text-align: right; border-top: 1px solid #e0e0e0;">₹${totalPriceAfterDiscount.toFixed(2)}</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding: 12px 15px; text-align: right;"><strong>Coupon (${couponDetails.code}):</strong></td>
+                  <td style="padding: 12px 15px; text-align: right;">-₹${couponDetails.discount.toFixed(2)}</td>
+                </tr>
+              ` : ''}
+              <tr>
+                <td colspan="2" style="padding: 12px 15px; text-align: right; font-weight: bold; border-top: 1px solid #e0e0e0;">Total:</td>
+                <td style="padding: 12px 15px; text-align: right; font-weight: bold; border-top: 1px solid #e0e0e0;">₹${totalAmount.toFixed(2)}</td>
+              </tr>
+            </tfoot>
+          </table>
+          
+          <div style="display: flex; margin-bottom: 20px;">
+            <div style="flex: 1; padding: 15px; background-color: #f9f9f9; border-radius: 5px; margin-right: 10px;">
+              <h3 style="margin-top: 0; color: #2c3e50;">Shipping Address</h3>
+              ${formattedAddress}
+            </div>
+          </div>
+          
+          <div style="text-align: center; margin-top: 30px;">
+            <a href="https://admin.yourwebsite.com/orders/${orderId}" style="display: inline-block; padding: 12px 25px; background-color: #3498db; color: white; text-decoration: none; border-radius: 4px; font-weight: bold;">View Order in Dashboard</a>
+          </div>
+        </div>
+        
+        <div style="background-color: #f8f8f8; padding: 20px; text-align: center; border-top: 1px solid #e0e0e0; font-size: 14px; color: #7f8c8d;">
+          <p>This is an automated notification. No action is required unless there are issues with the order.</p>
+          <p>© ${new Date().getFullYear()} Chhaap Admin</p>
+        </div>
+      </div>
+    `;
+
+    // Send emails
     await sendMail(
       user.email,
-      `Chhaap - Order #${orderIdShort} Confirmation`,
-      emailHTML
+      `Your Chhaap Order #${orderId.slice(-8).toUpperCase()} Confirmation`,
+      userEmailHTML
     );
 
     await sendMail(
       "yashjadon@diamondore.in",
-      `New Order #${orderIdShort} Received – Chhaap`,
-      `<h3>New order received from ${user.fullName || address.fullName}</h3>${emailHTML}`
+      `[Action Required] New Order #${orderId.slice(-8).toUpperCase()} - ₹${totalAmount.toFixed(2)}`,
+      adminEmailHTML
     );
 
     sendResponse(res, 200, newOrder[0], "Order created successfully");
-  } catch (err){
+  } catch (err) {
     await session.abortTransaction();
     session.endSession();
     throw err;
