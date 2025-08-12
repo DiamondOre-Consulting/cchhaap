@@ -61,10 +61,13 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
             const matchedVariation = productDoc.variations.find(
                 (v) => v._id.toString() === product.variationId?.toString()
             );
+            
 
             if (!matchedVariation) return;
 
-             if(matchedVariation.quantity<quantity||matchedVariation.quantity==0||matchedVariation.quantity-quantity<=0){
+            
+
+             if(matchedVariation.quantity<product.quantity||matchedVariation.quantity==0||matchedVariation.quantity-product.quantity<=0){
                     throw new ApiError("Not enough stock for selected variation", 400);
                 }   
 
@@ -103,6 +106,8 @@ export const checkoutPayment = asyncHandler(async (req, res) => {
     if (totalAmount < 1) {
         throw new ApiError("Cart is empty or total is invalid", 400);
     }
+
+    console.log("totalAmount",totalAmount)
 
     
     const razorAmount = totalAmount * 100; 
