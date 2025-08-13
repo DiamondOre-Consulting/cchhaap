@@ -93,12 +93,7 @@ export const signup = asyncHandler(async(req, res) => {
 });
 
 export const signout = asyncHandler(async(req, res) => {
-  const cookieOptions = {
-    maxAge: new Date(),
-    http: true,
-    secure: false,
-    sameSite: "None",
-  };
+  
 
   for (let cookie in req.cookies) {
     res.clearCookie(cookie, cookieOptions);
