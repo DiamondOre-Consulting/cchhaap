@@ -96,6 +96,8 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
     .skip(skip)
     .limit(limit)
     .lean();
+
+    
     
 
   if (!users.length) {

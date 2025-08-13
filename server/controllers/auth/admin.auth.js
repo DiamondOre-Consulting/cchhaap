@@ -170,7 +170,7 @@ export const forgotPassword = asyncHandler(async(req, res)=>{
     await existingUser.save();
   
   
-    const resetUrl = `http://localhost:5173/reset-password/${resetToken}/${existingUser.email}/${expiryTime}`;
+    const resetUrl = `http://admin.chhaapp.in/reset-password/${resetToken}/${existingUser.email}/${expiryTime}`;
   
     const emailTemplate = `
         <html>
