@@ -57,14 +57,14 @@ const App = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/return-refund-policy" element={<ReturnRefundPolicy />} />
-        <Route path="/terms-and-condition" element={<TermsAndConditions/>}/>
-
+        <Route path="/terms-and-condition" element={<TermsAndConditions />} />
+        <Route
+          path="/reset-password/:token/:email/:expiry"
+          element={<ResetPassword />}
+        />
         <Route element={<ProtectedRoute />}>
           <Route path="/my-account" element={<ProfilePage />} />
-          <Route
-            path="/reset-password/:token/:email/:expiry"
-            element={<ResetPassword />}
-          />
+
           <Route path="/checkout" element={<CheckOutPage />} />
         </Route>
         <Route path="*" element={<ErrorPage />} />
