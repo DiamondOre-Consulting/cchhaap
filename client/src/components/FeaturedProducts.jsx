@@ -18,7 +18,6 @@ const FeaturedProducts = () => {
 
       const mappedProducts = featuredProducts.map((product) => {
         const variation = product.variations[0];
-        console.log("pro", product);
         return {
           id: product._id,
           src:
@@ -27,7 +26,6 @@ const FeaturedProducts = () => {
             "",
           title: product.productName,
           onClick: () => {
-            console.log("clicked");
             navigate(`/each-product/${product?._id}`);
           },
         };
@@ -35,7 +33,6 @@ const FeaturedProducts = () => {
 
       setAllFeatured(mappedProducts);
     } catch (error) {
-      console.log("Error fetching featured products:", error);
     }
   };
 

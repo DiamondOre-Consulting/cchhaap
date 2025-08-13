@@ -6,12 +6,10 @@ import userAxiosInstance from "../../Helper/axiosInstance";
 export const userApplyCoupon = createAsyncThunk('/apply-coupon' , async(couponName)=>{
     try{
             const response = await userAxiosInstance.get(`/apply-coupon/${couponName}`);
-            console.log(response);
             toast.success(response?.data?.message);
             return response?.data
     }
     catch(error){
-        console.log(error);
         toast.error(error?.response?.data?.message)
     }
 })
@@ -19,14 +17,11 @@ export const userApplyCoupon = createAsyncThunk('/apply-coupon' , async(couponNa
 
 export const userBuyNowCoupon = createAsyncThunk('/buy-now-apply-coupon' , async(data)=>{
     try{
-        console.log(data)
             const response = await userAxiosInstance.get(`/buy-now-apply-coupon/${data?.couponName}/${data?.productId}/${data.variationId}`);
-            console.log(response);
             toast.success(response?.data?.message);
             return response?.data
     }
     catch(error){
-        console.log(error);
         toast.error(error?.response?.data?.message)
     }
 })

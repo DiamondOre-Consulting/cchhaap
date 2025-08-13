@@ -24,10 +24,8 @@ const Categories = () => {
   const allCategories = async () => {
     try {
       const response = await dispatch(categories());
-      console.log("data", response);
       setAllCategory(response?.payload?.data || []);
     } catch (error) {
-      // console.log(error);
     }
   };
 
@@ -35,7 +33,6 @@ const Categories = () => {
     allCategories();
   }, []);
 
-  // console.log(allCategories)
   return (
     <div className="py-6 px-4">
       <div data-aos = "fade-up" className="text-center text-[2rem] md:text-[3rem] mb-8 uppercase">

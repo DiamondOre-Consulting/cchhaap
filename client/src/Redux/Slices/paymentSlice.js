@@ -8,14 +8,12 @@ export const userGetRazorpayKey = createAsyncThunk('/user-razorpay-key' , async(
             return response?.data;
     }
     catch(error){
-        console.log(error)
     }
 })
 
 export const userCheckoutPayment = createAsyncThunk('/check-out/payment' , async(data)=>{
     try{
         
-        console.log("this is usercheckout ",data)
         const queryParams = new URLSearchParams();
         if (data?.couponName) queryParams.append("couponCode", data?.couponName);
         if (data?.totalItems) queryParams.append("quantity", data?.totalItems);
@@ -24,27 +22,20 @@ export const userCheckoutPayment = createAsyncThunk('/check-out/payment' , async
   
        
   
-        console.log("Query Params: " , queryParams.toString());
             const response = await userAxiosInstance.post(`/checkout-payment?${queryParams.toString()}`)
-            console.log("checout payment response",response)
             return response?.data
     }
     catch(error){
-        console.log(error)
     }
 })
 
 
 export const userVarifyPayment  = createAsyncThunk('/verify-payment' , async(paymentDetails)=>{
     try{
-        console.log("paymentDetails" , paymentDetails)
-        console.log(paymentDetails)
             const response = await userAxiosInstance.post('/verify-payment' , paymentDetails);
-            console.log("response in slice ",response)
             return response?.data
     }
     catch(error){
-        console.log(error)
     }
 })
 

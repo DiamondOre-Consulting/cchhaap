@@ -16,16 +16,13 @@ const CartDrawer = ({ isOpen, onClose }) => {
   const [customLoader, setCustomLoader] = useState(true);
   const navigate = useNavigate();
   const { user, isLoggedin } = useSelector((state) => state?.user);
-  console.log(user);
 
   const handleGetCart = async () => {
     try {
       setCustomLoader(true);
       const response = await dispatch(userGetCart());
       // setCartData(response)
-      console.log(response)
       setCartData(response?.payload?.data || []);
-      console.log("getting cart data", response);
       
     } catch (error) {
       console.error("Error fetching cart:", error);
@@ -44,7 +41,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
      const response =  await dispatch(userRomoveProductFromCart(productId));
       handleGetCart();
       dispatch(getNavbarCartWishlistCount())
-      console.log("my",response)
       if(response?.payload?.data === null){
         onClose()
       }
@@ -54,7 +50,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
   };
 
   const updateCart = async (newQuantity, productId , variationId) => {
-    console.log(variationId);
     // if (newQuantity < 1) return;
     try {
       await dispatch(
@@ -66,7 +61,6 @@ const CartDrawer = ({ isOpen, onClose }) => {
     }
   };
 
-  console.log("cart data thihs ", cartData);
   return (
     <div>
       <>

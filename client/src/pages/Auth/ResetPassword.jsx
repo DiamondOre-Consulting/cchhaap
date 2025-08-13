@@ -7,7 +7,6 @@ import { userResetPassword } from "@/Redux/Slices/authSlice";
 
 const ResetPassword = () => {
   const { token, expiry } = useParams();
-  console.log("expiry", expiry);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
@@ -15,7 +14,6 @@ const ResetPassword = () => {
   const [confirmPassword, setConfirmPassword] = useState();
   const [loader , setLoader] = useState(false)
 
-  console.log(newPassword, token);
 
   const [timeLeft, setTimeLeft] = useState({ minutes: 0, seconds: 0 });
   useEffect(() => {
@@ -53,7 +51,6 @@ const ResetPassword = () => {
     e.preventDefault();
     setLoader(true)
     try {
-      console.log("mytoken and password", token, newPassword);
       if (!newPassword || !confirmPassword) {
         toast.error("Please enter password and confirm password");
         return;
@@ -67,12 +64,10 @@ const ResetPassword = () => {
       const response = await dispatch(
         userResetPassword({ resetToken: token, newPassword })
       );
-      console.log(response);
       if (response?.payload?.statusCode === 200) {
         navigate("/login");
       }
     } catch (err) {
-      console.log(err);
     }
     finally{
         setLoader(false)

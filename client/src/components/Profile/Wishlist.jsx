@@ -17,7 +17,6 @@ const Wishlist = () => {
       const response = await dispatch(allWislist());
             
       
-      console.log("allwishliast",response)
       setWishlistData(response?.payload?.data?.wishList || []);
     } catch (error) {
       console.error("Error fetching wishlist:", error);
@@ -41,7 +40,6 @@ const Wishlist = () => {
     handleGetAllWishlistProducts();
   }, []);
 
-  console.log("wishlist" , wishlistData)
 
   if (loading) {
     return (

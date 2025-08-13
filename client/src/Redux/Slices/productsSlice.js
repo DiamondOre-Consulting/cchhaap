@@ -6,7 +6,6 @@ import { getNavbarCartWishlistCount } from "./cart";
 
 
 export const getSingleProduct = createAsyncThunk('/user/single-product' , async({id , userId, color, size, variationId, selectedAttributes ={}})=>{
-console.log("selected Attributess 1 ",selectedAttributes)
     try {
        const query = new URLSearchParams();
       if(userId) query.append("userId" , userId)
@@ -18,10 +17,8 @@ console.log("selected Attributess 1 ",selectedAttributes)
       }
 
         const res = await axiosInstance.get(`/get-single-product/${id}?${query.toString()}`)
-        console.log(res)
         return res.data
     } catch (error) {
-        console.log(error)
     }
 })
 
@@ -32,10 +29,8 @@ export const getAllProducts = createAsyncThunk('/user/all-product' , async({user
       if(userId) query.append("userId" , userId)
 
         const res = await axiosInstance.get(`/get-all-product/${10}/${1}?${query.toString()}`)
-        console.log(res)
         return res.data
     } catch (error) {
-        console.log(error)
     }
 })
 
@@ -48,7 +43,6 @@ export const categories = createAsyncThunk(
       );
       return response?.data;
     } catch (error) {
-      console.log(error);
     }
   }
 );
@@ -58,7 +52,6 @@ export const getCategorizedProduct = createAsyncThunk(
   "/admin/get-all-product",
   async ({id , userId}) => {
     try {
-      console.log(" slice",userId)
       const query = new URLSearchParams();
       if(userId) query.append("userId" , userId)
       const response = await axiosInstance.get(
@@ -66,7 +59,6 @@ export const getCategorizedProduct = createAsyncThunk(
       );
       return response?.data;
     } catch (error) {
-      console.log(error);
     }
   }
 );
@@ -77,10 +69,8 @@ export const getGenderWiseProduct = createAsyncThunk('/user/gender-wise-product'
          const query = new URLSearchParams();
       if(userId) query.append("userId" , userId)
         const response = await axiosInstance.get(`/get-gender-based-products/${gender}?${query.toString()}`);
-        console.log(response);
         return response?.data
     } catch (error) {
-        console.log(error)
     }
 })
 
@@ -90,7 +80,6 @@ export const addToWishlist = createAsyncThunk('/user/add-to-wishlist' , async(pr
         toast.success(response?.data?.message)
         return response?.data
     } catch (error) {
-        console.log(error)
     }
 })
 
@@ -101,7 +90,6 @@ export const removeFromWishlist = createAsyncThunk('/user/remove-to-wishlist' , 
         toast?.success(response?.data?.message)
         return response?.data
     } catch (error) {
-        console.log(error)
     }
 })
 
@@ -111,26 +99,21 @@ export const allWislist = createAsyncThunk('/user/get-wishlist' , async(productI
         const response = await axiosInstance.get(`/get-all-wishlist-products/${1}/${10}`);
         return response?.data
     } catch (error) {
-        console.log(error)
     }
 })
 
 export const getFeaturedProducts = createAsyncThunk('/user/get-featured-products' , async()=>{
   try {
     const response =await axiosInstance.get('/get-featured-products');
-    console.log(response)
     return response?.data
   } catch (error) {
-    console.log(error)
   }
 })
 
 
 export const userProductSearch = createAsyncThunk("/user/search", async (data) => {
   try {
-    console.log(data)
     const response = await axiosInstance.get(`/search-product/${data}`);
-    console.log(response);
     // toast.success(response?.data?.message);
     return response.data;
   } catch (error) {

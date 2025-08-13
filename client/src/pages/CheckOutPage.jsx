@@ -90,10 +90,8 @@ const CheckOutPage = () => {
   const handleGetCheckOutValue = async () => {
     try {
       const response = await dispatch(userGetCheckoutValues());
-      console.log("checkout value", response);
       setCheckOutValues(response?.payload?.data);
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -102,10 +100,8 @@ const CheckOutPage = () => {
       const response = await dispatch(
         userBuyNowCheckOutValues({ productId, variationId, quantity })
       );
-      console.log("buy now checout value", response);
       setCheckOutValues(response?.payload?.data?.data?.checkoutValues);
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -168,10 +164,10 @@ const CheckOutPage = () => {
       const response = await dispatch(userAddNewAddress(addAddressForm));
       if (response?.payload?.statusCode === 200) {
         setAddAddressPopUp(false);
+         resetAddAddressForm();
         await handleGetAllAddress();
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoader(false);
     }
@@ -188,7 +184,6 @@ const CheckOutPage = () => {
         setSelectedAddress(defaultAddress);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -217,7 +212,6 @@ const CheckOutPage = () => {
       await dispatch(userEditAddress({ addressId, editFormData }));
       await handleGetAllAddress();
     } catch (error) {
-      console.log(error);
     } finally {
       setLoader(false);
       setEditAddressPopUp(false);
@@ -229,7 +223,6 @@ const CheckOutPage = () => {
       await dispatch(userDeleteAddress(addressId));
       await handleGetAllAddress();
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -246,7 +239,6 @@ const CheckOutPage = () => {
         handleConfetti();
       }
     } catch (error) {
-      console.log(error);
       setCouponValue("");
     }
   };
@@ -266,7 +258,6 @@ const CheckOutPage = () => {
         handleConfetti();
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -275,7 +266,6 @@ const CheckOutPage = () => {
       const response = await dispatch(userGetRazorpayKey());
       setRazorpayKey(response?.payload?.data?.key);
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -309,7 +299,6 @@ const CheckOutPage = () => {
       setCheckOutPaymentValues(response?.payload?.data);
 
       if (!razorpayKey) {
-        console.log("Fetching Razorpay key again...");
         await handleGetRazorpayKey();
       }
 
@@ -379,7 +368,6 @@ const CheckOutPage = () => {
         }
       }
     } catch (error) {
-      console.log("Payment error:", error);
       toast.error("Something went wrong with the payment.");
     } finally {
       setLoader(false);
@@ -423,7 +411,6 @@ const CheckOutPage = () => {
         await dispatch(getNavbarCartWishlistCount());
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoader(false);
     }
@@ -434,7 +421,20 @@ const CheckOutPage = () => {
   }, []);
 
 
-  console.log("checkout value",checkoutvalues)
+  const resetAddAddressForm = () => {
+  setAddAddressForm({
+    fullName: "",
+    phoneNumber: "",
+    street: "",
+    city: "",
+    state: "",
+    country: "India",
+    pinCode: "",
+    addressType: "",
+    isDefault: false,
+  });
+};
+
   return (
     <div className="min-h-screen bg-[#6d0c04] text-white py-8 px-4 md:px-8">
      
@@ -781,7 +781,10 @@ const CheckOutPage = () => {
             <div className="relative bg-white z-60 text-gray-800 w-auto md:w-2xl px-2 py-4 rounded-md">
               <button
                 className="float-right text-2xl absolute top-2 right-1 mb-2 cursor-pointer"
-                onClick={() => setEditAddressPopUp(false)}
+                onClick={() => {
+    setAddAddressPopUp(false);
+    resetAddAddressForm(); 
+  }}
               >
                 <IoClose />
               </button>

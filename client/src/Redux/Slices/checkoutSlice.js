@@ -9,7 +9,6 @@ export const userGetCheckoutValues = createAsyncThunk('/user/checkout-values' , 
         return response?.data
     }
     catch(error){
-        console.log(error)
     }
 })
 
@@ -20,7 +19,6 @@ export const userBuyNowCheckOutValues = createAsyncThunk('/user/checkout-values'
         return response
     }
     catch(error){
-        console.log(error)
     }
 })
 

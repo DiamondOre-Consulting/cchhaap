@@ -28,7 +28,6 @@ const Address = () => {
         setSelectedAddress(defaultAddress);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -37,7 +36,6 @@ const Address = () => {
       const response = await dispatch(userDeleteAddress(addressId));
       await handleGetAllAddress();
     } catch (error) {
-      console.log(error);
     }
   };
 

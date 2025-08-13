@@ -14,7 +14,6 @@ const AddressDrawer = ({
   editAdd,
 }) => {
   const dispatch = useDispatch();
-  console.log(editAdd);
   const {
     register,
     handleSubmit,
@@ -82,11 +81,9 @@ useEffect(() => {
         res = await dispatch(userAddNewAddress(data));
       }
 
-      console.log(res);
       onClose();
       await handleGetAllAddress();
     } catch (error) {
-      console.log(error);
     }
   };
 

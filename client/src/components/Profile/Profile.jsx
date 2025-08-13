@@ -26,7 +26,6 @@ const Profile = () => {
         });
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -48,7 +47,6 @@ const Profile = () => {
         setEditMode(false);
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }

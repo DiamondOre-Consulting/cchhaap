@@ -9,11 +9,9 @@ const initialState = {
 
 export const sendOtp = createAsyncThunk("/send-otp", async (data) => {
   try {
-    console.log(data);
     const response = await userAxiosInstance.post("/send-otp", {
       email: data.email,
     });
-    console.log(response);
     toast.success(response?.data?.message);
     return response?.data;
   } catch (error) {
@@ -23,7 +21,6 @@ export const sendOtp = createAsyncThunk("/send-otp", async (data) => {
 
 export const userSignUp = createAsyncThunk("/signup", async (data) => {
   try {
-    console.log(data);
     const response = await userAxiosInstance.post("/signup", data);
     toast.success(response?.data?.message);
     return response?.data;
@@ -34,12 +31,12 @@ export const userSignUp = createAsyncThunk("/signup", async (data) => {
 
 export const userSignin = createAsyncThunk("/signin", async (data) => {
   try {
-    console.log(data);
     const response = await userAxiosInstance.post("/signin", data);
     // toast.success(response?.data?.message);
     return response?.data;
   } catch (error) {
-    // toast.error(error?.response?.data?.message);
+    console.log(error)
+    toast.error(error?.response?.data?.message);
   }
 });
 
@@ -47,7 +44,6 @@ export const userForgotPassword = createAsyncThunk(
   "/forgot-password",
   async (data) => {
     try {
-      console.log();
       const response = await userAxiosInstance.post(
         "/forgot-password",
         data
@@ -55,7 +51,6 @@ export const userForgotPassword = createAsyncThunk(
       toast.success(response?.data?.message);
       return response?.data;
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.message);
     }
   }
@@ -65,7 +60,6 @@ export const userResetPassword = createAsyncThunk(
   "/reset-password",
   async (data) => {
     try {
-      console.log(data);
       const response = await userAxiosInstance.post(
         `/reset-password/${data?.resetToken}`,
         { newPassword: data?.newPassword }
@@ -81,11 +75,9 @@ export const userResetPassword = createAsyncThunk(
 export const userSignOut = createAsyncThunk("/signout", async () => {
   try {
     const response = await userAxiosInstance.get("/signout");
-    console.log(response);
     // toast.success(response?.data?.message);
     return response?.data;
   } catch (error) {
-    console.log(error);
     toast.error(error?.response?.data?.message);
   }
 });
@@ -93,11 +85,9 @@ export const userSignOut = createAsyncThunk("/signout", async () => {
 export const getUserData = createAsyncThunk("/get-user-data", async () => {
   try {
     const response = await userAxiosInstance.get("/get-user-data");
-    console.log(response);
     return response?.data;
   } catch (error) {
     initialState.isLoggedIn = false;
-    console.log(error);
   }
 });
 
@@ -105,13 +95,13 @@ export const editUserProfile = createAsyncThunk(
   "/edit-proifle",
   async (data) => {
     try {
-      console.log(data);
+    
       const response = await userAxiosInstance.put("/edit-profile" , data );
-      console.log(response);
+      
       toast.success(response?.data?.message);
       return response?.data;
     } catch (error) {
-      console.log(error);
+    
       // toast.error(error?.response?.data?.message);
     }
   }
@@ -120,13 +110,13 @@ export const editUserProfile = createAsyncThunk(
 
 export const userAddNewAddress = createAsyncThunk('/add-address' , async(data)=>{
   try{
-    console.log(data)
+    
       const response = await userAxiosInstance.post('/add-new-address' , data)
       toast.success(response?.data?.message)
       return response?.data
   }
   catch(error){
-    console.log(error)
+    
   }
 })
 
@@ -136,32 +126,29 @@ export const userGetAllAddress  = createAsyncThunk('/all-address' , async()=>{
       return response?.data
   }
   catch(error){
-    console.log(error)
+
   }
 })
 
 
 export const userEditAddress = createAsyncThunk('/edit-address' , async({editFormData , addressId})=>{
   try{
-    console.log("inside slice",editFormData , addressId)
       const response = await userAxiosInstance.put(`/edit-address/${addressId}` , editFormData);
       toast.success(response?.data?.message)
-      console.log(response)
+     
   }
   catch(error){
-    console.log(error)
+  
   }
 })
 
 export const userDeleteAddress = createAsyncThunk('/delete-address' , async(addressId)=>{
   try{
         const response = await userAxiosInstance.delete(`/delete-address/${addressId}`);
-        console.log(response);
         toast.success(response?.data?.message);
         return response?.data
   }
   catch(error){
-    console.log(error)
   }
 })
 
@@ -169,10 +156,8 @@ export const userDeleteAddress = createAsyncThunk('/delete-address' , async(addr
 export const GetAllBannerImages = createAsyncThunk('/get-all-banner-images' ,async () => {
   try {
     const response = await userAxiosInstance.get("/get-all-banner-images");
-    console.log("this is response ",response);
     return response?.data
   } catch (error) {
-    console.log(error);
   }
 });
 
