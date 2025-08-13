@@ -171,6 +171,7 @@ export const signin= asyncHandler(async(req,res)=>{
 
     res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
 
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
@@ -187,15 +188,11 @@ export const signin= asyncHandler(async(req,res)=>{
 
 export const signout = asyncHandler(async (req, res) => {
   // Use the same cookie options as when the cookies were set
-  const cookieOptionsForSignOut = {
-    httpOnly: true,
-    secure: true,
-    sameSite: "None",
-  };
+  
 
   // Use the identical options to clear the cookies.
-  res.clearCookie("accessToken", cookieOptionsForSignOut);
-  res.clearCookie("refreshAccessToken", cookieOptionsForSignOut);
+  res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshAccessToken", cookieOptions);
 
   sendResponse(res, 200, null, "Signed out successfully");
 });
