@@ -19,12 +19,8 @@ const otpStore = new Map()
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "None",
-  domain: ".chhaapp.in",  // Add this (leading dot for subdomains)
-  path: "/",              // Explicitly set path
-  maxAge: 7 * 24 * 60 * 60 * 1000, // Set expiry (e.g., 7 days)
-  partitioned: true       // Required for Chrome mobile
+  secure: true,          
+  sameSite: "None",      
 };
 
 
