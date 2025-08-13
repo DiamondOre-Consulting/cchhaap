@@ -471,15 +471,15 @@ const Orders = () => {
 
         {showOrderDetails && selectedOrder && (
           <div className="fixed inset-0 z-50 overflow-y-auto">
-            <div className="flex items-end  bg-black/40 justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div className="flex items-end  bg-black/40 justify-center  overflow-y-auto pt-4 px-4 pb-20 text-center sm:block sm:p-0">
               <div
                 className="fixed inset-0 transition-opacity"
                 aria-hidden="true"
               >
-                <div
+                {/* <div
                   className="absolute inset-0 cursor-pointer   opacity-75"
                   onClick={() => setShowOrderDetails(false)}
-                ></div>
+                ></div> */}
               </div>
 
               <span
@@ -489,7 +489,7 @@ const Orders = () => {
                 &#8203;
               </span>
 
-              <div className=" inline-block align-bottom bg-white rounded-lg text-left overflow-y-auto shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+              <div className="inline-block align-bottom bg-white rounded-lg text-left overflow-y-auto h-full z-80 shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
                 <div className="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                   <div className="sm:flex  sm:items-start">
                     <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
@@ -657,8 +657,8 @@ const Orders = () => {
                                             }`}
                                           >
                                             {product.exchanged
-                                              ? "Approved"
-                                              : "Pending Approval"}
+                                              ? "Exchanged"
+                                              : "Pending Exchange"}
                                           </span>
                                         </div>
 
