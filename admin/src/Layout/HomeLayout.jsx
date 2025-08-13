@@ -60,7 +60,7 @@ const AdminLayout = ({ children }) => {
     return (
       <Link
         to={item.path}
-        className={`group flex items-center gap-3 px-4 py-3.5  mb-2 transition-all duration-200 relative overflow-hidden
+        className={`group flex items-center gap-3 px-4 py-2  mb-2 transition-all duration-200 relative overflow-hidden
                     ${
                       isActive
                         ? " border-l-4  border-[#620A1A] text-[#620A1A] transparent "
@@ -142,6 +142,7 @@ const AdminLayout = ({ children }) => {
                 <div className="mt-6 pt-6 border-t border-gray-100">
                   <button className="flex items-center gap-3 px-4 py-3.5 w-full text-gray-600 hover:bg-gray-50 hover:text-red-500 transition-colors group">
                     <LogOut
+                      onClick={handleLogout}
                       size={20}
                       className="group-hover:scale-110 transition-transform"
                     />

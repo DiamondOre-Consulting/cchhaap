@@ -40,7 +40,7 @@ const ProfilePage = () => {
       className="items-center py-6"
       onValueChange={handleTabChange}
     >
-      <TabsList className="h-auto rounded-none border-b bg-transparent w-96 p-0">
+      <TabsList className="h-auto rounded-none border-b bg-transparent w-90 p-0">
           <TabsTrigger
           value="tab-1"
           className=" relative rounded-none cursor-pointer w-full py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"

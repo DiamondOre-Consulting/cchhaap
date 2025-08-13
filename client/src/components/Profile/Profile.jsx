@@ -91,11 +91,11 @@ const Profile = () => {
         <div className="bg-[#ffffff08] backdrop-blur-sm border border-[#edb141]/10 rounded-xl overflow-hidden shadow-lg">
           {/* Card Header */}
           <div className="bg-[#edb141]/20 px-6 py-4 border-b border-[#edb141]/10 flex justify-between items-center">
-            <h2 className="text-xl font-semibold text-[#edb141]">Profile Information</h2>
+            <h2 className="text-md md:text-xl font-semibold text-[#edb141]">Profile Information</h2>
             {!editMode && (
               <button
                 onClick={() => setEditMode(true)}
-                className="px-4 py-2 bg-[#edb141] text-[#6d0c04] cursor-pointer rounded-lg hover:bg-[#f8c050] transition-all font-medium shadow-sm"
+                className="px-2 md:px-4 py-1 md:py-2 bg-[#edb141] text-[#6d0c04] cursor-pointer rounded-lg hover:bg-[#f8c050] transition-all font-medium shadow-sm"
               >
                 Edit Profile
               </button>

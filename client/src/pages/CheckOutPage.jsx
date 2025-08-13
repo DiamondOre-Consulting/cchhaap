@@ -356,7 +356,7 @@ const CheckOutPage = () => {
                 })
               );
 
-              navigate("/my-account?tab=tab-1", { replace: true });
+              navigate("/my-account?tab=tab-2", { replace: true });
               await dispatch(getNavbarCartWishlistCount());
             }
           },
@@ -1111,7 +1111,7 @@ const CheckOutPage = () => {
               <button
                 onClick={() => {
                   setSuccessPopUp(false);
-                  navigate("/my-account?tab=tab-1", { replace: true });
+                  navigate("/my-account?tab=tab-2", { replace: true });
                 }}
                 className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
               >
@@ -1120,7 +1120,7 @@ const CheckOutPage = () => {
               <button
                 onClick={() => {
                   setSuccessPopUp(false);
-                  navigate("/", { replace: true });
+                  navigate("/my-account?tab=tab-2", { replace: true });
                 }}
                 className="px-4 py-2 border border-gray-300 hover:bg-gray-50 text-gray-700 font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
               >

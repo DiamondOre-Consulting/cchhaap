@@ -31,7 +31,6 @@ const App = () => {
   const location = useLocation();
   const dispatch = useDispatch();
   const { cartCount, wishlistCount } = useSelector((state) => state.cart);
-  console.log("hello", cartCount, wishlistCount);
   const fetchData = async () => {
     await dispatch(getUserData());
     await dispatch(getNavbarCartWishlistCount());
@@ -42,7 +41,6 @@ const App = () => {
   }, [location.pathname]);
 
   const { user } = useSelector((state) => state.user);
-  console.log("data", user);
 
   return (
     <HomeLayout cartCount={cartCount} wishlistCount={wishlistCount}>
