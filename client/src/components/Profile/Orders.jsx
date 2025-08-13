@@ -526,7 +526,7 @@ const Orders = () => {
                                         onClick={() =>
                                           handleExchangeTypeChange("size")
                                         }
-                                        className={`px-4 py-2 rounded-md ${
+                                        className={`px-4 text-xs py-2 rounded-md ${
                                           exchangeType === "size"
                                             ? "bg-c1 text-white"
                                             : "bg-gray-200 text-gray-800"
@@ -538,9 +538,9 @@ const Orders = () => {
                                         onClick={() =>
                                           handleExchangeTypeChange("color")
                                         }
-                                        className={`px-4 py-2 rounded-md ${
+                                        className={`px-1 md:px-4 text-xs py-2 rounded-md ${
                                           exchangeType === "color"
-                                            ? "bg-c1 text-white"
+                                            ? "bg-c1 text-xs text-white"
                                             : "bg-gray-200 text-gray-800"
                                         }`}
                                       >
@@ -550,7 +550,7 @@ const Orders = () => {
 
                                     {exchangeType === "size" && (
                                       <div>
-                                        <h4 className="font-medium text-gray-700 mb-2">
+                                        <h4 className="text-sm md:font-medium text-gray-700 mb-2">
                                           Select Size
                                         </h4>
                                         <div className="flex flex-wrap text-gray-700 cursor-pointer gap-2">
@@ -591,7 +591,7 @@ const Orders = () => {
 
                                     {exchangeType === "color" && (
                                       <div>
-                                        <h4 className="font-medium mb-2">
+                                        <h4 className="text-sm md:font-medium mb-2">
                                           Select Color
                                         </h4>
                                         <div className="flex flex-wrap gap-3">
@@ -666,7 +666,7 @@ const Orders = () => {
                                         (exchangeType === "color" &&
                                           !selectedColor)
                                       }
-                                      className={`... bg-c1 p-2 mt-2  text-white`}
+                                      className={`... bg-c1 p-2 mt-2 text-sm  text-white`}
                                     >
                                       Request Exchange
                                     </button>

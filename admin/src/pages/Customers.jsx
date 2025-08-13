@@ -110,6 +110,7 @@ const Customers = () => {
     return visiblePages;
   };
 
+  console.log(allUsers)
   return (
     <HomeLayout>
       <div className=" mx-auto  py-6">
@@ -175,11 +176,25 @@ const Customers = () => {
                       >
                         Registration Date
                       </th>
+                       <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                         Name
+                      </th>
+
+                       <th
+                        scope="col"
+                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                      >
+                         Phone
+                      </th>
+
                       <th
                         scope="col"
                         className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                       >
-                        Customer Email
+                         Email
                       </th>
                       <th
                         scope="col"
@@ -208,14 +223,20 @@ const Customers = () => {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                             {formatDate(user.createdAt)}
                           </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {user?.fullName}
+                          </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            {user?.phoneNumber}
+                          </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                            {user.email}
+                            {user?.email}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">
-                            {user.orderData.totalOrders}
+                            {user?.orderData?.totalOrders}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                            ₹{user.orderData.totalAmount.toLocaleString()}
+                            ₹{user?.orderData?.totalAmount?.toLocaleString()}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                             <button
@@ -392,6 +413,31 @@ const Customers = () => {
                       </div>
 
                       <div className="mt-6 space-y-4">
+{
+  selectedUser?.fullName && selectedUser?.phoneNumber &&(
+     <div className="grid grid-cols-2 gap-4">
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">
+                              Name
+                            </p>
+                            <p className="mt-1 text-sm text-gray-900">
+                              {selectedUser?.fullName}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-500">
+                              Phone Number
+                            </p>
+                            <p className="mt-1 text-sm text-gray-900">
+                              {selectedUser?.phoneNumber}
+                            </p>
+                          </div>
+                        </div>
+
+  )
+}
+                     
+
                         <div className="grid grid-cols-2 gap-4">
                           <div>
                             <p className="text-sm font-medium text-gray-500">

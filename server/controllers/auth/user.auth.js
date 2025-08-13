@@ -264,8 +264,8 @@ export const editProfile = asyncHandler(async(req,res)=>{
 
     const userId = req.user.id;
 
-    const {phoneNumber}= req.validatedData.body
-   
+    const {phoneNumber , fullName}= req.validatedData.body
+   console.log(phoneNumber , fullName)
 
     // if (req.validatedData.body.userAddresses) {
     //     const defaultCount = req.validatedData.body.userAddresses.filter(addr => addr.isDefault).length;

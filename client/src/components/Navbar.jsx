@@ -284,7 +284,7 @@ const Navbar = ({ cartCount, wishlistCount }) => {
               <FaRegHeart
                 onClick={() => {
                   if (isLoggedIn) {
-                    navigate("/my-account?tab=tab-3");
+                    navigate("/my-account?tab=tab-4");
                   } else {
                     navigate("/login");
                   }

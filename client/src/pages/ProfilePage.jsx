@@ -8,6 +8,7 @@ import { userSignOut } from "@/Redux/Slices/authSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { getNavbarCartWishlistCount } from "@/Redux/Slices/cart";
+import Profile from "@/components/Profile/Profile";
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -40,42 +41,54 @@ const ProfilePage = () => {
       onValueChange={handleTabChange}
     >
       <TabsList className="h-auto rounded-none border-b bg-transparent w-96 p-0">
-        <TabsTrigger
+          <TabsTrigger
           value="tab-1"
-          className="data-[state=active]:after:bg-primary relative rounded-none cursor-pointer w-full py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+          className=" relative rounded-none cursor-pointer w-full py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+        >
+        Profile
+        </TabsTrigger>
+
+        <TabsTrigger
+          value="tab-2"
+          className=" relative rounded-none cursor-pointer w-full py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
           Order
         </TabsTrigger>
         <TabsTrigger
-          value="tab-2"
-          className="data-[state=active]:after:bg-primary relative rounded-none cursor-pointer py-2 w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+          value="tab-3"
+          className=" relative rounded-none cursor-pointer py-2 w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
           Address
         </TabsTrigger>
         <TabsTrigger
-          value="tab-3"
-          className="data-[state=active]:after:bg-primary relative rounded-none py-2 cursor-pointer w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+          value="tab-4"
+          className=" relative rounded-none py-2 cursor-pointer w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
           WishList
         </TabsTrigger>
         <TabsTrigger
-          value="tab-4"
-          className="data-[state=active]:after:bg-primary relative rounded-none py-2 cursor-pointer w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+          value="tab-5"
+          className=" relative rounded-none py-2 cursor-pointer w-full after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
         >
           Logout
         </TabsTrigger>
       </TabsList>
 
+      
       <TabsContent value="tab-1">
+        <Profile/>
+      </TabsContent>
+
+      <TabsContent value="tab-2">
         <Orders />
       </TabsContent>
-      <TabsContent value="tab-2">
+      <TabsContent value="tab-3">
         <Address />
       </TabsContent>
-      <TabsContent value="tab-3">
+      <TabsContent value="tab-4">
         <Wishlist />
       </TabsContent>
-      <TabsContent value="tab-4">
+      <TabsContent value="tab-5">
         <p className="text-gray-100 p-4 text-center  mt-6">
           <button
             onClick={handleLogout}

@@ -106,7 +106,7 @@ export const editUserProfile = createAsyncThunk(
   async (data) => {
     try {
       console.log(data);
-      const response = await userAxiosInstance.post("/edit-profile" , data );
+      const response = await userAxiosInstance.put("/edit-profile" , data );
       console.log(response);
       toast.success(response?.data?.message);
       return response?.data;

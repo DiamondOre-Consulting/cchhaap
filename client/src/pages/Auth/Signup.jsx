@@ -127,7 +127,7 @@ const Signup = () => {
                 
                 <div className="flex flex-col space-y-4">
                   <div className="flex items-center border-b border-gray-300 py-2">
-                    <FiMail className="text-gray-500 mr-2" />
+                    <FiMail className="text-gray-100 mr-2" />
                     <input
                       type="email"
                       className="flex-1 outline-none"
@@ -169,7 +169,7 @@ const Signup = () => {
               <div className="bg-white/20 backdrop-blur rounded-lg p-6 shadow-lg">
                 <div className="flex flex-col items-center mb-6">
                   <div className="bg-c2 p-3 rounded-full mb-3">
-                    <FaShieldAlt className="text-white text-2xl" />
+                    <FaShieldAlt className="text-white  text-2xl" />
                   </div>
                   <h2 className="text-xl font-bold text-gray-100">Enter OTP</h2>
                   <p className="text-sm text-gray-200 mt-1">We sent a code to {formData.email}</p>

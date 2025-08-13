@@ -5,7 +5,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useDispatch } from "react-redux";
 import { getLineChartData, getSalesData } from "@/Redux/Slices/authSlice";
 import { Chart, registerables } from "chart.js";
-import { LineChart } from "recharts";
 
 Chart.register(...registerables);
 
@@ -69,6 +68,7 @@ const Home = () => {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             position: "top",
@@ -81,6 +81,17 @@ const Home = () => {
         scales: {
           y: {
             beginAtZero: true,
+            ticks: {
+              autoSkip: true,
+              maxTicksLimit: 5,
+            },
+          },
+          x: {
+            ticks: {
+              autoSkip: true,
+              maxRotation: 45,
+              minRotation: 45,
+            },
           },
         },
       },
@@ -109,6 +120,7 @@ const Home = () => {
       },
       options: {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
           legend: {
             position: "top",
@@ -142,6 +154,17 @@ const Home = () => {
       initPieChart();
     }
 
+    const handleResize = () => {
+      if (chartInstance) {
+        chartInstance.resize();
+      }
+      if (pieChartInstance) {
+        pieChartInstance.resize();
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
     return () => {
       if (chartInstance) {
         chartInstance.destroy();
@@ -149,6 +172,7 @@ const Home = () => {
       if (pieChartInstance) {
         pieChartInstance.destroy();
       }
+      window.removeEventListener("resize", handleResize);
     };
   }, [selectedYear]);
 
@@ -161,22 +185,20 @@ const Home = () => {
   return (
     <HomeLayout>
       <h1 className="text-2xl">Welcome Admin</h1>
-      <div className="container mx-auto  py-10 flex flex-col items-center justify-center text-center  rounded-xl shadow-xl ">
-        <div className="grid grid-cols-2  md:grid-cols-4 md:gap-y-0 gap-y-3 gap-x-6 w-full md:h-40">
-          <div className=" rounded gap-y-1  shadow-xl flex flex-col h-28 md:h-40  items-center  justify-center   bg-white">
+      <div className="container mx-auto py-10 flex flex-col items-center justify-center text-center rounded-xl shadow-xl">
+        <div className="grid grid-cols-2 md:grid-cols-4 md:gap-y-0 gap-y-3 gap-x-6 w-full md:h-40">
+          <div className="rounded gap-y-1 shadow-xl flex flex-col h-28 md:h-40 items-center justify-center bg-white">
             <p>
-              {" "}
               <ShoppingCart className="" />
             </p>
             <p>Today's Orders</p>
             <p>{salesData?.todayTotalOrders}</p>
           </div>
 
-          <div className=" rounded shadow-xl flex flex-col items-center h-28 md:h-40   justify-center   bg-white">
+          <div className="rounded shadow-xl flex flex-col items-center h-28 md:h-40 justify-center bg-white">
             <HandCoins className="text-xl" />
             Today's Sales
             <p>
-              {" "}
               {salesData?.todayTotalAmount?.toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
@@ -185,20 +207,18 @@ const Home = () => {
             </p>
           </div>
 
-          <div className=" gap-y-1 rounded  shadow-xl flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
+          <div className="gap-y-1 rounded shadow-xl flex flex-col items-center h-28 md:h-40 justify-center bg-white">
             <p>
-              {" "}
               <ShoppingCart className="" />
             </p>
-            <p> All Orders</p>
+            <p>All Orders</p>
             <p>{salesData?.totalOrders}</p>
           </div>
 
-          <div className=" shadow-xl rounded flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
+          <div className="shadow-xl rounded flex flex-col items-center h-28 md:h-40 justify-center bg-white">
             <HandCoins className="text-xl" />
             Total Sales
             <p>
-              {" "}
               {salesData?.totalSales?.toLocaleString("en-IN", {
                 style: "currency",
                 currency: "INR",
@@ -209,62 +229,53 @@ const Home = () => {
         </div>
 
         <div className="grid grid-cols-2 mt-6 md:gap-y-0 gap-y-4 gap-x-6 w-full h-40">
-          <div className=" rounded shadow-xl flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
+          <div className="rounded shadow-xl flex flex-col items-center h-28 md:h-40 justify-center bg-white">
             <HandCoins className="text-xl" />
             Total Users
-            <p>
-              {" "}
-              {salesData?.totalUser
-             
-              }
-            </p>
+            <p>{salesData?.totalUsers}</p>
           </div>
 
-          <div className=" shadow-xl rounded flex flex-col items-center h-28 md:h-40  justify-center   bg-white">
+          <div className="shadow-xl rounded flex flex-col items-center h-28 md:h-40 justify-center bg-white">
             <HandCoins className="text-xl" />
             Cancelled Orders
-            <p>
-              {" "}
-              {salesData?.cancelledOrders}
-            </p>
+            <p>{salesData?.cancelledOrders}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 md:mt-10 bg-white p-4">
-          <div>
-            <div className="flex  items-center justify-between">
-              <div className="w-fit">
-                <Tabs defaultValue="tab-1" className="items-start ">
-                  <select
-                    value={selectedYear}
-                    onChange={(e) => setSelectedYear(e.target.value)}
-                    className="ml-4 p-2 border rounded"
-                  >
-                  
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                     <option value="2026">2026</option>
-                    <option value="2027">2027</option>
-                  </select>
-                  <TabsList className="h-auto rounded-none border-b bg-transparent p-0">
-                    <TabsTrigger
-                      value="tab-1"
-                      className="data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
-                    >
-                      Sales
-                    </TabsTrigger>
-                  
-                  </TabsList>
-                  <TabsContent value="tab-1">
-                    <div className="w-[80vw] md:w-[60vw]">
-                      <canvas ref={lineChartRef}  />
-                    </div>
-                  </TabsContent>
-              
-                </Tabs>
-              </div>
+        <div className="w-full mt-10 bg-white p-4">
+          <Tabs defaultValue="tab-1" className="w-full">
+            <div className="flex items-center justify-between mb-4">
+              <select
+                value={selectedYear}
+                onChange={(e) => setSelectedYear(e.target.value)}
+                className="p-2 border rounded"
+              >
+                <option value="2024">2024</option>
+                <option value="2025">2025</option>
+                <option value="2026">2026</option>
+                <option value="2027">2027</option>
+              </select>
+              <TabsList className="h-auto rounded-none border-b bg-transparent p-0">
+                <TabsTrigger
+                  value="tab-1"
+                  className="data-[state=active]:after:bg-primary relative rounded-none py-2 after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                >
+                  Sales
+                </TabsTrigger>
+              </TabsList>
             </div>
-          </div>
+            <TabsContent value="tab-1">
+              <div className="w-full h-64 md:h-96">
+                <canvas
+                  ref={lineChartRef}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                  }}
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </HomeLayout>
