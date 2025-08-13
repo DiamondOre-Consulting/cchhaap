@@ -75,6 +75,7 @@ const helpfulLinks = [
   { text: "Privacy Policy", href: "/privacy-policy" },
   { text: "Shipping Policy", href: "/shipping-policy" },
   { text: "Return & Refund Policy", href: "/return-refund-policy" },
+  { text: "Terms & Condition", href: "/terms-and-condition" },
 
   // { text: "Live Chat", href: data.help.livechat, hasIndicator: true },
 ];
@@ -84,6 +85,8 @@ const contactInfo = [
   { icon: Phone, text: data.contact.phone },
   { icon: MapPin, text: data.contact.address, isAddress: true },
 ];
+
+const currentYear = new Date().getFullYear();
 
 export default function Footer() {
   return (
@@ -190,7 +193,9 @@ export default function Footer() {
         <div className="mt-12 border-t pt-6">
           <div className="text-center sm:flex sm:justify-between sm:text-left">
             <p className="text-sm flex items-center gap-x-2">
-              <span className=" text-gray-800">All rights reserved.</span>
+              <span className=" md:text-left text-center mx-auto  text-gray-800">
+                All rights reserved.
+              </span>
               <ul className=" flex justify-center gap-6">
                 {socialLinks.map(({ icon: Icon, label, href }) => (
                   <li key={label}>
@@ -208,7 +213,7 @@ export default function Footer() {
             </p>
 
             <p className="text-secondary-foreground/70 mt-4 text-sm transition sm:order-first sm:mt-0">
-              &copy; 2025 {data.company.name}
+              &copy; {currentYear} {data.company.name}
             </p>
           </div>
         </div>

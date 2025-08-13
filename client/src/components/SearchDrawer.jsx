@@ -33,13 +33,11 @@ const SearchDrawer = ({ isOpen, onClose }) => {
     try {
       setLoader(true);
       const res = await dispatch(userProductSearch(query));
-      console.log(res?.payload?.success)
       if(res?.payload?.success){
         setSearchResults(res?.payload?.data || []);    
       }
      
     } catch (error) {
-      console.log(error);
       setSearchResults([]);
     } finally {
       setLoader(false);

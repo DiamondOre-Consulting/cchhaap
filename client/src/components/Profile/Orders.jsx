@@ -112,12 +112,10 @@ const Orders = () => {
     try {
       setLoading(true);
       const response = await dispatch(userGetAllOrders());
-      console.log("allorders", response);
       if (response?.payload?.success) {
         setOrders(response.payload.data.orders || []);
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -131,7 +129,6 @@ const Orders = () => {
         setIsModalOpen(true);
       }
     } catch (error) {
-      console.log(error);
     }
   };
 
@@ -176,7 +173,6 @@ const Orders = () => {
       </div>
     );
   }
-  console.log("selected order", selectedOrder);
 
   const handleExchangeSubmit = async (product) => {
     try {

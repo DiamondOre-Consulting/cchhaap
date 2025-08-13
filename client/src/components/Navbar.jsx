@@ -75,7 +75,6 @@ const navigationLinks = [
   // },
 ];
 const Navbar = ({ cartCount, wishlistCount }) => {
-  // console.log(Count)
   const [cartDrawer, setCartDrawer] = useState(false);
   const [searchDrawer, setSearchDrawer] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -107,7 +106,6 @@ const Navbar = ({ cartCount, wishlistCount }) => {
   const userState = useSelector((state) => state?.user) || {};
   const navigate = useNavigate();
   const { user, isLoggedIn } = userState;
-  console.log("user data", user, isLoggedIn);
 
    const handleScrollToSection = (e, href) => {
     // If we're on the home page, scroll to section

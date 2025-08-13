@@ -18,7 +18,6 @@ const Hero = () => {
       const res = await dispatch(GetAllBannerImages());
       setImages(res?.payload?.data[0]?.bannerImage || []);
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }

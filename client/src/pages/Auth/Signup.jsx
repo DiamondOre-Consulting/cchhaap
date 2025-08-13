@@ -45,7 +45,6 @@ const Signup = () => {
         setSlideStage(1); 
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoader(false);
     }
@@ -71,7 +70,6 @@ const Signup = () => {
         dispatch(getNavbarCartWishlistCount())
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoader(false);
     }

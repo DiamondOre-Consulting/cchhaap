@@ -46,14 +46,12 @@ if (!formData?.email || !formData?.password) {
         toast.error("Password must contain at least 6 characters");
       }
       const response = await dispatch(userSignin(formData));
-      console.log(response);
       if (response?.payload?.statusCode === 200) {
         // toast.success("user logged in successfully")
         dispatch(getNavbarCartWishlistCount())
         navigate("/");
       }
     } catch (error) {
-      console.log(error);
     }
     finally{
       setLoader(false)
@@ -68,9 +66,7 @@ if (!formData?.email || !formData?.password) {
         toast.success("Enter your email Id");
       }
       const response = await dispatch(userForgotPassword({ email }));
-      console.log(response);
     } catch (e) {
-      console.log(err);
     }
     finally{
       setLoader(false);

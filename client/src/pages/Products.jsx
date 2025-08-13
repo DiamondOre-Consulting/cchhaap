@@ -254,7 +254,6 @@ const Products = () => {
         response = await dispatch(getAllProducts({ userId: user?.data?._id }));
       }
 
-      console.log(response);
       const productsData =
         response?.payload?.data?.products ||
         response?.payload?.data ||

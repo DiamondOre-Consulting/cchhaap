@@ -24,6 +24,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ShippingPolicy from "./pages/ShippingPolicy";
 import ErrorPage from "./pages/ErrorPage";
 import ReturnRefundPolicy from "./pages/ReturnRefundPolicy";
+import TermsAndConditions from "./pages/TermsAndConditions";
 
 const About = () => <h2 className="text-2xl text-blue-400">About Page</h2>;
 
@@ -56,6 +57,7 @@ const App = () => {
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/shipping-policy" element={<ShippingPolicy />} />
         <Route path="/return-refund-policy" element={<ReturnRefundPolicy />} />
+        <Route path="/terms-and-condition" element={<TermsAndConditions/>}/>
 
         <Route element={<ProtectedRoute />}>
           <Route path="/my-account" element={<ProfilePage />} />

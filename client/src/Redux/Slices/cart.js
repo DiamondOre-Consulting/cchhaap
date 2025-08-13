@@ -6,14 +6,12 @@ export const userUpdateCart = createAsyncThunk(
   "/user/update-cart",
   async ({ quantity, productId , variationId }) => {
     try {
-      console.log(productId, quantity);
       const response = await userAxiosInstance.put(
         `/update-cart/${quantity}/${productId}/${variationId}`
       );
       toast?.success(response?.data?.message);
       return response.data;
     } catch (error) {
-      console.log(error);
       toast.error(error?.response?.data?.message);
     }
   }
@@ -24,7 +22,6 @@ export const userGetCart = createAsyncThunk("/get-cart", async () => {
     const response = await userAxiosInstance.get("/get-cart");
     return response?.data;
   } catch (error) {
-    console.log(error);
   }
 });
 
@@ -35,11 +32,9 @@ export const userRomoveProductFromCart = createAsyncThunk(
       const response = await userAxiosInstance.put(
         `/remove-item-from-cart/${productId}`
       );
-      console.log(response);
       toast.success(response?.data?.message);
       return response?.data;
     } catch (error) {
-      console.log(error);
     }
   }
 );
@@ -48,10 +43,8 @@ export const userRomoveProductFromCart = createAsyncThunk(
 export const getNavbarCartWishlistCount = createAsyncThunk('/get-Navbar-Count' ,async () => {
   try {
     const response = await userAxiosInstance.get("/get-navbar-cart-wishlist-count");
-    console.log("this is response ",response);
     return response?.data
   } catch (error) {
-    console.log(error);
   }
 });
 

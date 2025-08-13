@@ -387,7 +387,6 @@ const EachProductPage = () => {
         setSelectedAttributes(newSelectedAttributes);
       }
     } catch (error) {
-      console.log(error);
     } finally {
       setLoading(false);
     }
