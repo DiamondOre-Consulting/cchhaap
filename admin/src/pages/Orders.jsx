@@ -500,7 +500,7 @@ const Orders = () => {
                         </h3>
                         <button
                           onClick={() => setShowOrderDetails(false)}
-                          className="text-gray-400 hover:text-gray-500"
+                          className="text-gray-400 z-20 cursor-pointer hover:text-gray-500"
                         >
                           <svg
                             className="h-6 w-6"

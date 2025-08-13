@@ -82,7 +82,7 @@ export const userSignOut = createAsyncThunk("/signout", async () => {
   try {
     const response = await userAxiosInstance.get("/signout");
     console.log(response);
-    toast.success(response?.data?.message);
+    // toast.success(response?.data?.message);
     return response?.data;
   } catch (error) {
     console.log(error);
