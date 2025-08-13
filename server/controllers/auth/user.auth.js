@@ -19,8 +19,12 @@ const otpStore = new Map()
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,          
-  sameSite: "None",      
+  secure: true,
+  sameSite: "None",
+  domain: ".chhaapp.in",  // Add this (leading dot for subdomains)
+  path: "/",              // Explicitly set path
+  maxAge: 7 * 24 * 60 * 60 * 1000, // Set expiry (e.g., 7 days)
+  partitioned: true       // Required for Chrome mobile
 };
 
 
@@ -169,8 +173,8 @@ export const signin= asyncHandler(async(req,res)=>{
     existingUser.refreshAccessToken = refreshAccessToken;
     await existingUser.save();
 
-    // res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
-    // res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
 
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
