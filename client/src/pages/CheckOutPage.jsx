@@ -344,9 +344,9 @@ const CheckOutPage = () => {
             }
           },
           prefill: {
-            name: "Zoya",
-            email: "zoya@gmail.com",
-            contact: "9811839410",
+            name: "Chhaapp",
+            email: "anantasinghal28@gmail.com",
+            contact: "9891444077",
           },
           theme: {
             color: "#F37254",
