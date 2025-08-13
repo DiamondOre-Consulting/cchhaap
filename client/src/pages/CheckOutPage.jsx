@@ -91,8 +91,7 @@ const CheckOutPage = () => {
     try {
       const response = await dispatch(userGetCheckoutValues());
       setCheckOutValues(response?.payload?.data);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleGetBuyNowCheckOutValues = async () => {
@@ -101,8 +100,7 @@ const CheckOutPage = () => {
         userBuyNowCheckOutValues({ productId, variationId, quantity })
       );
       setCheckOutValues(response?.payload?.data?.data?.checkoutValues);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const cartItems = useSelector((state) => state.cart.cartItems);
@@ -164,7 +162,7 @@ const CheckOutPage = () => {
       const response = await dispatch(userAddNewAddress(addAddressForm));
       if (response?.payload?.statusCode === 200) {
         setAddAddressPopUp(false);
-         resetAddAddressForm();
+        resetAddAddressForm();
         await handleGetAllAddress();
       }
     } catch (error) {
@@ -183,8 +181,7 @@ const CheckOutPage = () => {
       if (defaultAddress) {
         setSelectedAddress(defaultAddress);
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleEditClick = (address) => {
@@ -222,8 +219,7 @@ const CheckOutPage = () => {
     try {
       await dispatch(userDeleteAddress(addressId));
       await handleGetAllAddress();
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleApplyCoupon = async () => {
@@ -257,16 +253,14 @@ const CheckOutPage = () => {
         setCouponValue(res?.payload?.data);
         handleConfetti();
       }
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   const handleGetRazorpayKey = async () => {
     try {
       const response = await dispatch(userGetRazorpayKey());
       setRazorpayKey(response?.payload?.data?.key);
-    } catch (error) {
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {
@@ -420,24 +414,22 @@ const CheckOutPage = () => {
     window.scrollTo(0, 0);
   }, []);
 
-
   const resetAddAddressForm = () => {
-  setAddAddressForm({
-    fullName: "",
-    phoneNumber: "",
-    street: "",
-    city: "",
-    state: "",
-    country: "India",
-    pinCode: "",
-    addressType: "",
-    isDefault: false,
-  });
-};
+    setAddAddressForm({
+      fullName: "",
+      phoneNumber: "",
+      street: "",
+      city: "",
+      state: "",
+      country: "India",
+      pinCode: "",
+      addressType: "",
+      isDefault: false,
+    });
+  };
 
   return (
     <div className="min-h-screen bg-[#6d0c04] text-white py-8 px-4 md:px-8">
-     
       <div className="max-w-6xl mx-auto mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-white">Checkout</h1>
         <div className="flex items-center mt-2 text-amber-100">
@@ -530,9 +522,6 @@ const CheckOutPage = () => {
               ))}
             </div>
           </div>
-
-       
-         
         </div>
 
         <div className="space-y-6">
@@ -543,13 +532,12 @@ const CheckOutPage = () => {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-amber-100">
-                 Total Items ({checkoutvalues?.totalItems})
+                  Total Items ({checkoutvalues?.totalItems})
                 </span>
-             
               </div>
-                  <div className="flex justify-between">
+              <div className="flex justify-between">
                 <span className="text-amber-100">Total MRP</span>
-                 <span className="text-white">
+                <span className="text-white">
                   {checkoutvalues?.totalMRP.toLocaleString("en-US", {
                     style: "currency",
                     currency: "INR",
@@ -622,7 +610,6 @@ const CheckOutPage = () => {
               </div>
             </div>
 
-         
             <div className="mt-6">
               <div className="flex items-center space-x-2">
                 <div className="relative flex-1">
@@ -778,13 +765,13 @@ const CheckOutPage = () => {
               <div className="absolute inset-0 bg-gray-500 opacity-75"></div>
             </div>
 
-            <div className="relative bg-white z-60 text-gray-800 w-auto md:w-2xl px-2 py-4 rounded-md">
+            <div className="relative bg-white z-[10000000000000000000] text-gray-800 w-auto md:w-2xl px-2 py-4 rounded-md">
               <button
-                className="float-right text-2xl absolute top-2 right-1 mb-2 cursor-pointer"
+                className="float-right  text-2xl absolute top-2 right-1 mb-2 cursor-pointer"
                 onClick={() => {
-    setAddAddressPopUp(false);
-    resetAddAddressForm(); 
-  }}
+                  setEditAddressPopUp(false);
+                  resetAddAddressForm();
+                }}
               >
                 <IoClose />
               </button>
