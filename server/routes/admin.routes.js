@@ -45,7 +45,7 @@ adminRouter.delete('/delete-category/:categoryId',validate({params:deleteCategor
 
 adminRouter.post('/signin'  , validate({body:signinSchema}), signin)
 
-adminRouter.post('/signup',adminMiddleware ,validate({body:signupSchema}),signup)
+adminRouter.post('/signup' ,validate({body:signupSchema}),signup)
 
 adminRouter.get('/signout',signout)
 
