@@ -202,33 +202,35 @@ const PrivacyPolicy = () => {
         <h2 className="text-2xl font-semibold text-gray-100 mt-10 mb-4">
           Cookies
         </h2>
-        <p className="mb-6">
-          Like many websites, we use Cookies on our Site. For specific
-          information about the Cookies that we use related to powering our
-          store with Shopify, see{" "}
-          <a
-            href="https://www.shopify.com/legal/cookies"
-            className="text-blue-400 hover:underline"
-          >
-            https://www.shopify.com/legal/cookies
-          </a>
-          . We use Cookies to power and improve our Site and our Services
-          (including to remember your actions and preferences), to run analytics
-          and better understand user interaction with the Services (in our
-          legitimate interests to administer, improve and optimize the
-          Services). We may also permit third parties and services providers to
-          use Cookies on our Site to better tailor the services, products and
-          advertising on our Site and other websites.
+
+        <p className="mb-4">
+          Our website uses cookies and similar tracking technologies to enhance
+          your experience. Here's how we use them:
         </p>
+
+        <ul className="list-disc pl-6 mb-4 space-y-2">
+          <li>
+            <strong>Essential Cookies:</strong> Required for core functionality
+            (e.g., user authentication, shopping cart).
+          </li>
+          <li>
+            <strong>Analytics Cookies:</strong> Help us understand site usage
+            (e.g., via Google Analytics).
+          </li>
+          <li>
+            <strong>Preference Cookies:</strong> Remember your settings (e.g.,
+            language, theme).
+          </li>
+        </ul>
+
+        <p className="mb-4">
+          You can control cookies through your browser settings. Disabling them
+          may affect site functionality.
+        </p>
+
         <p className="mb-6">
-          Most browsers automatically accept Cookies by default, but you can
-          choose to set your browser to remove or reject Cookies through your
-          browser controls. Please keep in mind that removing or blocking
-          Cookies can negatively impact your user experience and may cause some
-          of the Services, including certain features and general functionality,
-          to work incorrectly or no longer be available. Additionally, blocking
-          Cookies may not completely prevent how we share information with third
-          parties such as our advertising partners.
+          We do not use third-party cookies for advertising or tracking without
+          your explicit consent.
         </p>
 
         <h2 className="text-2xl font-semibold text-gray-100 mt-10 mb-4">
