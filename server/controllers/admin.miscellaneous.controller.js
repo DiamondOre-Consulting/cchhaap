@@ -92,9 +92,11 @@ export const fetchAllUsers = asyncHandler(async (req, res) => {
 
   const users = await User.find()
     .select("_id fullName email phoneNumber createdAt updatedAt")
+    .sort({ createdAt: -1 }) 
     .skip(skip)
     .limit(limit)
     .lean();
+    
 
   if (!users.length) {
     throw new ApiError("No users found", 404);
