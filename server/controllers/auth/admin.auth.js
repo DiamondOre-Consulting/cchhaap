@@ -15,8 +15,11 @@ import { sendMail } from "../../utils/mail.util.js";
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,
-  sameSite: "None",
+  secure: true,       // send cookie only over HTTPS
+  sameSite: "None",   // allow cross-site (different subdomain)
+  domain: ".chhaapp.in", // leading dot allows all subdomains
+  path: "/",          // cookie valid for whole site
+  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
 };
 
 
