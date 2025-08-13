@@ -25,4 +25,33 @@ adminAxiosInstance.interceptors.request.use(
   }
 );
 
+// Attach Authorization header if token exists
+adminAxiosInstance.interceptors.request.use(
+  (config) => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('adminAccessToken') : null;
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+// Capture tokens from auth responses
+adminAxiosInstance.interceptors.response.use(
+  (response) => {
+    const tokens = response?.data?.data?.tokens;
+    if (tokens?.accessToken) {
+      try {
+        localStorage.setItem('adminAccessToken', tokens.accessToken);
+        if (tokens.refreshAccessToken) {
+          localStorage.setItem('adminRefreshToken', tokens.refreshAccessToken);
+        }
+      } catch {}
+    }
+    return response;
+  },
+  (error) => Promise.reject(error)
+);
+
 export default adminAxiosInstance

@@ -4,7 +4,10 @@ import ApiError from '../utils/apiError.js';
 import Admin from '../models/admin.model.js';
 
 export const adminMiddleware = asyncHandler(async (req, res, next) => {
-    const accessToken = req.cookies.accessToken;
+    let accessToken = req.cookies.accessToken;
+    if (!accessToken && req.headers.authorization?.startsWith('Bearer ')) {
+        accessToken = req.headers.authorization.split(' ')[1];
+    }
     if (!accessToken) {
         throw new ApiError("Access Token is missing", 401);
     }

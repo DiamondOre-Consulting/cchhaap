@@ -17,13 +17,27 @@ import Address from "../../models/address.model.js";
 
 const otpStore = new Map()
 
-const cookieOptions = {
-  httpOnly: true,
-  secure: true,       // send cookie only over HTTPS
-  sameSite: "None",   // allow cross-site (different subdomain)
-  domain: ".chhaapp.in", // leading dot allows all subdomains
-  path: "/",          // cookie valid for whole site
-  maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
+// Build cookie options dynamically to avoid setting invalid domain on different hosts
+const getCookieOptions = (req) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const configuredDomain = process.env.COOKIE_DOMAIN; // e.g., .chhaapp.in
+  const host = req.hostname;
+  const normalizedDomain = configuredDomain?.replace(/^\./, '');
+
+  // Only set domain if current host is a subdomain of configured domain
+  const shouldUseDomain = Boolean(normalizedDomain && host.endsWith(normalizedDomain));
+
+  // If using same-site domain (subdomain), Lax is fine; otherwise use None for cross-site
+  const sameSite = shouldUseDomain ? 'Lax' : 'None';
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite,
+    ...(shouldUseDomain ? { domain: configuredDomain } : {}),
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
 };
 
 
@@ -74,10 +88,11 @@ export const signup= asyncHandler(async(req,res)=>{
       user.resetPasswordToken = undefined;
       user.resetPasswordTokenExpires = undefined;
     
+      const cookieOptions = getCookieOptions(req);
       res.cookie("accessToken", token, cookieOptions);
       res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
 
-      sendResponse(res, 200, user, "User created successfully")
+      sendResponse(res, 200, { user, tokens: { accessToken: token, refreshAccessToken } }, "User created successfully")
 
 })
 
@@ -171,10 +186,7 @@ export const signin= asyncHandler(async(req,res)=>{
     existingUser.refreshAccessToken = refreshAccessToken;
     await existingUser.save();
 
-    res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
-
+    const cookieOptions = getCookieOptions(req);
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
     existingUser.password = undefined;
@@ -182,7 +194,7 @@ export const signin= asyncHandler(async(req,res)=>{
     existingUser.resetPasswordToken = undefined;
     existingUser.resetPasswordTokenExpires = undefined;
 
-    sendResponse(res, 200, existingUser, "User logged in successfully");
+    sendResponse(res, 200, { user: existingUser, tokens: { accessToken, refreshAccessToken } }, "User logged in successfully");
 
 
 })
@@ -193,8 +205,9 @@ export const signout = asyncHandler(async (req, res) => {
   
 
   // Use the identical options to clear the cookies.
-  res.clearCookie("accessToken", cookieOptions);
-  res.clearCookie("refreshAccessToken", cookieOptions);
+  const cookieOptions = getCookieOptions(req);
+  res.clearCookie("accessToken", cookieOptions);
+  res.clearCookie("refreshAccessToken", cookieOptions);
 
   sendResponse(res, 200, null, "Signed out successfully");
 });
