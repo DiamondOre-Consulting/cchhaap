@@ -26,7 +26,7 @@ const ProfilePage = () => {
     console.log(res)
     dispatch(getNavbarCartWishlistCount());
     console.log(res);
-    toast.success("Logged out successfully");
+    // toast.success("Logged out successfully");
     navigate("/login");
   };
 
