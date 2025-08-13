@@ -171,6 +171,7 @@ export const signin= asyncHandler(async(req,res)=>{
 
     res.setHeader('Access-Control-Allow-Origin', 'https://chhaapp.in');
     res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
 
     res.cookie("accessToken", accessToken, cookieOptions);
     res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);

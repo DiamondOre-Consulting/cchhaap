@@ -88,6 +88,7 @@ export const signup = asyncHandler(async(req, res) => {
 
   res.cookie("accessToken", token, cookieOptions);
   res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
+  res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
 
   sendResponse(res, 200, admin, "User created successfully");
 });
