@@ -7,7 +7,12 @@ import User from '../models/user.model.js';
 
 export const userMiddleware = asyncHandler(async(req,res,next)=>{
     
-    const accessToken = req.cookies.accessToken
+    let accessToken = req.cookies.accessToken
+
+    // Fallback: allow Authorization header Bearer token for environments where third-party cookies are blocked
+    if (!accessToken && req.headers.authorization?.startsWith('Bearer ')) {
+        accessToken = req.headers.authorization.split(' ')[1];
+    }
 
     if (!accessToken) {
         throw new ApiError("Access Token is missing", 401);

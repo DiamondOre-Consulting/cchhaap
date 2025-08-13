@@ -19,9 +19,13 @@ app.use(express.json())
 app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(cors({
-     origin:["http://localhost:5173","http://localhost:5174","http://localhost:5175","https://cchhaap.onrender.com","https://cchhaap-admin.onrender.com","https://www.chhaapp.in","https://chhaapp.in","https://admin.chhaapp.in"],
-     credentials:true
-}))
+  origin: ["http://localhost:5173","http://localhost:5174","http://localhost:5175","https://cchhaap.onrender.com","https://cchhaap-admin.onrender.com","https://www.chhaapp.in","https://chhaapp.in","https://admin.chhaapp.in"],
+  credentials: true,
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"],
+}));
+
+
 
 cloudinary.v2.config({
   cloud_name : process.env.cloud_name,

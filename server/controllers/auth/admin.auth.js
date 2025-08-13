@@ -13,10 +13,27 @@ import { sendMail } from "../../utils/mail.util.js";
 
 
 
-const cookieOptions = {
-  httpOnly: true,
-  secure: true,
-  sameSite: "None",
+// Build cookie options dynamically to avoid setting invalid domain on different hosts
+const getCookieOptions = (req) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  const configuredDomain = process.env.COOKIE_DOMAIN; // e.g., .chhaapp.in
+  const host = req.hostname;
+  const normalizedDomain = configuredDomain?.replace(/^\./, '');
+
+  // Only set domain if current host is a subdomain of configured domain
+  const shouldUseDomain = Boolean(normalizedDomain && host.endsWith(normalizedDomain));
+
+  // If using same-site domain (subdomain), Lax is fine; otherwise use None for cross-site
+  const sameSite = shouldUseDomain ? 'Lax' : 'None';
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite,
+    ...(shouldUseDomain ? { domain: configuredDomain } : {}),
+    path: '/',
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
 };
 
 
@@ -41,6 +58,7 @@ export const signin = asyncHandler(async(req, res) => {
   existingUser.refreshAccessToken = refreshAccessToken;
   await existingUser.save();
 
+  const cookieOptions = getCookieOptions(req);
   res.cookie("accessToken", accessToken, cookieOptions);
   res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
   existingUser.password = undefined;
@@ -86,9 +104,9 @@ export const signup = asyncHandler(async(req, res) => {
   admin.resetPasswordToken = undefined;
   admin.resetPasswordTokenExpires = undefined;
 
+  const cookieOptions = getCookieOptions(req);
   res.cookie("accessToken", token, cookieOptions);
   res.cookie("refreshAccessToken", refreshAccessToken, cookieOptions);
-  res.setHeader('Access-Control-Expose-Headers', 'Set-Cookie');
 
   sendResponse(res, 200, admin, "User created successfully");
 });
