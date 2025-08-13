@@ -16,7 +16,9 @@ import { sendMail } from "../../utils/mail.util.js";
 const cookieOptions = {
   httpOnly: true,
   secure: true,
-  sameSite: "None",
+  sameSite: "None",
+  domain: ".chhaapp.in", // Add this (leading dot for subdomains)
+  path: "/"
 };
 
 

@@ -19,8 +19,10 @@ const otpStore = new Map()
 
 const cookieOptions = {
   httpOnly: true,
-  secure: true,          
-  sameSite: "None",      
+  secure: true,
+  sameSite: "None",
+  domain: ".chhaapp.in", // Add this (leading dot for subdomains)
+  path: "/"
 };
 
 
