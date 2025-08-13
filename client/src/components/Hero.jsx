@@ -18,6 +18,7 @@ const Hero = () => {
       const res = await dispatch(GetAllBannerImages());
       setImages(res?.payload?.data[0]?.bannerImage || []);
     } catch (error) {
+      // console.log(error);
     } finally {
       setLoading(false);
     }
@@ -37,7 +38,7 @@ const Hero = () => {
   }
 
   return (
-    <div className="relative h-[60vh] md:h-screen">
+    <div className="relative h-full md:h-screen">
       <Swiper
         modules={[Autoplay, EffectFade]}
         autoplay={{
@@ -71,7 +72,7 @@ const Hero = () => {
             <div className="relative w-full h-full">
               <img
                 src={slide.secureUrl}
-                className="w-full h-full object-cover"
+             className="w-full h-full object-contain md:object-cover object-top"
                 alt={`Slide ${index + 1}`}
                 // Changed from lazy to eager for above-the-fold images
                 loading="eager"
